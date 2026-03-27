@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { getWilliamResponse } from "./claudeApi.js";
 
 const PURPLE = "#5a3fa0";
 const PURPLE_LIGHT = "#7155b8";
@@ -165,21 +166,20 @@ function ChatView() {
     setMsgs(p => [...p, userMsg]);
     setInput("");
     setTyping(true);
-    setTimeout(() => {
-      const replies = {
-        default: `Good question. Let me pull that up for you. Based on your pipeline right now — you've got 2 meetings booked this week, 4 hot leads that need follow-up, and 24 new prospects I'm still working. What do you want to dig into first?`,
-        results: `Here's your overnight breakdown:\n\n47 messages sent across email, LinkedIn, and Instagram. 6 replies — that's a 12.7% reply rate, which is strong. 2 meetings booked for Thursday. 4 leads need follow-up today — I'll handle them unless you want to review first.`,
-        prospects: `I found 12 SaaS founders in the dev tools space who posted about hiring challenges this week. Here are the top 5:\n\n1. Sarah Kim, BuildKit — posted about SDR burnout yesterday\n2. Marcus Webb, Deployfast — just raised seed, no sales hire yet\n3. Aisha Patel, CodeForge — launched on PH last week, 340 upvotes\n4. James Chen, StackPilot — tweeted about doing sales at midnight\n5. Ren Watanabe, Shiply — expanding to US market, no outbound\n\nWant me to start reaching out?`,
-        pipeline: `Your pipeline right now:\n\n🔴 Meeting (3): Alex Morin, Thu 2pm — Shipyard. Two others pending confirmation.\n🟠 Interested (8): Priya Kumar asked about pricing. Leo Tanaka wants to know more. 6 others warming up.\n🔵 Contacted (15): Jake Rivera opened your email 3 times. Nina Patel accepted on LinkedIn.\n⚪ New (24): Fresh prospects I'm working through.\n🟢 Won (2): Dan Fields signed up last week.\n\nYour pipeline is healthy. The bottleneck is converting \"interested\" to \"meeting\" — I'm on it.`
-      };
-      let reply = replies.default;
-      const t = text.toLowerCase();
-      if (t.includes("result") || t.includes("overnight") || t.includes("today")) reply = replies.results;
-      if (t.includes("prospect") || t.includes("find")) reply = replies.prospects;
-      if (t.includes("pipeline") || t.includes("funnel")) reply = replies.pipeline;
-      setMsgs(p => [...p, { id: (Date.now() + 1).toString(), sender: "william", content: reply, time: "now" }]);
+
+    // Call Claude API with William's personality
+    (async () => {
+      const updatedMsgs = [...msgs, userMsg];
+      const response = await getWilliamResponse(updatedMsgs);
+      
+      if (response) {
+        setMsgs(p => [...p, { id: (Date.now() + 1).toString(), sender: "william", content: response, time: "now" }]);
+      } else {
+        // Fallback if API fails
+        setMsgs(p => [...p, { id: (Date.now() + 1).toString(), sender: "william", content: "I'm having trouble connecting right now. Make sure your API key is set up in .env.local", time: "now" }]);
+      }
       setTyping(false);
-    }, 1500);
+    })();
   }
 
   const suggestions = ["Show me today's results", "Who replied overnight?", "Find me 10 new prospects", "What's in my pipeline?"];
