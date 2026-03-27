@@ -783,58 +783,339 @@ function MeetingsView() {
 
 // ── Analytics ──
 function AnalyticsView() {
+  const [animatedStats, setAnimatedStats] = useState([0, 0, 0, 0]);
+  const [hoveredCard, setHoveredCard] = useState(null);
+  const [selectedTimeframe, setSelectedTimeframe] = useState("7d");
+
   const stats = [
-    { label: "Messages sent", value: "312", change: "+47 today" },
-    { label: "Replies", value: "38", change: "12.2% rate" },
-    { label: "Meetings booked", value: "11", change: "+2 today" },
-    { label: "Pipeline value", value: "24", change: "Active prospects" },
+    { label: "Messages sent", value: 312, change: "+47 today", icon: "📤", color: PURPLE },
+    { label: "Replies", value: 38, change: "12.2% rate", icon: "💬", color: GREEN },
+    { label: "Meetings booked", value: 11, change: "+2 today", icon: "📅", color: AMBER },
+    { label: "Pipeline value", value: 24, change: "Active prospects", icon: "🚀", color: "#378add" },
   ];
-  const days = [
-    { day: "Mon", sent: 42, replies: 5 }, { day: "Tue", sent: 47, replies: 6 },
-    { day: "Wed", sent: 38, replies: 4 }, { day: "Thu", sent: 51, replies: 7 },
-    { day: "Fri", sent: 45, replies: 6 }, { day: "Sat", sent: 44, replies: 5 },
-    { day: "Sun", sent: 45, replies: 5 },
+
+  const timeframes = [
+    { id: "7d", label: "7 days", data: [
+      { day: "Mon", sent: 42, replies: 5 }, { day: "Tue", sent: 47, replies: 6 },
+      { day: "Wed", sent: 38, replies: 4 }, { day: "Thu", sent: 51, replies: 7 },
+      { day: "Fri", sent: 45, replies: 6 }, { day: "Sat", sent: 44, replies: 5 },
+      { day: "Sun", sent: 45, replies: 5 },
+    ]},
+    { id: "30d", label: "30 days", data: [
+      { day: "Week 1", sent: 180, replies: 22 }, { day: "Week 2", sent: 210, replies: 28 },
+      { day: "Week 3", sent: 195, replies: 25 }, { day: "Week 4", sent: 235, replies: 32 },
+    ]},
+    { id: "90d", label: "90 days", data: [
+      { day: "Month 1", sent: 780, replies: 95 }, { day: "Month 2", sent: 920, replies: 118 },
+      { day: "Month 3", sent: 1050, replies: 142 },
+    ]},
   ];
-  const maxSent = Math.max(...days.map(d => d.sent));
+
+  const currentData = timeframes.find(t => t.id === selectedTimeframe)?.data || timeframes[0].data;
+  const maxSent = Math.max(...currentData.map(d => d.sent));
+
+  // Animate counters on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      stats.forEach((stat, index) => {
+        let current = 0;
+        const increment = stat.value / 50;
+        const interval = setInterval(() => {
+          current += increment;
+          if (current >= stat.value) {
+            current = stat.value;
+            clearInterval(interval);
+          }
+          setAnimatedStats(prev => {
+            const newStats = [...prev];
+            newStats[index] = Math.floor(current);
+            return newStats;
+          });
+        }, 20);
+      });
+    }, 300);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <div style={{ padding: "16px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6 }}>
         <IconHash s={14} />
         <span style={{ fontWeight: 600, fontSize: 14 }}>analytics</span>
+        <div style={{ marginLeft: "auto", display: "flex", gap: 4 }}>
+          {timeframes.map(tf => (
+            <button
+              key={tf.id}
+              onClick={() => setSelectedTimeframe(tf.id)}
+              style={{
+                padding: "4px 8px",
+                borderRadius: 12,
+                border: `1px solid ${selectedTimeframe === tf.id ? PURPLE : RULE}`,
+                background: selectedTimeframe === tf.id ? PURPLE_PALE : "transparent",
+                color: selectedTimeframe === tf.id ? PURPLE : INK_SOFT,
+                fontSize: 10,
+                fontWeight: 500,
+                cursor: "pointer",
+                transition: "all 0.2s"
+              }}
+            >
+              {tf.label}
+            </button>
+          ))}
+        </div>
       </div>
+
       <div style={{ flex: 1, overflowY: "auto", padding: 20 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 24 }}>
-          {stats.map(s => (
-            <div key={s.label} style={{ background: PAPER_WARM, borderRadius: 10, padding: "14px 16px", textAlign: "center" }}>
-              <div style={{ fontSize: 10, color: INK_GHOST, marginBottom: 4 }}>{s.label}</div>
-              <div style={{ fontSize: 26, fontWeight: 700, color: INK }}>{s.value}</div>
-              <div style={{ fontSize: 10, color: GREEN, marginTop: 2 }}>{s.change}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{ fontSize: 12, fontWeight: 600, color: INK_MID, marginBottom: 12 }}>Last 7 days</div>
-        <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 160, padding: "0 8px" }}>
-          {days.map(d => (
-            <div key={d.day} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-              <div style={{ fontSize: 9, color: INK_GHOST }}>{d.sent}</div>
-              <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 2 }}>
-                <div style={{ height: (d.sent / maxSent) * 100, background: PURPLE, borderRadius: "4px 4px 0 0", minHeight: 4, transition: "height 0.3s" }} />
-                <div style={{ height: (d.replies / maxSent) * 100, background: GREEN, borderRadius: "0 0 4px 4px", minHeight: 4, transition: "height 0.3s" }} />
+        {/* Hero Stats Grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 32 }}>
+          {stats.map((s, index) => (
+            <div
+              key={s.label}
+              onMouseEnter={() => setHoveredCard(index)}
+              onMouseLeave={() => setHoveredCard(null)}
+              style={{
+                background: hoveredCard === index ? `linear-gradient(135deg, ${PAPER_WARM} 0%, #fff 100%)` : PAPER_WARM,
+                borderRadius: 16,
+                padding: "20px",
+                textAlign: "center",
+                cursor: "pointer",
+                transform: hoveredCard === index ? "translateY(-4px)" : "translateY(0)",
+                boxShadow: hoveredCard === index ? `0 8px 25px rgba(90, 99, 160, 0.15)` : "none",
+                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                border: hoveredCard === index ? `1px solid ${s.color}40` : `1px solid ${RULE}`,
+                position: "relative",
+                overflow: "hidden"
+              }}
+            >
+              {/* Animated background pulse */}
+              <div style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: `radial-gradient(circle at 50% 50%, ${s.color}15 0%, transparent 70%)`,
+                opacity: hoveredCard === index ? 1 : 0,
+                transition: "opacity 0.3s"
+              }} />
+
+              <div style={{ fontSize: 24, marginBottom: 8 }}>{s.icon}</div>
+              <div style={{ fontSize: 11, color: INK_GHOST, marginBottom: 8, fontWeight: 500 }}>{s.label}</div>
+              <div style={{
+                fontSize: 32,
+                fontWeight: 800,
+                color: s.color,
+                marginBottom: 6,
+                fontVariantNumeric: "tabular-nums"
+              }}>
+                {animatedStats[index].toLocaleString()}
               </div>
-              <div style={{ fontSize: 10, color: INK_SOFT, marginTop: 4 }}>{d.day}</div>
+              <div style={{
+                fontSize: 11,
+                color: GREEN,
+                fontWeight: 600,
+                background: "#e4f5ed",
+                padding: "4px 8px",
+                borderRadius: 12,
+                display: "inline-block"
+              }}>
+                {s.change}
+              </div>
+
+              {/* Sparkle effect on hover */}
+              {hoveredCard === index && (
+                <div style={{
+                  position: "absolute",
+                  top: 10,
+                  right: 10,
+                  fontSize: 16,
+                  animation: "sparkle 1.5s ease-in-out infinite"
+                }}>
+                  ✨
+                </div>
+              )}
             </div>
           ))}
         </div>
-        <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 12 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10, color: INK_SOFT }}>
-            <div style={{ width: 8, height: 8, borderRadius: 2, background: PURPLE }} /> Sent
+
+        {/* Interactive Chart Section */}
+        <div style={{
+          background: PAPER_WARM,
+          borderRadius: 16,
+          padding: 24,
+          marginBottom: 24,
+          boxShadow: "0 4px 20px rgba(0,0,0,0.05)"
+        }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+            <div>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: INK, margin: 0 }}>Activity Overview</h3>
+              <p style={{ fontSize: 12, color: INK_SOFT, margin: 4 }}>Messages sent vs replies over time</p>
+            </div>
+            <div style={{ display: "flex", gap: 12 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <div style={{ width: 12, height: 12, borderRadius: 3, background: PURPLE }} />
+                <span style={{ fontSize: 11, color: INK_SOFT }}>Sent</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <div style={{ width: 12, height: 12, borderRadius: 3, background: GREEN }} />
+                <span style={{ fontSize: 11, color: INK_SOFT }}>Replies</span>
+              </div>
+            </div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10, color: INK_SOFT }}>
-            <div style={{ width: 8, height: 8, borderRadius: 2, background: GREEN }} /> Replies
+
+          <div style={{ display: "flex", alignItems: "flex-end", gap: 12, height: 200, padding: "0 16px" }}>
+            {currentData.map((d, index) => (
+              <div
+                key={d.day}
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 8,
+                  cursor: "pointer",
+                  transition: "transform 0.2s"
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+                onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+              >
+                <div style={{
+                  position: "relative",
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 2,
+                  alignItems: "center"
+                }}>
+                  {/* Reply bar */}
+                  <div style={{
+                    height: Math.max((d.replies / maxSent) * 160, 4),
+                    width: 24,
+                    background: GREEN,
+                    borderRadius: "4px 4px 0 0",
+                    transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+                    animation: `slideUp 0.8s ease-out ${index * 0.1}s both`
+                  }} />
+                  {/* Sent bar */}
+                  <div style={{
+                    height: Math.max((d.sent / maxSent) * 160, 4),
+                    width: 32,
+                    background: PURPLE,
+                    borderRadius: "4px 4px 0 0",
+                    transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+                    animation: `slideUp 0.8s ease-out ${index * 0.1 + 0.2}s both`,
+                    position: "relative"
+                  }}>
+                    {/* Tooltip */}
+                    <div style={{
+                      position: "absolute",
+                      top: -35,
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      background: INK,
+                      color: "#fff",
+                      padding: "6px 10px",
+                      borderRadius: 6,
+                      fontSize: 10,
+                      whiteSpace: "nowrap",
+                      opacity: 0,
+                      pointerEvents: "none",
+                      transition: "opacity 0.2s",
+                      zIndex: 10
+                    }}>
+                      {d.sent} sent, {d.replies} replies
+                    </div>
+                  </div>
+                </div>
+                <div style={{ fontSize: 11, color: INK_SOFT, fontWeight: 500 }}>{d.day}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Conversion Funnel */}
+        <div style={{
+          background: `linear-gradient(135deg, ${PAPER_WARM} 0%, #fff 100%)`,
+          borderRadius: 16,
+          padding: 24,
+          boxShadow: "0 4px 20px rgba(0,0,0,0.05)"
+        }}>
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: INK, margin: "0 0 16px 0" }}>Conversion Funnel</h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {[
+              { stage: "Messages Sent", count: 312, rate: "100%", color: PURPLE },
+              { stage: "Replies", count: 38, rate: "12.2%", color: "#378add" },
+              { stage: "Interested", count: 15, rate: "39.5%", color: AMBER },
+              { stage: "Meetings Booked", count: 11, rate: "73.3%", color: GREEN },
+            ].map((stage, index) => (
+              <div key={stage.stage} style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 16,
+                padding: 12,
+                background: "#fff",
+                borderRadius: 8,
+                border: `1px solid ${RULE}`,
+                animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`
+              }}>
+                <div style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 8,
+                  background: stage.color,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 14,
+                  fontWeight: 700,
+                  color: "#fff"
+                }}>
+                  {stage.count}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: INK }}>{stage.stage}</div>
+                  <div style={{ fontSize: 11, color: INK_SOFT }}>{stage.rate} conversion rate</div>
+                </div>
+                <div style={{
+                  width: 80,
+                  height: 6,
+                  background: RULE,
+                  borderRadius: 3,
+                  overflow: "hidden"
+                }}>
+                  <div style={{
+                    width: `${stage.rate.replace('%', '')}%`,
+                    height: "100%",
+                    background: stage.color,
+                    borderRadius: 3,
+                    transition: "width 1s ease-out",
+                    animation: `growWidth 1s ease-out ${index * 0.2}s both`
+                  }} />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes slideUp {
+          from { transform: scaleY(0); transform-origin: bottom; }
+          to { transform: scaleY(1); transform-origin: bottom; }
+        }
+        @keyframes sparkle {
+          0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+          50% { transform: scale(1.2) rotate(180deg); opacity: 1; }
+        }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 0; transform: translateY(0); }
+        }
+        @keyframes growWidth {
+          from { width: 0%; }
+          to { width: var(--target-width); }
+        }
+      `}</style>
     </div>
   );
 }
