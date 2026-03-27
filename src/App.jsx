@@ -123,7 +123,6 @@ function Sidebar({ active, onNav }) {
     { id: "chat", label: "talk-to-william", dot: true },
     { id: "pipeline", label: "pipeline" },
     { id: "outreach", label: "outreach-log", badge: "3" },
-    { id: "leads", label: "hot-leads", badge: "4" },
     { id: "meetings", label: "meetings", badge: "2" },
     { id: "analytics", label: "analytics" },
   ];
@@ -746,35 +745,6 @@ function OutreachView() {
   );
 }
 
-// ── Hot Leads ──
-function LeadsView() {
-  const hot = MOCK_PROSPECTS.filter(p => p.score >= 50).sort((a, b) => b.score - a.score);
-  return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <div style={{ padding: "16px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6 }}>
-        <IconHash s={14} />
-        <span style={{ fontWeight: 600, fontSize: 14 }}>hot-leads</span>
-      </div>
-      <div style={{ flex: 1, overflowY: "auto", padding: 20 }}>
-        {hot.map(p => {
-          const heat = p.score >= 80 ? "hot" : p.score >= 60 ? "warm" : "new";
-          return (
-            <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 0", borderBottom: `1px solid ${PAPER_WARM}` }}>
-              <Avatar initials={p.avatar} bg={heat === "hot" ? "#fcebeb" : heat === "warm" ? "#fdf2e3" : "#e6f1fb"} size={36} />
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 13, fontWeight: 600 }}>{p.name}</div>
-                <div style={{ fontSize: 11, color: INK_SOFT }}>{p.company} · {p.lastAction}</div>
-              </div>
-              <Badge text={heat.charAt(0).toUpperCase() + heat.slice(1)} color={heat} />
-              <div style={{ width: 60 }}><ScoreBar score={p.score} /></div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
 // ── Meetings ──
 function MeetingsView() {
   const meetings = [
@@ -907,7 +877,6 @@ export default function App() {
     chat: <ChatView />,
     pipeline: <PipelineView />,
     outreach: <OutreachView />,
-    leads: <LeadsView />,
     meetings: <MeetingsView />,
     analytics: <AnalyticsView />,
   };
