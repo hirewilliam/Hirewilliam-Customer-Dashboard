@@ -16,17 +16,22 @@ const PAPER = "#faf9f6";
 const PAPER_WARM = "#f3f1ec";
 const RULE = "#ddd9d0";
 
-// ── Mock Data ──
-const MOCK_PROSPECTS = [
-  { id: "1", name: "Alex Morin", company: "Shipyard", role: "Founder", industry: "Dev Tools", score: 90, stage: "meeting", channel: "linkedin", lastAction: "Booked: Thu 2pm", avatar: "AM" },
-  { id: "2", name: "Priya Kumar", company: "DataStack", role: "CEO", industry: "Analytics", score: 72, stage: "interested", channel: "email", lastAction: "Asked about pricing", avatar: "PK" },
-  { id: "3", name: "Leo Tanaka", company: "Kitemaker", role: "Founder", industry: "PM Tool", score: 65, stage: "interested", channel: "instagram", lastAction: "Replied: tell me more", avatar: "LT" },
-  { id: "4", name: "Jake Rivera", company: "Launchpad", role: "CTO", industry: "No-code", score: 45, stage: "contacted", channel: "email", lastAction: "Opened email 3x", avatar: "JR" },
-  { id: "5", name: "Nina Patel", company: "FormFlow", role: "Founder", industry: "Forms", score: 35, stage: "contacted", channel: "linkedin", lastAction: "LinkedIn accepted", avatar: "NP" },
-  { id: "6", name: "Sara Chen", company: "Metrify", role: "CEO", industry: "Analytics", score: 20, stage: "new", channel: "linkedin", lastAction: "LinkedIn sent", avatar: "SC" },
-  { id: "7", name: "Tom Okoro", company: "Stackbase", role: "Founder", industry: "Dev Tools", score: 15, stage: "new", channel: "email", lastAction: "Email sent 2h ago", avatar: "TO" },
-  { id: "8", name: "Dan Fields", company: "Beacon", role: "CEO", industry: "CRM", score: 100, stage: "won", channel: "email", lastAction: "Signed up", avatar: "DF" },
+// ── Enhanced Mock Data with Activity Tracking ──
+const INITIAL_PROSPECTS = [
+  { id: "1", name: "Alex Morin", company: "Shipyard", role: "Founder", industry: "Dev Tools", score: 90, stage: "meeting", channel: "linkedin", lastAction: "Booked: Thu 2pm", avatar: "AM", lastActivityTime: Date.now() - 7200000, activities: [{ time: Date.now() - 7200000, action: "Meeting booked" }] },
+  { id: "2", name: "Priya Kumar", company: "DataStack", role: "CEO", industry: "Analytics", score: 72, stage: "interested", channel: "email", lastAction: "Asked about pricing", avatar: "PK", lastActivityTime: Date.now() - 14400000, activities: [{ time: Date.now() - 14400000, action: "Replied positively" }] },
+  { id: "3", name: "Leo Tanaka", company: "Kitemaker", role: "Founder", industry: "PM Tool", score: 65, stage: "interested", channel: "instagram", lastAction: "Replied: tell me more", avatar: "LT", lastActivityTime: Date.now() - 21600000, activities: [{ time: Date.now() - 21600000, action: "Replied" }] },
+  { id: "4", name: "Jake Rivera", company: "Launchpad", role: "CTO", industry: "No-code", score: 45, stage: "contacted", channel: "email", lastAction: "Opened email 3x", avatar: "JR", lastActivityTime: Date.now() - 43200000, activities: [{ time: Date.now() - 43200000, action: "Message opened" }] },
+  { id: "5", name: "Nina Patel", company: "FormFlow", role: "Founder", industry: "Forms", score: 35, stage: "contacted", channel: "linkedin", lastAction: "LinkedIn accepted", avatar: "NP", lastActivityTime: Date.now() - 86400000, activities: [{ time: Date.now() - 86400000, action: "Accepted connection" }] },
+  { id: "6", name: "Sara Chen", company: "Metrify", role: "CEO", industry: "Analytics", score: 20, stage: "new", channel: "linkedin", lastAction: "LinkedIn sent", avatar: "SC", lastActivityTime: Date.now() - 259200000, activities: [{ time: Date.now() - 259200000, action: "Initial message sent" }] },
+  { id: "7", name: "Tom Okoro", company: "Stackbase", role: "Founder", industry: "Dev Tools", score: 15, stage: "new", channel: "email", lastAction: "Email sent 2h ago", avatar: "TO", lastActivityTime: Date.now() - 7200000, activities: [{ time: Date.now() - 7200000, action: "Initial email sent" }] },
+  { id: "8", name: "Dan Fields", company: "Beacon", role: "CEO", industry: "CRM", score: 100, stage: "won", channel: "email", lastAction: "Signed up", avatar: "DF", lastActivityTime: Date.now() - 604800000, activities: [{ time: Date.now() - 604800000, action: "Became customer" }] },
+  { id: "9", name: "Rachel Green", company: "TechFlow", role: "Founder", industry: "Analytics", score: 28, stage: "new", channel: "linkedin", lastAction: "Researching", avatar: "RG", lastActivityTime: Date.now() - 432000000, activities: [{ time: Date.now() - 432000000, action: "Profile researched" }] },
+  { id: "10", name: "Marcus Chen", company: "BuildFlow", role: "CRO", industry: "Dev Tools", score: 55, stage: "contacted", channel: "email", lastAction: "No response yet", avatar: "MC", lastActivityTime: Date.now() - 172800000, activities: [{ time: Date.now() - 172800000, action: "Initial email sent" }] },
+  { id: "11", name: "Sofia Rodriguez", company: "PayFlow", role: "CEO", industry: "Fintech", score: 78, stage: "interested", channel: "linkedin", lastAction: "Asked for demo", avatar: "SR", lastActivityTime: Date.now() - 3600000, activities: [{ time: Date.now() - 3600000, action: "Requested demo" }] },
 ];
+
+const MOCK_PROSPECTS = INITIAL_PROSPECTS;
 
 const MOCK_OUTREACH = [
   {
@@ -270,38 +275,222 @@ function ChatView() {
 
 // ── Pipeline View ──
 function PipelineView() {
+  const [prospects, setProspects] = useState(MOCK_PROSPECTS);
+  const [filter, setFilter] = useState({ channel: null, time: null, score: null });
+  const [draggedCard, setDraggedCard] = useState(null);
+
   const stages = [
-    { id: "new", label: "New", color: INK_SOFT },
-    { id: "contacted", label: "Contacted", color: "#378add" },
-    { id: "interested", label: "Interested", color: AMBER },
-    { id: "meeting", label: "Meeting", color: RED },
-    { id: "won", label: "Won", color: GREEN },
+    { id: "new", label: "New", color: INK_SOFT, desc: "Researching" },
+    { id: "contacted", label: "Contacted", color: "#378add", desc: "First message sent" },
+    { id: "interested", label: "Interested", color: AMBER, desc: "Positive response" },
+    { id: "meeting", label: "Meeting", color: RED, desc: "Call scheduled" },
+    { id: "won", label: "Won", color: GREEN, desc: "Customer" },
+    { id: "lost", label: "Lost", color: INK_GHOST, desc: "Not a fit" },
   ];
+
+  // Helper: time since activity
+  const timeAgo = (timestamp) => {
+    const seconds = Math.floor((Date.now() - timestamp) / 1000);
+    if (seconds < 60) return "now";
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+    return `${Math.floor(seconds / 86400)}d ago`;
+  };
+
+  // Helper: determine if lead is stale
+  const isStale = (timestamp) => Date.now() - timestamp > 432000000; // 5+ days
+
+  // Helper: get conversion rate
+  const getConversionRate = (stageId) => {
+    const stageIndex = stages.findIndex(s => s.id === stageId);
+    if (stageIndex === 0) return null; // No rate for "New"
+    const prevStageId = stages[stageIndex - 1].id;
+    const prevCount = prospects.filter(p => p.stage === prevStageId).length;
+    const currentCount = prospects.filter(p => p.stage === stageId).length;
+    if (prevCount === 0) return null;
+    return Math.round((currentCount / prevCount) * 100);
+  };
+
+  // Filter prospects
+  const filteredProspects = prospects.filter(p => {
+    if (filter.channel && p.channel !== filter.channel) return false;
+    if (filter.time) {
+      const hours = filter.time === "today" ? 24 : filter.time === "week" ? 168 : 720;
+      if (Date.now() - p.lastActivityTime > hours * 3600000) return false;
+    }
+    if (filter.score) {
+      const scores = { hot: [80, 100], warm: [50, 79], cold: [0, 49] };
+      const range = scores[filter.score];
+      if (p.score < range[0] || p.score > range[1]) return false;
+    }
+    return true;
+  });
+
+  // Drag handlers
+  const handleDragStart = (e, prospect) => {
+    setDraggedCard(prospect);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const handleDrop = (e, stageId) => {
+    e.preventDefault();
+    if (!draggedCard) return;
+    setProspects(p => p.map(prospect => 
+      prospect.id === draggedCard.id 
+        ? { ...prospect, stage: stageId, lastActivityTime: Date.now(), activities: [...(prospect.activities || []), { time: Date.now(), action: "Manually moved" }] }
+        : prospect
+    ));
+    setDraggedCard(null);
+  };
 
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <div style={{ padding: "16px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6 }}>
-        <IconHash s={14} />
-        <span style={{ fontWeight: 600, fontSize: 14 }}>pipeline</span>
+      {/* Header */}
+      <div style={{ padding: "16px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <IconHash s={14} />
+          <span style={{ fontWeight: 600, fontSize: 14 }}>pipeline</span>
+          <span style={{ fontSize: 10, color: INK_GHOST, marginLeft: 8 }}>{filteredProspects.length} prospects</span>
+        </div>
       </div>
+
+      {/* Filters */}
+      <div style={{ padding: "12px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", gap: 8, alignItems: "center", background: PAPER_WARM }}>
+        <span style={{ fontSize: 10, fontWeight: 600, color: INK_SOFT, textTransform: "uppercase" }}>Filter:</span>
+        <select
+          value={filter.channel || ""}
+          onChange={(e) => setFilter({ ...filter, channel: e.target.value || null })}
+          style={{ fontSize: 11, padding: "5px 8px", borderRadius: 6, border: `1px solid ${RULE}`, background: "#fff", cursor: "pointer" }}
+        >
+          <option value="">All channels</option>
+          <option value="email">Email</option>
+          <option value="linkedin">LinkedIn</option>
+          <option value="instagram">Instagram</option>
+        </select>
+        <select
+          value={filter.time || ""}
+          onChange={(e) => setFilter({ ...filter, time: e.target.value || null })}
+          style={{ fontSize: 11, padding: "5px 8px", borderRadius: 6, border: `1px solid ${RULE}`, background: "#fff", cursor: "pointer" }}
+        >
+          <option value="">All time</option>
+          <option value="today">Today</option>
+          <option value="week">This week</option>
+          <option value="month">This month</option>
+        </select>
+        <select
+          value={filter.score || ""}
+          onChange={(e) => setFilter({ ...filter, score: e.target.value || null })}
+          style={{ fontSize: 11, padding: "5px 8px", borderRadius: 6, border: `1px solid ${RULE}`, background: "#fff", cursor: "pointer" }}
+        >
+          <option value="">All scores</option>
+          <option value="hot">Hot (80+)</option>
+          <option value="warm">Warm (50-79)</option>
+          <option value="cold">Cold (0-49)</option>
+        </select>
+        {(filter.channel || filter.time || filter.score) && (
+          <button
+            onClick={() => setFilter({ channel: null, time: null, score: null })}
+            style={{ fontSize: 10, padding: "5px 10px", borderRadius: 6, border: "none", background: RULE, color: INK, cursor: "pointer" }}
+          >
+            Clear filters
+          </button>
+        )}
+      </div>
+
+      {/* Kanban Board */}
       <div style={{ flex: 1, display: "grid", gridTemplateColumns: `repeat(${stages.length}, 1fr)`, gap: 8, padding: 12, background: PAPER_WARM, overflowY: "auto" }}>
         {stages.map(st => {
-          const items = MOCK_PROSPECTS.filter(p => p.stage === st.id);
+          const items = filteredProspects.filter(p => p.stage === st.id);
+          const conversionRate = getConversionRate(st.id);
+          const prevStageCount = stages.findIndex(s => s.id === st.id) > 0 
+            ? filteredProspects.filter(p => p.stage === stages[stages.findIndex(s => s.id === st.id) - 1].id).length 
+            : null;
+
           return (
-            <div key={st.id}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 4px 8px", fontSize: 12, fontWeight: 600, color: st.color }}>
-                {st.label}
-                <span style={{ fontSize: 10, fontWeight: 400, color: INK_GHOST, background: "#fff", padding: "0 6px", borderRadius: 8 }}>{items.length}</span>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                {items.map(p => (
-                  <div key={p.id} style={{ background: "#fff", border: `1px solid ${RULE}`, borderRadius: 8, padding: "10px 12px" }}>
-                    <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 2 }}>{p.name}</div>
-                    <div style={{ fontSize: 10, color: INK_GHOST, marginBottom: 3 }}>{p.company} ({p.industry})</div>
-                    <div style={{ fontSize: 10, color: st.id === "won" || st.id === "meeting" ? GREEN : INK_SOFT }}>{p.lastAction}</div>
-                    <ScoreBar score={p.score} />
+            <div
+              key={st.id}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, st.id)}
+              style={{ display: "flex", flexDirection: "column", gap: 0 }}
+            >
+              {/* Column Header with Conversion Rate */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 8 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 4px" }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: st.color }}>{st.label}</div>
+                  <span style={{ fontSize: 9, fontWeight: 600, color: INK_GHOST, background: "#fff", padding: "2px 6px", borderRadius: 6 }}>
+                    {items.length}
+                  </span>
+                </div>
+                {conversionRate && (
+                  <div style={{ fontSize: 9, color: INK_GHOST, padding: "0 4px" }}>
+                    {conversionRate}% converted from {stages[stages.findIndex(s => s.id === st.id) - 1].label}
                   </div>
-                ))}
+                )}
+                <div style={{ fontSize: 8, color: INK_GHOST, padding: "0 4px", fontStyle: "italic" }}>{st.desc}</div>
+              </div>
+
+              {/* Cards */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 6, minHeight: 100 }}>
+                {items.map(p => {
+                  const stale = isStale(p.lastActivityTime);
+                  const recentMove = Date.now() - p.lastActivityTime < 3600000; // moved in last hour
+                  
+                  return (
+                    <div
+                      key={p.id}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, p)}
+                      style={{
+                        background: stale ? `rgba(255,255,255,0.5)` : "#fff",
+                        border: recentMove ? `2px solid ${GREEN}` : `1px solid ${RULE}`,
+                        borderRadius: 8,
+                        padding: "10px 12px",
+                        cursor: "grab",
+                        opacity: stale ? 0.6 : 1,
+                        transition: "all 0.2s",
+                        boxShadow: recentMove ? `0 0 8px ${GREEN}40` : "none",
+                      }}
+                      onDragEnd={() => setDraggedCard(null)}
+                    >
+                      {/* Card Content */}
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
+                        <div>
+                          <div style={{ fontSize: 12, fontWeight: 600, color: INK }}>{p.name}</div>
+                          <div style={{ fontSize: 10, color: INK_SOFT }}>{p.company}</div>
+                        </div>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: p.score >= 80 ? GREEN : p.score >= 50 ? AMBER : INK_GHOST }}>
+                          {p.score}
+                        </div>
+                      </div>
+
+                      {/* Channel Badge */}
+                      <div style={{ marginBottom: 6 }}>
+                        <Badge text={p.channel} color={p.channel} />
+                      </div>
+
+                      {/* Last Activity */}
+                      <div style={{ fontSize: 9, color: INK_GHOST, marginBottom: 6 }}>
+                        {p.lastAction}
+                      </div>
+
+                      {/* Activity Timeline */}
+                      <div style={{ fontSize: 8, display: "flex", alignItems: "center", gap: 4, color: INK_GHOST }}>
+                        <span style={{
+                          width: 6,
+                          height: 6,
+                          borderRadius: "50%",
+                          background: recentMove ? GREEN : st.color,
+                        }} />
+                        Moved {timeAgo(p.lastActivityTime)}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           );
