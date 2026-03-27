@@ -170,6 +170,10 @@ function ChatView() {
     // Call Claude API with William's personality
     (async () => {
       const updatedMsgs = [...msgs, userMsg];
+      
+      // Add a delay to feel natural (William is thinking)
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      
       const response = await getWilliamResponse(updatedMsgs);
       
       if (response) {
