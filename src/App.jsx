@@ -155,7 +155,9 @@ function Sidebar({ active, onNav }) {
 
 // ── Chat View ──
 function ChatView() {
-  const [msgs, setMsgs] = useState(MOCK_CHAT);
+  const [msgs, setMsgs] = useState([
+    { id: "intro", sender: "william", content: "Hi there! I'm William, your AI sales assistant. I help founders like you fill their sales pipeline without hiring SDRs. Tell me about your product, your ideal customers, and what you're struggling with in sales right now. I'll get to work building your outreach strategy.", time: "now" }
+  ]);
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
   const bottomRef = useRef(null);
@@ -190,7 +192,7 @@ function ChatView() {
     })();
   }
 
-  const suggestions = ["Show me today's results", "Who replied overnight?", "Find me 10 new prospects", "What's in my pipeline?"];
+  const suggestions = ["Tell me about your product", "Who are your ideal customers?", "What sales challenges do you face?", "Show me how you work"];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
