@@ -502,33 +502,245 @@ function PipelineView() {
 
 // ── Outreach Log ──
 function OutreachView() {
-  return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <div style={{ padding: "16px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6 }}>
-        <IconHash s={14} />
-        <span style={{ fontWeight: 600, fontSize: 14 }}>outreach-log</span>
+  const [filter, setFilter] = useState("all");
+
+  const CONVOS = [
+    {
+      id: "1", name: "Alex Morin", company: "Shipyard", channel: "linkedin", status: "replied", stage: "Meeting booked",
+      stageColor: GREEN, time: "2h ago", avatar: "AM",
+      thread: [
+        { from: "william", text: "Hey Alex, saw your post about struggling to hire your first SDR. What if you didn't have to? I help solo founders fill their pipeline without hiring. No calls, no contracts, you can see it working in 48 hours. Worth 15 mins?", time: "Yesterday, 11:32 PM", research: "Alex's LinkedIn post from 3 days ago about hiring challenges" },
+        { from: "prospect", text: "This looks great, let's chat. Thursday work?", time: "Today, 8:14 AM" },
+        { from: "william", text: "Thursday's perfect. I've sent you a calendar link for 2pm — does that work? Looking forward to it.", time: "Today, 8:22 AM" },
+        { from: "prospect", text: "Confirmed. See you then.", time: "Today, 8:30 AM" },
+      ]
+    },
+    {
+      id: "2", name: "Priya Kumar", company: "DataStack", channel: "email", status: "pending approval", stage: "Awaiting your review",
+      stageColor: AMBER, time: "4h ago", avatar: "PK", needsApproval: true,
+      thread: [
+        { from: "william", text: "Subject: Saw your Product Hunt launch\n\nHey Priya, congrats on the PH launch. 200+ upvotes is solid. Quick question: now that you've got product attention, who's doing outbound to convert that into pipeline? If the answer is \"nobody\" or \"me, badly\" — I might be able to help.", time: "Yesterday, 10:15 PM", research: "Product Hunt launch 4 days ago, 200+ upvotes" },
+        { from: "prospect", text: "Hey, thanks! We're actually struggling with exactly this. What does pricing look like?", time: "Today, 6:45 AM" },
+        { from: "william", text: "DRAFT — waiting for your approval:\n\nGreat question, Priya. It's $299/month, everything included — outreach, follow-ups, meeting booking, the works. No per-message fees, no contracts. Want me to show you what I'd do for DataStack specifically? I can find 5 prospects and draft outreach right now, free.", time: "Today, 7:02 AM", draft: true },
+      ]
+    },
+    {
+      id: "3", name: "Leo Tanaka", company: "Kitemaker", channel: "instagram", status: "replied", stage: "Interested",
+      stageColor: AMBER, time: "6h ago", avatar: "LT",
+      thread: [
+        { from: "william", text: "Hey Leo, been following the Kitemaker journey. Building in public is hard when you're also trying to sell. What if the selling part ran itself?", time: "Yesterday, 9:45 PM", research: "Leo actively posts build-in-public content on Instagram" },
+        { from: "prospect", text: "Intrigued. How does this work?", time: "Today, 5:30 AM" },
+        { from: "william", text: "Short version: I handle your entire outbound — finding the right people, writing personalised messages, handling replies, booking meetings. You wake up to calls on your calendar instead of an empty pipeline. Want me to show you what I'd send to your ideal customers?", time: "Today, 5:48 AM" },
+      ]
+    },
+    {
+      id: "4", name: "Jake Rivera", company: "Launchpad", channel: "email", status: "opened", stage: "Engaged — no reply yet",
+      stageColor: "#378add", time: "12h ago", avatar: "JR",
+      thread: [
+        { from: "william", text: "Subject: Quick question about Launchpad\n\nHey Jake, I've been watching Launchpad grow — the no-code space is heating up. Curious: are you doing any outbound right now, or is it all inbound? Either way, I think I can help you 3x your pipeline this quarter.", time: "2 days ago, 10:00 PM", research: "Recent funding announcement, growing team, no visible outbound" },
+        { from: "system", text: "Opened 3 times. Last opened 4 hours ago. No reply yet.", time: "Today" },
+        { from: "william", text: "QUEUED — follow-up in 24h:\n\nHey Jake, just bumping this up. I know you're busy shipping — that's exactly why I exist. Happy to show you what personalised outreach to your ICP looks like. Takes 5 minutes to see it.", time: "Scheduled: Tomorrow, 9:00 AM", queued: true },
+      ]
+    },
+    {
+      id: "5", name: "Nina Patel", company: "FormFlow", channel: "linkedin", status: "sent", stage: "Contacted",
+      stageColor: "#378add", time: "8h ago", avatar: "NP",
+      thread: [
+        { from: "william", text: "Hi Nina — I noticed FormFlow just crossed 1K users on your changelog. That's the inflection point where outbound starts mattering. Happy to show you what that looks like without hiring.", time: "Yesterday, 11:00 PM", research: "FormFlow changelog update showing 1K users milestone" },
+        { from: "system", text: "Connection request accepted. Message delivered.", time: "Today, 3:15 AM" },
+      ]
+    },
+    {
+      id: "6", name: "Sara Chen", company: "Metrify", channel: "linkedin", status: "sent", stage: "New — first contact",
+      stageColor: INK_SOFT, time: "1d ago", avatar: "SC",
+      thread: [
+        { from: "william", text: "Hey Sara, saw Metrify is building in the analytics space — competitive market but your positioning around real-time dashboards stands out. Are you doing any outbound to get in front of data teams, or is it all inbound right now?", time: "2 days ago, 11:30 PM", research: "Metrify website review, LinkedIn profile, recent analytics industry posts" },
+        { from: "system", text: "Connection request pending.", time: "Yesterday" },
+      ]
+    },
+    {
+      id: "7", name: "Dan Fields", company: "Beacon", channel: "email", status: "won", stage: "Signed up",
+      stageColor: GREEN, time: "3d ago", avatar: "DF",
+      thread: [
+        { from: "william", text: "Subject: Beacon + better outbound\n\nHey Dan, I noticed Beacon is hiring its first AE — which tells me you've got product-market fit and now need pipeline. What if you could skip the SDR hire entirely and have someone filling your AE's calendar from day one?", time: "2 weeks ago", research: "Job posting for AE on Beacon careers page" },
+        { from: "prospect", text: "This is exactly what we need. Can we talk this week?", time: "12 days ago" },
+        { from: "william", text: "Absolutely. I've sent a calendar link — pick any slot that works. Looking forward to showing you what I can do for Beacon.", time: "12 days ago" },
+        { from: "system", text: "Meeting held. Dan signed up for HireWilliam.", time: "1 week ago" },
+        { from: "prospect", text: "Just signed up. Let's get started.", time: "1 week ago" },
+        { from: "william", text: "Welcome aboard, Dan. Already researching your ICP. You'll have your first batch of prospects by tomorrow morning.", time: "1 week ago" },
+      ]
+    },
+  ];
+
+  function Badge({ text, bg, color }) {
+    return <span style={{ fontSize: 10, fontWeight: 600, padding: "3px 8px", borderRadius: 4, background: bg, color, whiteSpace: "nowrap" }}>{text}</span>;
+  }
+
+  function ChannelBadge({ channel }) {
+    const c = { linkedin: { bg: "#e6f1fb", color: "#185fa5", label: "LinkedIn" }, email: { bg: PAPER_WARM, color: INK_SOFT, label: "Email" }, instagram: { bg: PURPLE_PALE, color: PURPLE, label: "Instagram" } };
+    const ch = c[channel] || c.email;
+    return <Badge text={ch.label} bg={ch.bg} color={ch.color} />;
+  }
+
+  function StatusDot({ status }) {
+    const colors = { replied: GREEN, "pending approval": AMBER, opened: "#378add", sent: INK_GHOST, won: GREEN };
+    return <div style={{ width: 8, height: 8, borderRadius: "50%", background: colors[status] || INK_GHOST, flexShrink: 0 }} />;
+  }
+
+  function Avatar({ initials, size = 36 }) {
+    return <div style={{ width: size, height: size, borderRadius: 8, background: PURPLE, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: size * 0.34, fontWeight: 700, flexShrink: 0 }}>{initials}</div>;
+  }
+
+  function MessageBubble({ msg }) {
+    const isW = msg.from === "william";
+    const isP = msg.from === "prospect";
+    const isSys = msg.from === "system";
+
+    if (isSys) {
+      return (
+        <div style={{ textAlign: "center", padding: "8px 0" }}>
+          <span style={{ fontSize: 11, color: INK_GHOST, background: PAPER_WARM, padding: "4px 12px", borderRadius: 12 }}>{msg.text}</span>
+          <div style={{ fontSize: 10, color: INK_GHOST, marginTop: 4 }}>{msg.time}</div>
+        </div>
+      );
+    }
+
+    return (
+      <div style={{ display: "flex", flexDirection: isP ? "row-reverse" : "row", gap: 8, marginBottom: 4 }}>
+        <div style={{ width: 24, height: 24, borderRadius: 6, background: isW ? PURPLE : PAPER_WARM, color: isW ? "#fff" : INK_SOFT, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, flexShrink: 0, marginTop: 2 }}>
+          {isW ? "W" : "P"}
+        </div>
+        <div style={{ maxWidth: "80%" }}>
+          <div style={{ fontSize: 10, fontWeight: 600, color: isW ? PURPLE : INK_MID, marginBottom: 3, display: "flex", alignItems: "center", gap: 6 }}>
+            {isW ? "William" : "Prospect"}
+            {isW && <span style={{ fontSize: 8, fontWeight: 600, background: PURPLE_PALE, color: PURPLE, padding: "1px 5px", borderRadius: 3 }}>AI</span>}
+            {msg.draft && <span style={{ fontSize: 8, fontWeight: 600, background: "#fdf2e3", color: AMBER, padding: "1px 5px", borderRadius: 3 }}>DRAFT</span>}
+            {msg.queued && <span style={{ fontSize: 8, fontWeight: 600, background: "#e6f1fb", color: "#185fa5", padding: "1px 5px", borderRadius: 3 }}>QUEUED</span>}
+          </div>
+          <div style={{
+            padding: "10px 14px",
+            borderRadius: isP ? "14px 14px 4px 14px" : "14px 14px 14px 4px",
+            background: isP ? "#e4f5ed" : msg.draft ? "#fdf2e3" : PAPER_WARM,
+            border: msg.draft ? `1.5px dashed ${AMBER}` : msg.queued ? `1.5px dashed #378add` : "none",
+            fontSize: 12.5, lineHeight: 1.55, color: INK_MID, whiteSpace: "pre-wrap"
+          }}>
+            {msg.text}
+          </div>
+          {msg.research && (
+            <div style={{ fontSize: 10, color: INK_GHOST, marginTop: 4, fontStyle: "italic" }}>
+              Research: {msg.research}
+            </div>
+          )}
+          <div style={{ fontSize: 10, color: INK_GHOST, marginTop: 3 }}>{msg.time}</div>
+        </div>
       </div>
-      <div style={{ flex: 1, overflowY: "auto" }}>
-        {MOCK_OUTREACH.map(o => (
-          <div key={o.id} style={{ padding: "16px 20px", borderBottom: `1px solid ${PAPER_WARM}` }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-              <span style={{ fontSize: 12, fontWeight: 600 }}>{o.prospect}, {o.company}</span>
-              <Badge text={o.channel} color={o.channel} />
-              <Badge text={o.status} color={o.status} />
-              <span style={{ fontSize: 10, color: INK_GHOST, marginLeft: "auto" }}>{o.time}</span>
+    );
+  }
+
+  function ConvoRow({ convo }) {
+    const [open, setOpen] = useState(false);
+    const [replyText, setReplyText] = useState("");
+
+    return (
+      <div style={{ borderBottom: `1px solid ${RULE}` }}>
+        <div
+          onClick={() => setOpen(!open)}
+          style={{
+            display: "flex", alignItems: "center", gap: 12, padding: "14px 20px", cursor: "pointer",
+            background: open ? PAPER_WARM : "transparent", transition: "background 0.15s",
+          }}
+        >
+          <Avatar initials={convo.avatar} size={34} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: INK }}>{convo.name}</span>
+              <span style={{ fontSize: 12, color: INK_SOFT }}>{convo.company}</span>
             </div>
-            {o.subject && <div style={{ fontSize: 11, fontWeight: 600, color: INK_MID, marginBottom: 4 }}>Subject: {o.subject}</div>}
-            <div style={{ fontSize: 12, color: INK_SOFT, lineHeight: 1.55, padding: "10px 14px", background: PAPER_WARM, borderRadius: 8, marginBottom: 8 }}>{o.message}</div>
-            <div style={{ fontSize: 10, color: INK_GHOST, marginBottom: 4 }}>
-              {o.status === "opened" ? `Opened ${o.openCount}x` : o.status === "replied" ? "Delivered + read" : o.status === "sent" ? "Delivered" : ""} · Research: {o.research}
+            <div style={{ fontSize: 11, color: INK_SOFT, marginTop: 2 }}>{convo.stage}</div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+            <ChannelBadge channel={convo.channel} />
+            <StatusDot status={convo.status} />
+            <span style={{ fontSize: 11, color: INK_GHOST, minWidth: 50, textAlign: "right" }}>{convo.time}</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={INK_GHOST} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transition: "transform 0.2s", transform: open ? "rotate(180deg)" : "rotate(0deg)" }}>
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </div>
+        </div>
+
+        {open && (
+          <div style={{ padding: "0 20px 20px 66px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 16 }}>
+              {convo.thread.map((msg, i) => <MessageBubble key={i} msg={msg} />)}
             </div>
-            {o.reply && (
-              <div style={{ fontSize: 12, color: GREEN, padding: "8px 12px", background: "#e4f5ed", borderLeft: `2.5px solid #6cc49a`, borderRadius: "0 8px 8px 0", marginTop: 8 }}>
-                {o.prospect} replied: "{o.reply}"
+
+            {convo.needsApproval && (
+              <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+                <button style={{ padding: "8px 16px", borderRadius: 8, background: GREEN, color: "#fff", border: "none", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>Approve & send</button>
+                <button style={{ padding: "8px 16px", borderRadius: 8, background: "transparent", color: INK_SOFT, border: `1px solid ${RULE}`, fontSize: 12, fontWeight: 500, cursor: "pointer" }}>Edit before sending</button>
+                <button style={{ padding: "8px 16px", borderRadius: 8, background: "transparent", color: RED, border: `1px solid ${RULE}`, fontSize: 12, fontWeight: 500, cursor: "pointer" }}>Don't send</button>
               </div>
             )}
+
+            <div style={{ display: "flex", gap: 8 }}>
+              <textarea
+                value={replyText}
+                onChange={e => setReplyText(e.target.value)}
+                placeholder="Jump in and reply yourself..."
+                rows={1}
+                style={{ flex: 1, resize: "none", borderRadius: 8, border: `1px solid ${RULE}`, padding: "8px 12px", fontSize: 12, fontFamily: "inherit", outline: "none", background: "#fff" }}
+              />
+              <button style={{ padding: "8px 14px", borderRadius: 8, background: replyText.trim() ? PURPLE : RULE, color: "#fff", border: "none", fontSize: 12, fontWeight: 600, cursor: replyText.trim() ? "pointer" : "default", transition: "background 0.15s" }}>Send</button>
+              <button style={{ padding: "8px 14px", borderRadius: 8, background: "transparent", color: INK_SOFT, border: `1px solid ${RULE}`, fontSize: 12, fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap" }}>I'll handle this one</button>
+            </div>
           </div>
+        )}
+      </div>
+    );
+  }
+
+  const filters = [
+    { id: "all", label: "All conversations", count: CONVOS.length },
+    { id: "replied", label: "Replied", count: CONVOS.filter(c => c.status === "replied").length },
+    { id: "pending approval", label: "Needs approval", count: CONVOS.filter(c => c.status === "pending approval").length },
+    { id: "opened", label: "Opened", count: CONVOS.filter(c => c.status === "opened").length },
+    { id: "sent", label: "Sent", count: CONVOS.filter(c => c.status === "sent").length },
+  ];
+
+  const filtered = filter === "all" ? CONVOS : CONVOS.filter(c => c.status === filter);
+
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", fontFamily: "'DM Sans', system-ui, sans-serif", color: INK, background: "#fff" }}>
+      <div style={{ padding: "16px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={INK_GHOST} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="9" x2="20" y2="9" /><line x1="4" y1="15" x2="20" y2="15" /><line x1="10" y1="3" x2="8" y2="21" /><line x1="16" y1="3" x2="14" y2="21" /></svg>
+          <span style={{ fontWeight: 600, fontSize: 14 }}>outreach-log</span>
+          <span style={{ fontSize: 11, color: INK_GHOST, marginLeft: 4 }}>{CONVOS.length} conversations</span>
+        </div>
+      </div>
+
+      <div style={{ display: "flex", gap: 6, padding: "12px 20px", borderBottom: `1px solid ${RULE}`, overflowX: "auto" }}>
+        {filters.map(f => (
+          <button
+            key={f.id}
+            onClick={() => setFilter(f.id)}
+            style={{
+              padding: "5px 12px", borderRadius: 20, border: `1px solid ${filter === f.id ? PURPLE : RULE}`,
+              background: filter === f.id ? PURPLE_PALE : "transparent", color: filter === f.id ? PURPLE : INK_SOFT,
+              fontSize: 11, fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 5, transition: "all 0.15s"
+            }}
+          >
+            {f.label}
+            <span style={{ fontSize: 10, fontWeight: 600, background: filter === f.id ? PURPLE : PAPER_WARM, color: filter === f.id ? "#fff" : INK_GHOST, padding: "1px 6px", borderRadius: 10 }}>{f.count}</span>
+          </button>
         ))}
+      </div>
+
+      <div style={{ flex: 1, overflowY: "auto" }}>
+        {filtered.map(c => <ConvoRow key={c.id} convo={c} />)}
+        {filtered.length === 0 && (
+          <div style={{ padding: 40, textAlign: "center", color: INK_GHOST, fontSize: 13 }}>No conversations match this filter.</div>
+        )}
       </div>
     </div>
   );
