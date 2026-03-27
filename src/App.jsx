@@ -121,9 +121,9 @@ function ScoreBar({ score }) {
 function Sidebar({ active, onNav }) {
   const channels = [
     { id: "chat", label: "talk-to-william", dot: true },
-    { id: "pipeline", label: "pipeline" },
     { id: "outreach", label: "outreach-log", badge: "3" },
     { id: "meetings", label: "meetings", badge: "2" },
+    { id: "pipeline", label: "pipeline" },
     { id: "analytics", label: "analytics" },
   ];
 
