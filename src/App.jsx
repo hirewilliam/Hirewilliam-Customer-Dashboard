@@ -1145,78 +1145,401 @@ function RightPanel() {
 
 // ── For Founders View ──
 function ForFoundersView({ onNav }) {
-  const highlights = [
-    { icon: "🎯", title: "Zero SDR Overhead", body: "William handles cold outreach end-to-end — research, personalised messages, follow-ups — so you can stay focused on building the product." },
-    { icon: "⚡", title: "Pipeline in Days, Not Months", body: "Most founders see their first qualified meetings within 48 hours of onboarding. William works around the clock with no ramp-up time." },
-    { icon: "🔍", title: "ICP-Precision Targeting", body: "Define your Ideal Customer Profile once. William surfaces lookalike prospects from a live database of 300 M+ contacts and enriches every lead automatically." },
-    { icon: "📈", title: "Compounding Learning", body: "Every reply, bounce and booking trains William's model on your audience so reply rates and conversion improve week over week." },
-    { icon: "🤝", title: "Human-Quality Personalisation", body: "Messages are crafted per prospect using their LinkedIn activity, company news and funding signals — not mail-merge templates." },
-    { icon: "🔒", title: "Founder-Safe Sending", body: "Domain warm-up, sending throttles and spam-score checks protect your deliverability so your own inbox never gets burned." },
-  ];
-
-  const metrics = [
-    { label: "Avg. reply rate", value: "14%", sub: "vs 2–3% industry avg" },
-    { label: "Time to first meeting", value: "48 hrs", sub: "from onboarding" },
-    { label: "Prospects contacted", value: "300M+", sub: "live database" },
-    { label: "Founder hours saved", value: "20 hrs/wk", sub: "per customer" },
-  ];
+  const sectionLabel = {
+    fontSize: 10, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase",
+    color: PURPLE, marginBottom: 10,
+  };
+  const h1Style = {
+    fontFamily: "'Playfair Display', Georgia, 'Times New Roman', serif",
+    fontSize: 32, fontWeight: 700, color: INK, margin: "0 0 14px", lineHeight: 1.2,
+  };
+  const h2Style = {
+    fontFamily: "'Playfair Display', Georgia, 'Times New Roman', serif",
+    fontSize: 22, fontWeight: 700, color: INK, margin: "0 0 12px", lineHeight: 1.25,
+  };
+  const bodyText = { fontSize: 13, color: INK_SOFT, lineHeight: 1.7, margin: 0 };
+  const divider = { borderTop: `1px solid ${RULE}`, margin: "40px 0" };
+  const card = {
+    background: "#fff", border: `1px solid ${RULE}`, borderRadius: 12,
+    padding: "20px 22px",
+  };
 
   return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", overflowY: "auto" }}>
-      <div style={{ padding: "20px 24px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6 }}>
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", overflowY: "auto", background: PAPER }}>
+      {/* Channel header */}
+      <div style={{ padding: "20px 24px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6, background: "#fff", flexShrink: 0 }}>
         <IconHash s={14} />
         <span style={{ fontWeight: 600, fontSize: 16 }}>for-founders</span>
       </div>
 
-      <div style={{ flex: 1, padding: "28px 28px 40px", maxWidth: 860 }}>
-        {/* Hero */}
-        <div style={{ marginBottom: 32 }}>
-          <h1 style={{ fontSize: 26, fontWeight: 700, color: INK, margin: "0 0 10px" }}>
-            Your AI Sales Rep — Working 24/7
+      <div style={{ flex: 1, padding: "0 0 60px" }}>
+
+        {/* ── 1. HERO / COVER ── */}
+        <div style={{ background: "#16102a", padding: "48px 40px 44px", textAlign: "center" }}>
+          <div style={{ width: 52, height: 52, borderRadius: 14, background: PURPLE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, fontWeight: 800, color: "#fff", margin: "0 auto 20px" }}>W</div>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", color: "rgba(255,255,255,0.4)", marginBottom: 16 }}>HireWilliam</div>
+          <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 36, fontWeight: 700, color: "#fff", margin: "0 0 16px", lineHeight: 1.15 }}>
+            Your AI Sales Rep.<br />Working 24/7.
           </h1>
-          <p style={{ fontSize: 14, color: INK_SOFT, lineHeight: 1.65, maxWidth: 620, margin: 0 }}>
-            HireWilliam replaces your first sales hire with an AI that prospects, personalizes and follows up at scale.
-            Built specifically for early-stage founders who need pipeline fast without burning runway on headcount.
+          <p style={{ fontSize: 14, color: "rgba(255,255,255,0.55)", maxWidth: 480, margin: "0 auto 28px", lineHeight: 1.65 }}>
+            Personalised outreach across email, LinkedIn, and Instagram —<br />research‑backed, founder‑priced, no headcount required.
           </p>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.08)", borderRadius: 100, padding: "8px 20px" }}>
+            <span style={{ fontSize: 22, fontWeight: 800, color: "#fff" }}>$299</span>
+            <span style={{ fontSize: 12, color: "rgba(255,255,255,0.45)" }}>/month · cancel anytime</span>
+          </div>
         </div>
 
-        {/* Metrics row */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 32 }}>
-          {metrics.map(m => (
-            <div key={m.label} style={{ background: PAPER_WARM, borderRadius: 10, padding: "16px 18px" }}>
-              <div style={{ fontSize: 22, fontWeight: 700, color: PURPLE }}>{m.value}</div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: INK, marginTop: 4 }}>{m.label}</div>
-              <div style={{ fontSize: 11, color: INK_SOFT, marginTop: 2 }}>{m.sub}</div>
-            </div>
-          ))}
-        </div>
+        <div style={{ maxWidth: 780, margin: "0 auto", padding: "0 28px" }}>
 
-        {/* Feature highlights */}
-        <h2 style={{ fontSize: 15, fontWeight: 700, color: INK, margin: "0 0 14px" }}>Why founders choose William</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 14, marginBottom: 32 }}>
-          {highlights.map(h => (
-            <div key={h.title} style={{ background: "#fff", border: `1px solid ${RULE}`, borderRadius: 10, padding: "18px 20px", display: "flex", gap: 14 }}>
-              <div style={{ fontSize: 24, lineHeight: 1 }}>{h.icon}</div>
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: INK, marginBottom: 6 }}>{h.title}</div>
-                <div style={{ fontSize: 12, color: INK_SOFT, lineHeight: 1.6 }}>{h.body}</div>
+          {/* ── 2. PULL QUOTE ── */}
+          <div style={{ borderLeft: `4px solid ${PURPLE}`, padding: "24px 28px", margin: "40px 0", background: PURPLE_PALE, borderRadius: "0 12px 12px 0" }}>
+            <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 20, fontWeight: 700, color: INK, margin: "0 0 10px", lineHeight: 1.35 }}>
+              "The average junior SDR costs $62,400 a year — before benefits, management overhead, or ramp time. And most churn within 18 months."
+            </p>
+            <p style={{ fontSize: 11, color: INK_SOFT, margin: 0 }}>— Why founders are rethinking their first sales hire</p>
+          </div>
+
+          {/* ── 3. PROBLEM ── */}
+          <div style={divider} />
+          <div style={sectionLabel}>The Problem</div>
+          <h2 style={h2Style}>Sound familiar?</h2>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
+            {[
+              "You're spending Sunday nights writing cold emails instead of building the product.",
+              "You hired an SDR, spent 3 months ramping them, and they left before closing a deal.",
+              "Your LinkedIn connection requests sit at the daily limit and still go unanswered.",
+              "You know exactly who your ICP is — you just can't reach enough of them fast enough.",
+              "You're too early for a full sales team but too busy to run outbound yourself.",
+              "You've tried tools that blast generic templates. The replies were brutal.",
+            ].map((p, i) => (
+              <div key={i} style={{ ...card, display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <span style={{ fontSize: 16, lineHeight: 1, marginTop: 1 }}>😓</span>
+                <p style={{ ...bodyText, fontSize: 12 }}>{p}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* ── 4. SOLUTION ── */}
+          <div style={divider} />
+          <div style={sectionLabel}>The Solution</div>
+          <h2 style={h2Style}>Until now.</h2>
+          <p style={{ ...bodyText, marginBottom: 20, maxWidth: 600 }}>
+            William is an AI sales agent purpose-built for early-stage founders. He researches your prospects, writes personalised messages, sends them across channels, and manages follow-ups — all while you focus on the product.
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 8 }}>
+            {[
+              { label: "Avg. reply rate", value: "14%", sub: "vs 2–3% industry avg" },
+              { label: "Time to first meeting", value: "48 hrs", sub: "from onboarding" },
+              { label: "Founder hours saved", value: "20 hrs/wk", sub: "per customer" },
+            ].map(m => (
+              <div key={m.label} style={{ background: "#fff", border: `1px solid ${RULE}`, borderRadius: 10, padding: "18px 20px", textAlign: "center" }}>
+                <div style={{ fontSize: 26, fontWeight: 800, color: PURPLE, marginBottom: 4 }}>{m.value}</div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: INK }}>{m.label}</div>
+                <div style={{ fontSize: 10, color: INK_GHOST, marginTop: 2 }}>{m.sub}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* ── 5. CHANNELS ── */}
+          <div style={divider} />
+          <div style={sectionLabel}>Where William Works</div>
+          <h2 style={h2Style}>Three channels. One inbox.</h2>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14, marginBottom: 8 }}>
+            {[
+              {
+                icon: "✉️", label: "Email", color: "#185fa5", bg: "#e6f1fb",
+                lines: ["50–100 personalised emails/day", "Domain warm-up included", "Spam-score checked before every send", "Open & click tracking built in"],
+              },
+              {
+                icon: "💼", label: "LinkedIn", color: PURPLE, bg: PURPLE_PALE,
+                lines: ["~20 connection requests/day*", "InMail + DM follow-ups", "Triggers from profile activity & posts", "* Platform limit — William respects it"],
+              },
+              {
+                icon: "📸", label: "Instagram", color: "#b86a0a", bg: "#fdf2e3",
+                lines: ["DMs to B2C and creator-founders", "Triggered by story views & engagement", "Casual, conversational tone auto-applied", "Works for consumer & lifestyle products"],
+              },
+            ].map(ch => (
+              <div key={ch.label} style={{ ...card }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                  <div style={{ width: 34, height: 34, borderRadius: 8, background: ch.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>{ch.icon}</div>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: ch.color }}>{ch.label}</span>
+                </div>
+                <ul style={{ margin: 0, paddingLeft: 16 }}>
+                  {ch.lines.map((l, i) => (
+                    <li key={i} style={{ fontSize: 11, color: i === ch.lines.length - 1 && ch.label === "LinkedIn" ? INK_GHOST : INK_SOFT, lineHeight: 1.7, fontStyle: i === ch.lines.length - 1 && ch.label === "LinkedIn" ? "italic" : "normal" }}>{l}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          {/* ── 6. DASHBOARD MOCKUP ── */}
+          <div style={divider} />
+          <div style={sectionLabel}>The Interface</div>
+          <h2 style={h2Style}>Your command centre.</h2>
+          <p style={{ ...bodyText, marginBottom: 20 }}>William surfaces everything in a Slack-style dashboard — so you always know what's in motion without chasing spreadsheets.</p>
+
+          <div style={{ background: "#16102a", borderRadius: 14, overflow: "hidden", border: `1px solid rgba(255,255,255,0.06)`, marginBottom: 8 }}>
+            {/* Mock sidebar */}
+            <div style={{ display: "flex", height: 260 }}>
+              <div style={{ width: 160, background: "#120d22", padding: "12px 8px", flexShrink: 0 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 8px 12px", color: "#fff", fontSize: 11, fontWeight: 600 }}>
+                  <div style={{ width: 20, height: 20, borderRadius: 5, background: PURPLE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, color: "#fff" }}>W</div>
+                  HireWilliam
+                </div>
+                {["talk-to-william", "outreach-log", "meetings", "pipeline", "analytics"].map((ch, i) => (
+                  <div key={ch} style={{ padding: "4px 8px", borderRadius: 4, marginBottom: 1, display: "flex", alignItems: "center", gap: 5, background: i === 0 ? "rgba(90,63,160,0.4)" : "transparent", color: i === 0 ? "#fff" : "rgba(255,255,255,0.38)", fontSize: 10 }}>
+                    <span style={{ opacity: 0.5 }}>#</span> {ch}
+                  </div>
+                ))}
+              </div>
+              {/* Mock chat area */}
+              <div style={{ flex: 1, padding: "14px 16px", display: "flex", flexDirection: "column", gap: 10, overflowY: "hidden" }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.6)", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: 8 }}># talk-to-william</div>
+                {[
+                  { who: "W", bg: PURPLE, msg: "Good morning. I sent 34 emails overnight. Alex Morin from Shipyard replied — want me to book a call?", time: "7:01 AM" },
+                  { who: "W", bg: PURPLE, msg: "Priya from DataStack opened your email 3×. I drafted a follow-up. Approve or edit before I send?", time: "7:03 AM" },
+                  { who: "Y", bg: PAPER_WARM, msg: "Go ahead on Alex. Hold on Priya — let me tweak the draft.", time: "7:08 AM", right: true },
+                ].map((m, i) => (
+                  <div key={i} style={{ display: "flex", gap: 8, flexDirection: m.right ? "row-reverse" : "row" }}>
+                    <div style={{ width: 22, height: 22, borderRadius: 5, background: m.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, color: m.right ? INK : "#fff", flexShrink: 0 }}>{m.who}</div>
+                    <div style={{ maxWidth: "70%", background: m.right ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.05)", borderRadius: 10, padding: "7px 10px" }}>
+                      <p style={{ fontSize: 10, color: "rgba(255,255,255,0.75)", margin: "0 0 3px", lineHeight: 1.5 }}>{m.msg}</p>
+                      <p style={{ fontSize: 8, color: "rgba(255,255,255,0.3)", margin: 0 }}>{m.time}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
-        </div>
-
-        {/* CTA */}
-        <div style={{ background: PURPLE, borderRadius: 12, padding: "24px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: "#fff", marginBottom: 6 }}>Ready to fill your pipeline?</div>
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.75)" }}>Talk to William now — he's online and ready to learn about your product.</div>
           </div>
-          <button
-            onClick={() => onNav("chat")}
-            style={{ background: "#fff", color: PURPLE, border: "none", borderRadius: 8, padding: "10px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}
-          >
-            Talk to William →
-          </button>
+
+          {/* ── 7. PIPELINE ── */}
+          <div style={divider} />
+          <div style={sectionLabel}>Pipeline View</div>
+          <h2 style={h2Style}>Always know where every prospect stands.</h2>
+
+          <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
+            {[
+              { label: "New", color: INK_GHOST, cards: [{ name: "Sara Chen", co: "Metrify", ch: "linkedin" }, { name: "Tom Okoro", co: "Stackbase", ch: "email" }] },
+              { label: "Contacted", color: "#378add", cards: [{ name: "Jake Rivera", co: "Launchpad", ch: "email" }, { name: "Nina Patel", co: "FormFlow", ch: "linkedin" }] },
+              { label: "Interested", color: AMBER, cards: [{ name: "Priya Kumar", co: "DataStack", ch: "email" }, { name: "Leo Tanaka", co: "Kitemaker", ch: "instagram" }] },
+              { label: "Meeting", color: RED, cards: [{ name: "Alex Morin", co: "Shipyard", ch: "linkedin" }] },
+              { label: "Won", color: GREEN, cards: [{ name: "Dan Fields", co: "Beacon", ch: "email" }] },
+            ].map(col => (
+              <div key={col.label} style={{ flex: "0 0 148px", background: PAPER_WARM, borderRadius: 10, padding: "10px 10px 12px" }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: col.color, marginBottom: 8, textTransform: "uppercase", letterSpacing: 0.8 }}>{col.label}</div>
+                {col.cards.map(c => (
+                  <div key={c.name} style={{ background: "#fff", borderRadius: 7, padding: "8px 10px", marginBottom: 6, border: `1px solid ${RULE}` }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: INK }}>{c.name}</div>
+                    <div style={{ fontSize: 10, color: INK_SOFT }}>{c.co}</div>
+                    <div style={{ marginTop: 5 }}>
+                      <Badge text={c.ch} color={c.ch} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+
+          {/* ── 8. OUTREACH EXAMPLES ── */}
+          <div style={divider} />
+          <div style={sectionLabel}>Real Outreach</div>
+          <h2 style={h2Style}>What William actually sends.</h2>
+          <p style={{ ...bodyText, marginBottom: 20 }}>Not templates. Every message is written fresh using live research on the prospect.</p>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            {[
+              {
+                prospect: "Alex Morin", company: "Shipyard", channel: "linkedin", channelColor: "#185fa5", channelBg: "#e6f1fb",
+                research: "Alex posted 3 days ago about struggling to hire his first SDR",
+                message: "Hey Alex, saw your post about struggling to hire your first SDR. What if you didn't have to? I help solo founders fill their pipeline without hiring. No calls, no contracts, you can see it working in 48 hours. Worth 15 mins?",
+                status: "replied", reply: "This looks great, let's chat. Thursday work?",
+              },
+              {
+                prospect: "Priya Kumar", company: "DataStack", channel: "email", channelColor: INK_SOFT, channelBg: PAPER_WARM,
+                research: "Priya launched on Product Hunt 4 days ago — 200+ upvotes",
+                subject: "Saw your Product Hunt launch",
+                message: "Hey Priya, congrats on the PH launch. 200+ upvotes is solid. Quick question: now that you've got product attention, who's doing outbound to convert that into pipeline? If the answer is \"nobody\" or \"me, badly\" — I might be able to help.",
+                status: "opened", openCount: 3,
+              },
+            ].map((ex, i) => (
+              <div key={i} style={{ ...card }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: INK }}>{ex.prospect}</span>
+                      <span style={{ fontSize: 12, color: INK_SOFT }}> · {ex.company}</span>
+                    </div>
+                  </div>
+                  <Badge text={ex.channel} color={ex.channel} />
+                </div>
+                <div style={{ background: PAPER_WARM, borderRadius: 8, padding: "8px 12px", marginBottom: 10, fontSize: 11, color: INK_SOFT, fontStyle: "italic" }}>
+                  🔍 Research: {ex.research}
+                </div>
+                {ex.subject && <div style={{ fontSize: 11, fontWeight: 600, color: INK_MID, marginBottom: 6 }}>Subject: {ex.subject}</div>}
+                <p style={{ fontSize: 12, color: INK, lineHeight: 1.65, margin: "0 0 10px", background: "#fff", border: `1px solid ${RULE}`, borderRadius: 8, padding: "10px 12px" }}>{ex.message}</p>
+                {ex.reply && (
+                  <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                    <Badge text="replied" color="replied" />
+                    <p style={{ fontSize: 12, color: GREEN, margin: 0, fontStyle: "italic" }}>"{ex.reply}"</p>
+                  </div>
+                )}
+                {ex.openCount && (
+                  <Badge text={`opened ×${ex.openCount}`} color="opened" />
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* ── 9. COST COMPARISON ── */}
+          <div style={divider} />
+          <div style={sectionLabel}>Cost Comparison</div>
+          <h2 style={h2Style}>William vs. a junior SDR.</h2>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+            {/* SDR column */}
+            <div style={{ ...card, borderColor: RULE }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: RED, marginBottom: 16 }}>Junior SDR</div>
+              {[
+                ["Base salary", "$52,000/yr"],
+                ["Benefits & taxes", "+ $10,400/yr"],
+                ["Laptop + software", "+ $3,600/yr"],
+                ["Ramp time", "3–6 months"],
+                ["Management overhead", "High"],
+                ["Average tenure", "14 months"],
+              ].map(([k, v]) => (
+                <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: `1px solid ${RULE}`, fontSize: 12 }}>
+                  <span style={{ color: INK_SOFT }}>{k}</span>
+                  <span style={{ fontWeight: 600, color: INK }}>{v}</span>
+                </div>
+              ))}
+              <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 0 0", fontSize: 14, fontWeight: 800 }}>
+                <span style={{ color: RED }}>Total (yr 1)</span>
+                <span style={{ color: RED }}>$66,000+</span>
+              </div>
+            </div>
+            {/* William column */}
+            <div style={{ ...card, borderColor: PURPLE, background: PURPLE_PALE }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: PURPLE, marginBottom: 16 }}>William</div>
+              {[
+                ["Monthly subscription", "$299/mo"],
+                ["Setup fee", "$0"],
+                ["Ramp time", "48 hours"],
+                ["Management overhead", "Minimal"],
+                ["Platform limits", "Transparent"],
+                ["Cancel anytime", "Yes"],
+              ].map(([k, v]) => (
+                <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: `1px solid rgba(90,63,160,0.15)`, fontSize: 12 }}>
+                  <span style={{ color: INK_SOFT }}>{k}</span>
+                  <span style={{ fontWeight: 600, color: INK }}>{v}</span>
+                </div>
+              ))}
+              <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 0 0", fontSize: 14, fontWeight: 800 }}>
+                <span style={{ color: PURPLE }}>Total (yr 1)</span>
+                <span style={{ color: PURPLE }}>$3,588</span>
+              </div>
+            </div>
+          </div>
+
+          {/* ── 10. PRICING ── */}
+          <div style={divider} />
+          <div style={sectionLabel}>Pricing</div>
+          <div style={{ background: PURPLE, borderRadius: 16, padding: "32px 36px", textAlign: "center" }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", marginBottom: 12 }}>One plan. No surprises.</div>
+            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "center", gap: 4, marginBottom: 16 }}>
+              <span style={{ fontSize: 48, fontWeight: 800, color: "#fff", lineHeight: 1 }}>$299</span>
+              <span style={{ fontSize: 14, color: "rgba(255,255,255,0.55)" }}>/month</span>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8, maxWidth: 440, margin: "0 auto 24px" }}>
+              {[
+                "Personalised outreach on 3 channels",
+                "Live prospect research & enrichment",
+                "Pipeline dashboard (this one)",
+                "Slack-style command interface",
+                "Follow-up sequences included",
+                "Cancel anytime — no contracts",
+              ].map((f, i) => (
+                <div key={i} style={{ display: "flex", gap: 7, alignItems: "flex-start" }}>
+                  <span style={{ color: "#6ee7b7", fontSize: 12, lineHeight: 1.5 }}>✓</span>
+                  <span style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", lineHeight: 1.5, textAlign: "left" }}>{f}</span>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => onNav("chat")}
+              style={{ background: "#fff", color: PURPLE, border: "none", borderRadius: 10, padding: "13px 32px", fontSize: 14, fontWeight: 700, cursor: "pointer" }}
+            >
+              Get started with William →
+            </button>
+          </div>
+
+          {/* ── 11. PROOF / META ── */}
+          <div style={divider} />
+          <div style={sectionLabel}>Proof of Concept</div>
+          <h2 style={h2Style}>How you found this page is the demo.</h2>
+          <p style={{ ...bodyText, marginBottom: 14 }}>
+            If William reached out to you — whether by email, LinkedIn DM, or Instagram — that message <em>was</em> the product in action. He researched you, wrote something specific to your situation, and sent it at the right time on the right channel.
+          </p>
+          <p style={{ ...bodyText, marginBottom: 14 }}>
+            You weren't sent a generic pitch. William found a signal — a post you wrote, a launch you shipped, a job listing — and crafted a message around it. That's what your prospects will receive.
+          </p>
+          <div style={{ background: PAPER_WARM, borderRadius: 12, padding: "18px 22px", border: `1px solid ${RULE}` }}>
+            <p style={{ fontSize: 13, color: INK, lineHeight: 1.65, margin: 0, fontStyle: "italic" }}>
+              "Visit hirewilliam.com and describe your ICP. William will research and return 10 real prospects with personalised message drafts for each — free, no account needed. That's the proof."
+            </p>
+          </div>
+
+          {/* ── 12. CTA ── */}
+          <div style={divider} />
+          <div style={{ background: INK, borderRadius: 16, padding: "36px 40px", textAlign: "center" }}>
+            <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 24, fontWeight: 700, color: "#fff", margin: "0 0 12px" }}>
+              While your competitors' SDR sleeps,<br />William is writing to your next customer.
+            </h2>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", margin: "0 0 24px", lineHeight: 1.65 }}>
+              No calls. No setup fees. First qualified meeting or your money back.
+            </p>
+            <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+              <button
+                onClick={() => onNav("chat")}
+                style={{ background: PURPLE, color: "#fff", border: "none", borderRadius: 10, padding: "13px 28px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}
+              >
+                Talk to William now →
+              </button>
+              <a
+                href="https://hirewilliam.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ background: "transparent", color: "rgba(255,255,255,0.65)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 10, padding: "13px 28px", fontSize: 13, fontWeight: 600, cursor: "pointer", textDecoration: "none", display: "inline-block" }}
+              >
+                Get free prospect research
+              </a>
+            </div>
+          </div>
+
+          {/* ── 13. FOUNDER FOOTER ── */}
+          <div style={{ marginTop: 48, padding: "32px 36px", background: "#fff", borderRadius: 16, border: `1px solid ${RULE}` }}>
+            <div style={{ display: "flex", gap: 18, alignItems: "flex-start" }}>
+              <div style={{ width: 52, height: 52, borderRadius: 14, background: PURPLE_PALE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 800, color: PURPLE, flexShrink: 0 }}>TL</div>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: INK, marginBottom: 2 }}>Terry Lee</div>
+                <div style={{ fontSize: 11, color: INK_SOFT, marginBottom: 14 }}>Founder, HireWilliam</div>
+                <p style={{ fontSize: 13, color: INK_MID, lineHeight: 1.75, margin: "0 0 12px" }}>
+                  I built William because I was doing exactly what you're doing right now — late nights on LinkedIn, copy-pasting emails, wondering if there was a better way. There is.
+                </p>
+                <p style={{ fontSize: 13, color: INK_MID, lineHeight: 1.75, margin: "0 0 12px" }}>
+                  William isn't magic, and I won't pretend he is. He respects platform limits (yes, LinkedIn caps connection requests at ~20/day). He won't close deals for you. What he will do is make sure the right people hear about your product — every single day, whether you're at your desk or not.
+                </p>
+                <p style={{ fontSize: 13, color: INK_MID, lineHeight: 1.75, margin: 0 }}>
+                  If you're the kind of founder who moves fast, acts on signal, and hates wasted motion — William was built for you.
+                </p>
+                <div style={{ marginTop: 16, fontSize: 12, color: INK_SOFT }}>
+                  Questions? Reply to the email William sent you, or DM me directly. I read everything.
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
