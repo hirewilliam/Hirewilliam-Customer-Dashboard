@@ -125,6 +125,7 @@ function Sidebar({ active, onNav }) {
     { id: "meetings", label: "meetings", badge: "2" },
     { id: "pipeline", label: "pipeline" },
     { id: "analytics", label: "analytics" },
+    { id: "founders", label: "for-founders" },
   ];
 
   return (
@@ -192,21 +193,19 @@ function ChatView() {
     })();
   }
 
-  const suggestions = ["Tell me about your product", "Who are your ideal customers?", "What sales challenges do you face?", "Show me how you work"];
-
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 20px", borderBottom: `1px solid ${RULE}` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "18px 24px", borderBottom: `1px solid ${RULE}` }}>
         <div style={{ position: "relative" }}>
-          <Avatar initials="W" size={36} />
-          <div style={{ position: "absolute", bottom: -1, right: -1, width: 10, height: 10, borderRadius: "50%", background: "#44b700", border: "2px solid #fff" }} />
+          <Avatar initials="W" size={42} />
+          <div style={{ position: "absolute", bottom: -1, right: -1, width: 12, height: 12, borderRadius: "50%", background: "#44b700", border: "2px solid #fff" }} />
         </div>
         <div>
-          <div style={{ fontWeight: 600, fontSize: 14, display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ fontWeight: 600, fontSize: 17, display: "flex", alignItems: "center", gap: 6 }}>
             William
-            <span style={{ fontSize: 9, fontWeight: 600, background: PURPLE_PALE, color: PURPLE, padding: "2px 6px", borderRadius: 4 }}>AI</span>
+            <span style={{ fontSize: 11, fontWeight: 600, background: PURPLE_PALE, color: PURPLE, padding: "2px 8px", borderRadius: 4 }}>AI</span>
           </div>
-          <div style={{ fontSize: 11, color: GREEN }}>Online — always</div>
+          <div style={{ fontSize: 13, color: GREEN }}>Online — always</div>
         </div>
       </div>
 
@@ -238,14 +237,6 @@ function ChatView() {
               </div>
               <span style={{ fontSize: 11, color: INK_SOFT, marginLeft: 4 }}>William is thinking...</span>
             </div>
-          </div>
-        )}
-
-        {msgs.length > 0 && msgs.length <= 3 && !typing && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
-            {suggestions.map(s => (
-              <button key={s} onClick={() => { setInput(s); inputRef.current?.focus(); }} style={{ fontSize: 11, padding: "5px 12px", borderRadius: 20, border: `1px solid ${RULE}`, background: "transparent", color: INK_SOFT, cursor: "pointer" }}>{s}</button>
-            ))}
           </div>
         )}
 
@@ -1120,6 +1111,130 @@ function AnalyticsView() {
   );
 }
 
+// ── For Founders ──
+function ForFoundersView() {
+  const sections = [
+    {
+      icon: "🚀",
+      title: "What is HireWilliam?",
+      color: PURPLE,
+      body: "HireWilliam is your AI-powered sales assistant built specifically for founders. Instead of hiring an SDR team, William handles outbound prospecting, personalised outreach, and pipeline management — so you can focus on building your product.",
+    },
+    {
+      icon: "🎯",
+      title: "Who is it for?",
+      color: GREEN,
+      body: "Solo founders and early-stage teams (pre-Series A) who need a consistent pipeline but aren't ready to hire a full sales team. If you're doing founder-led sales and want to scale without adding headcount, William is for you.",
+    },
+    {
+      icon: "⚡",
+      title: "How it works",
+      color: AMBER,
+      steps: [
+        "Tell William about your product and ideal customer profile.",
+        "William researches and identifies high-fit prospects automatically.",
+        "Personalised outreach messages are sent on your behalf.",
+        "Warm replies and booked meetings land straight in your dashboard.",
+      ],
+    },
+    {
+      icon: "📈",
+      title: "Results founders see",
+      color: "#378add",
+      metrics: [
+        { label: "Average reply rate", value: "12–18%" },
+        { label: "Meetings booked per month", value: "8–20" },
+        { label: "Hours saved per week", value: "10+" },
+        { label: "Time to first meeting", value: "< 48 hrs" },
+      ],
+    },
+    {
+      icon: "💬",
+      title: "What founders are saying",
+      color: PURPLE,
+      quotes: [
+        { text: "William booked 3 discovery calls in the first week. I hadn't touched outbound in months.", author: "Alex R., B2B SaaS founder" },
+        { text: "It's like having an SDR that works overnight and never complains about the CRM.", author: "Priya K., DataStack CEO" },
+        { text: "I went from zero pipeline to 11 active opportunities in 30 days.", author: "Marcus T., Series A founder" },
+      ],
+    },
+  ];
+
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      <div style={{ padding: "16px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6 }}>
+        <IconHash s={14} />
+        <span style={{ fontWeight: 600, fontSize: 14 }}>for-founders</span>
+      </div>
+
+      <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
+        {/* Hero */}
+        <div style={{ background: `linear-gradient(135deg, ${PURPLE} 0%, ${PURPLE_DARK} 100%)`, borderRadius: 20, padding: "32px 28px", marginBottom: 24, color: "#fff", textAlign: "center" }}>
+          <div style={{ fontSize: 36, marginBottom: 12 }}>👋</div>
+          <h1 style={{ fontSize: 24, fontWeight: 800, margin: "0 0 10px 0" }}>Built for founders, by a founder</h1>
+          <p style={{ fontSize: 14, opacity: 0.85, maxWidth: 480, margin: "0 auto", lineHeight: 1.6 }}>
+            Stop losing deals because you don't have time for outreach. William works while you build — filling your pipeline with qualified meetings every week.
+          </p>
+        </div>
+
+        {/* Content sections */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 20 }}>
+          {sections.map((s) => (
+            <div
+              key={s.title}
+              style={{
+                background: PAPER_WARM,
+                borderRadius: 16,
+                padding: 24,
+                border: `1px solid ${RULE}`,
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: s.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>
+                  {s.icon}
+                </div>
+                <h3 style={{ fontSize: 15, fontWeight: 700, color: INK, margin: 0 }}>{s.title}</h3>
+              </div>
+
+              {s.body && <p style={{ fontSize: 13, color: INK_SOFT, lineHeight: 1.65, margin: 0 }}>{s.body}</p>}
+
+              {s.steps && (
+                <ol style={{ margin: 0, padding: "0 0 0 18px", display: "flex", flexDirection: "column", gap: 8 }}>
+                  {s.steps.map((step, i) => (
+                    <li key={i} style={{ fontSize: 13, color: INK_SOFT, lineHeight: 1.55 }}>{step}</li>
+                  ))}
+                </ol>
+              )}
+
+              {s.metrics && (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                  {s.metrics.map((m) => (
+                    <div key={m.label} style={{ background: "#fff", borderRadius: 10, padding: "10px 12px", border: `1px solid ${RULE}` }}>
+                      <div style={{ fontSize: 20, fontWeight: 800, color: s.color }}>{m.value}</div>
+                      <div style={{ fontSize: 11, color: INK_GHOST, marginTop: 2 }}>{m.label}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {s.quotes && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {s.quotes.map((q, i) => (
+                    <div key={i} style={{ background: "#fff", borderRadius: 10, padding: "12px 14px", border: `1px solid ${RULE}` }}>
+                      <p style={{ fontSize: 12, color: INK_SOFT, lineHeight: 1.6, margin: "0 0 6px 0", fontStyle: "italic" }}>"{q.text}"</p>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: INK_GHOST }}>— {q.author}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Right Panel (shown on chat view) ──
 function RightPanel() {
   const hot = MOCK_PROSPECTS.filter(p => p.score >= 45).sort((a, b) => b.score - a.score).slice(0, 4);
@@ -1162,6 +1277,7 @@ export default function App() {
     outreach: <OutreachView />,
     meetings: <MeetingsView />,
     analytics: <AnalyticsView />,
+    founders: <ForFoundersView />,
   };
 
   return (
