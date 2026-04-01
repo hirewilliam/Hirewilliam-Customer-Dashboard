@@ -78,6 +78,9 @@ function IconSend({ s = 16 }) {
 function IconHash({ s = 14 }) {
   return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>;
 }
+function IconLock({ s = 14 }) {
+  return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>;
+}
 
 // ── Utility Components ──
 function Avatar({ initials, bg = PURPLE, size = 32 }) {
@@ -125,7 +128,7 @@ function Sidebar({ active, onNav }) {
     { id: "meetings", label: "meetings", badge: "2" },
     { id: "pipeline", label: "pipeline" },
     { id: "analytics", label: "analytics" },
-    { id: "founders", label: "for-founders" },
+    { id: "founders", label: "for-founders", lock: true },
   ];
 
   return (
@@ -137,7 +140,7 @@ function Sidebar({ active, onNav }) {
       <div style={{ fontSize: 9, color: "rgba(255,255,255,0.25)", padding: "10px 8px 4px", textTransform: "uppercase", letterSpacing: 0.5 }}>Channels</div>
       {channels.map(ch => (
         <div key={ch.id} onClick={() => onNav(ch.id)} style={{ padding: "5px 10px", borderRadius: 5, marginBottom: 1, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, background: active === ch.id ? "rgba(90,63,160,0.35)" : "transparent", color: active === ch.id ? "#fff" : "rgba(255,255,255,0.5)", fontSize: 12, transition: "all 0.15s" }}>
-          <IconHash s={11} />
+          {ch.lock ? <IconLock s={11} /> : <IconHash s={11} />}
           {ch.label}
           {ch.badge && <span style={{ marginLeft: "auto", fontSize: 9, background: RED, color: "#fff", padding: "1px 5px", borderRadius: 8, fontWeight: 600 }}>{ch.badge}</span>}
         </div>
@@ -513,7 +516,7 @@ function OutreachView() {
       thread: [
         { from: "william", text: "Subject: Saw your Product Hunt launch\n\nHey Priya, congrats on the PH launch. 200+ upvotes is solid. Quick question: now that you've got product attention, who's doing outbound to convert that into pipeline? If the answer is \"nobody\" or \"me, badly\" — I might be able to help.", time: "Yesterday, 10:15 PM", research: "Product Hunt launch 4 days ago, 200+ upvotes" },
         { from: "prospect", text: "Hey, thanks! We're actually struggling with exactly this. What does pricing look like?", time: "Today, 6:45 AM" },
-        { from: "william", text: "DRAFT — waiting for your approval:\n\nGreat question, Priya. It's $299/month, everything included — outreach, follow-ups, meeting booking, the works. No per-message fees, no contracts. Want me to show you what I'd do for DataStack specifically? I can find 5 prospects and draft outreach right now, free.", time: "Today, 7:02 AM", draft: true },
+        { from: "william", text: "DRAFT — waiting for your approval:\n\nGreat question, Priya. It's $499/month, everything included — outreach, follow-ups, meeting booking, the works. No per-message fees, no contracts. Want me to show you what I'd do for DataStack specifically? I can find 5 prospects and draft outreach right now, free.", time: "Today, 7:02 AM", draft: true },
       ]
     },
     {
@@ -1164,7 +1167,7 @@ function ForFoundersView({ onNav }) {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", overflowY: "auto" }}>
       <div style={{ padding: "20px 24px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6 }}>
-        <IconHash s={14} />
+        <IconLock s={14} />
         <span style={{ fontWeight: 600, fontSize: 16 }}>for-founders</span>
       </div>
 
@@ -1203,6 +1206,63 @@ function ForFoundersView({ onNav }) {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Channels */}
+        <h2 style={{ fontSize: 15, fontWeight: 700, color: INK, margin: "0 0 14px" }}>Where William works</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14, marginBottom: 32 }}>
+          {[
+            { icon: "📧", label: "Email", desc: "Cold outreach, follow-up sequences, and inbox management — all from a warmed dedicated domain." },
+            { icon: "💼", label: "LinkedIn", desc: "Connection requests, personalised InMail and comment engagement that feels genuinely human." },
+            { icon: "📱", label: "Instagram DM", desc: "Reach founders and decision-makers where they're most responsive — via direct message." },
+          ].map(ch => (
+            <div key={ch.label} style={{ background: "#fff", border: `1px solid ${RULE}`, borderRadius: 10, padding: "18px 20px" }}>
+              <div style={{ fontSize: 26, marginBottom: 10 }}>{ch.icon}</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: INK, marginBottom: 6 }}>{ch.label}</div>
+              <div style={{ fontSize: 12, color: INK_SOFT, lineHeight: 1.6 }}>{ch.desc}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Dashboard Mockup */}
+        <h2 style={{ fontSize: 15, fontWeight: 700, color: INK, margin: "0 0 14px" }}>See it in action</h2>
+        <div style={{ background: "#1e1a2e", borderRadius: 12, overflow: "hidden", marginBottom: 32, border: `1px solid ${RULE}` }}>
+          {/* Mockup title bar */}
+          <div style={{ padding: "10px 16px", borderBottom: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ display: "flex", gap: 5 }}>
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#ff5f56" }} />
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#ffbd2e" }} />
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#27c93f" }} />
+            </div>
+            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginLeft: 6 }}>william · talk-to-william</span>
+          </div>
+          {/* Chat messages */}
+          <div style={{ padding: "20px 20px 8px" }}>
+            {[
+              { from: "William", avatar: "W", avatarBg: PURPLE, text: "🔍 Found 12 new prospects matching your ICP — B2B SaaS founders, 5–50 employees, recently funded.", time: "8:14 AM" },
+              { from: "William", avatar: "W", avatarBg: PURPLE, text: "✉️ Sent personalised email to Alex Morin (Shipyard). Used his recent LinkedIn post about hiring challenges as the hook.", time: "8:15 AM" },
+              { from: "Prospect", avatar: "AM", avatarBg: "#378add", text: "This looks interesting — how does it actually work? Do I need to set anything up?", time: "9:42 AM" },
+              { from: "William", avatar: "W", avatarBg: PURPLE, text: "📅 Alex replied positively. I've drafted a follow-up and suggested two meeting slots. Awaiting your approval before sending.", time: "9:43 AM" },
+            ].map((msg, i) => (
+              <div key={i} style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+                <div style={{ width: 28, height: 28, borderRadius: 6, background: msg.avatarBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, color: "#fff", flexShrink: 0, marginTop: 2 }}>
+                  {msg.avatar}
+                </div>
+                <div>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 3 }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: msg.from === "William" ? PURPLE_LIGHT : "#6ab0f5" }}>{msg.from}</span>
+                    <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)" }}>{msg.time}</span>
+                  </div>
+                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.8)", lineHeight: 1.55 }}>{msg.text}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{ padding: "8px 16px 14px", display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ flex: 1, background: "rgba(255,255,255,0.06)", borderRadius: 8, padding: "8px 14px", fontSize: 11, color: "rgba(255,255,255,0.25)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              Message #talk-to-william…
+            </div>
+          </div>
         </div>
 
         {/* CTA */}
