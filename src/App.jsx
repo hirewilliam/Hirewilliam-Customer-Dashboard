@@ -198,17 +198,17 @@ function ChatView() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "24px 28px", borderBottom: `1px solid ${RULE}` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "18px 24px", borderBottom: `1px solid ${RULE}` }}>
         <div style={{ position: "relative" }}>
           <Avatar initials="W" size={42} />
           <div style={{ position: "absolute", bottom: -1, right: -1, width: 10, height: 10, borderRadius: "50%", background: "#44b700", border: "2px solid #fff" }} />
         </div>
         <div>
-          <div style={{ fontWeight: 600, fontSize: 18, display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ fontWeight: 600, fontSize: 17, display: "flex", alignItems: "center", gap: 6 }}>
             William
-            <span style={{ fontSize: 12, fontWeight: 600, background: PURPLE_PALE, color: PURPLE, padding: "2px 6px", borderRadius: 4 }}>AI</span>
+            <span style={{ fontSize: 11, fontWeight: 600, background: PURPLE_PALE, color: PURPLE, padding: "2px 6px", borderRadius: 4 }}>AI</span>
           </div>
-          <div style={{ fontSize: 14, color: GREEN }}>Online — always</div>
+          <div style={{ fontSize: 13, color: GREEN }}>Online — always</div>
         </div>
       </div>
 
