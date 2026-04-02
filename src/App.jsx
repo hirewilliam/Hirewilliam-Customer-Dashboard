@@ -132,9 +132,9 @@ function Sidebar({ active, onNav }) {
   ];
 
   return (
-    <div style={{ width: 220, background: "#16102a", padding: "14px 10px", color: "rgba(255,255,255,0.45)", fontSize: 14, display: "flex", flexDirection: "column", height: "100%", flexShrink: 0 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "4px 8px 16px", color: "#fff", fontSize: 16, fontWeight: 600 }}>
-        <div style={{ width: 28, height: 28, borderRadius: 7, background: PURPLE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, color: "#fff" }}>W</div>
+    <div style={{ width: 220, background: "#16102a", padding: "20px 12px 14px", color: "rgba(255,255,255,0.45)", fontSize: 14, display: "flex", flexDirection: "column", height: "100%", flexShrink: 0 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 9, padding: "0 8px 20px", color: "#fff", fontSize: 17, fontWeight: 700 }}>
+        <div style={{ width: 32, height: 32, borderRadius: 8, background: PURPLE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 800, color: "#fff", flexShrink: 0 }}>W</div>
         HireWilliam
       </div>
       <div style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", padding: "10px 8px 4px", textTransform: "uppercase", letterSpacing: 0.5 }}>Channels</div>
@@ -197,18 +197,18 @@ function ChatView() {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "18px 24px", borderBottom: `1px solid ${RULE}` }}>
-        <div style={{ position: "relative" }}>
-          <Avatar initials="W" size={42} />
-          <div style={{ position: "absolute", bottom: -1, right: -1, width: 10, height: 10, borderRadius: "50%", background: "#44b700", border: "2px solid #fff" }} />
+    <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "22px 24px", borderBottom: `1px solid ${RULE}`, flexShrink: 0, minHeight: 84 }}>
+        <div style={{ position: "relative", flexShrink: 0 }}>
+          <Avatar initials="W" size={46} />
+          <div style={{ position: "absolute", bottom: 0, right: 0, width: 12, height: 12, borderRadius: "50%", background: "#44b700", border: "2.5px solid #fff" }} />
         </div>
         <div>
-          <div style={{ fontWeight: 600, fontSize: 17, display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ fontWeight: 700, fontSize: 18, display: "flex", alignItems: "center", gap: 8, lineHeight: 1.3 }}>
             William
-            <span style={{ fontSize: 11, fontWeight: 600, background: PURPLE_PALE, color: PURPLE, padding: "2px 6px", borderRadius: 4 }}>AI</span>
+            <span style={{ fontSize: 12, fontWeight: 600, background: PURPLE_PALE, color: PURPLE, padding: "2px 7px", borderRadius: 4 }}>AI</span>
           </div>
-          <div style={{ fontSize: 13, color: GREEN }}>Online — always</div>
+          <div style={{ fontSize: 14, color: GREEN, marginTop: 2 }}>Online — always</div>
         </div>
       </div>
 
@@ -246,7 +246,7 @@ function ChatView() {
         <div ref={bottomRef} />
       </div>
 
-      <div style={{ padding: "12px 20px", borderTop: `1px solid ${RULE}` }}>
+      <div style={{ padding: "14px 20px", borderTop: `1px solid ${RULE}`, flexShrink: 0 }}>
         <div style={{ display: "flex", gap: 10 }}>
           <textarea
             ref={inputRef}
@@ -344,9 +344,9 @@ function PipelineView() {
   };
 
   return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+    <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
       {/* Header */}
-      <div style={{ padding: "16px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div style={{ padding: "18px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <IconHash s={14} />
           <span style={{ fontWeight: 600, fontSize: 15 }}>pipeline</span>
@@ -355,7 +355,7 @@ function PipelineView() {
       </div>
 
       {/* Filters */}
-      <div style={{ padding: "12px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", gap: 8, alignItems: "center", background: PAPER_WARM }}>
+      <div style={{ padding: "12px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", gap: 8, alignItems: "center", background: PAPER_WARM, flexShrink: 0 }}>
         <span style={{ fontSize: 11, fontWeight: 600, color: INK_SOFT, textTransform: "uppercase" }}>Filter:</span>
         <select
           value={filter.channel || ""}
@@ -705,8 +705,8 @@ function OutreachView() {
   const filtered = filter === "all" ? CONVOS : CONVOS.filter(c => c.status === filter);
 
   return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", fontFamily: "'DM Sans', system-ui, sans-serif", color: INK, background: "#fff" }}>
-      <div style={{ padding: "16px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+    <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", fontFamily: "'DM Sans', system-ui, sans-serif", color: INK, background: "#fff" }}>
+      <div style={{ padding: "18px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={INK_GHOST} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="9" x2="20" y2="9" /><line x1="4" y1="15" x2="20" y2="15" /><line x1="10" y1="3" x2="8" y2="21" /><line x1="16" y1="3" x2="14" y2="21" /></svg>
           <span style={{ fontWeight: 600, fontSize: 15 }}>outreach-log</span>
@@ -714,7 +714,7 @@ function OutreachView() {
         </div>
       </div>
 
-      <div style={{ display: "flex", gap: 6, padding: "12px 20px", borderBottom: `1px solid ${RULE}`, overflowX: "auto" }}>
+      <div style={{ display: "flex", gap: 6, padding: "12px 20px", borderBottom: `1px solid ${RULE}`, overflowX: "auto", flexShrink: 0 }}>
         {filters.map(f => (
           <button
             key={f.id}
@@ -750,8 +750,8 @@ function MeetingsView() {
   ];
 
   return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <div style={{ padding: "16px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6 }}>
+    <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+      <div style={{ padding: "18px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
         <IconHash s={14} />
         <span style={{ fontWeight: 600, fontSize: 15 }}>meetings</span>
       </div>
@@ -832,8 +832,8 @@ function AnalyticsView() {
   }, []);
 
   return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <div style={{ padding: "16px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6 }}>
+    <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+      <div style={{ padding: "18px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
         <IconHash s={14} />
         <span style={{ fontWeight: 600, fontSize: 15 }}>analytics</span>
         <div style={{ marginLeft: "auto", display: "flex", gap: 4 }}>
@@ -1133,9 +1133,9 @@ function ForFoundersView({ onNav }) {
   const divider = { borderTop: `1px solid ${RULE}`, margin: "40px 0" };
 
   return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", overflowY: "auto", background: PAPER }}>
+    <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", overflowY: "auto", background: PAPER }}>
       {/* Channel header */}
-      <div style={{ padding: "20px 24px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6, background: "#fff", flexShrink: 0 }}>
+      <div style={{ padding: "22px 24px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6, background: "#fff", flexShrink: 0 }}>
         <IconHash s={14} />
         <span style={{ fontWeight: 600, fontSize: 16 }}>for-founders</span>
       </div>
@@ -1495,7 +1495,7 @@ function ForFoundersView({ onNav }) {
 function RightPanel() {
   const hot = MOCK_PROSPECTS.filter(p => p.score >= 45).sort((a, b) => b.score - a.score).slice(0, 4);
   return (
-    <div style={{ width: 200, borderLeft: `1px solid ${RULE}`, padding: 12, fontSize: 12, background: PAPER, flexShrink: 0, overflowY: "auto" }}>
+    <div style={{ width: 210, borderLeft: `1px solid ${RULE}`, padding: "22px 14px 14px", fontSize: 12, background: PAPER, flexShrink: 0, overflowY: "auto" }}>
       <div style={{ fontSize: 10, fontWeight: 600, color: INK_GHOST, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Overnight results</div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginBottom: 16 }}>
         {[{ l: "Sent", v: "47", c: "While you slept" }, { l: "Replies", v: "6", c: "12.7% rate" }, { l: "Meetings", v: "2", c: "Booked Thu" }, { l: "Hot leads", v: "4", c: "Need follow-up" }].map(s => (
