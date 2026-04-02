@@ -105,7 +105,7 @@ function Badge({ text, color }) {
     instagram: { bg: PURPLE_PALE, text: PURPLE },
   };
   const c = colors[color] || colors.new;
-  return <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 4, background: c.bg, color: c.text, whiteSpace: "nowrap" }}>{text}</span>;
+  return <span style={{ fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 4, background: c.bg, color: c.text, whiteSpace: "nowrap" }}>{text}</span>;
 }
 
 function ScoreBar({ score }) {
@@ -115,7 +115,7 @@ function ScoreBar({ score }) {
       <div style={{ flex: 1, height: 3, borderRadius: 2, background: RULE }}>
         <div style={{ width: `${score}%`, height: "100%", borderRadius: 2, background: color }} />
       </div>
-      <span style={{ fontSize: 10, color: INK_GHOST, minWidth: 20, textAlign: "right" }}>{score}</span>
+      <span style={{ fontSize: 11, color: INK_GHOST, minWidth: 20, textAlign: "right" }}>{score}</span>
     </div>
   );
 }
@@ -132,23 +132,23 @@ function Sidebar({ active, onNav }) {
   ];
 
   return (
-    <div style={{ width: 220, background: "#16102a", padding: "14px 10px", color: "rgba(255,255,255,0.45)", fontSize: 13, display: "flex", flexDirection: "column", height: "100%", flexShrink: 0 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "4px 8px 16px", color: "#fff", fontSize: 15, fontWeight: 600 }}>
-        <div style={{ width: 28, height: 28, borderRadius: 7, background: PURPLE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: "#fff" }}>W</div>
+    <div style={{ width: 220, background: "#16102a", padding: "14px 10px", color: "rgba(255,255,255,0.45)", fontSize: 14, display: "flex", flexDirection: "column", height: "100%", flexShrink: 0 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "4px 8px 16px", color: "#fff", fontSize: 16, fontWeight: 600 }}>
+        <div style={{ width: 28, height: 28, borderRadius: 7, background: PURPLE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, color: "#fff" }}>W</div>
         HireWilliam
       </div>
-      <div style={{ fontSize: 9, color: "rgba(255,255,255,0.25)", padding: "10px 8px 4px", textTransform: "uppercase", letterSpacing: 0.5 }}>Channels</div>
+      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", padding: "10px 8px 4px", textTransform: "uppercase", letterSpacing: 0.5 }}>Channels</div>
       {channels.map(ch => (
-        <div key={ch.id} onClick={() => onNav(ch.id)} style={{ padding: "5px 10px", borderRadius: 5, marginBottom: 1, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, background: active === ch.id ? "rgba(90,63,160,0.35)" : "transparent", color: active === ch.id ? "#fff" : "rgba(255,255,255,0.5)", fontSize: 12, transition: "all 0.15s" }}>
+        <div key={ch.id} onClick={() => onNav(ch.id)} style={{ padding: "5px 10px", borderRadius: 5, marginBottom: 1, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, background: active === ch.id ? "rgba(90,63,160,0.35)" : "transparent", color: active === ch.id ? "#fff" : "rgba(255,255,255,0.5)", fontSize: 13, transition: "all 0.15s" }}>
           {ch.lock ? <IconLock s={11} /> : <IconHash s={11} />}
           {ch.label}
-          {ch.badge && <span style={{ marginLeft: "auto", fontSize: 9, background: RED, color: "#fff", padding: "1px 5px", borderRadius: 8, fontWeight: 600 }}>{ch.badge}</span>}
+          {ch.badge && <span style={{ marginLeft: "auto", fontSize: 10, background: RED, color: "#fff", padding: "1px 5px", borderRadius: 8, fontWeight: 600 }}>{ch.badge}</span>}
         </div>
       ))}
-      <div style={{ fontSize: 9, color: "rgba(255,255,255,0.25)", padding: "16px 8px 4px", textTransform: "uppercase", letterSpacing: 0.5 }}>Direct messages</div>
-      <div onClick={() => onNav("chat")} style={{ padding: "5px 10px", borderRadius: 5, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, background: active === "chat" ? "rgba(90,63,160,0.35)" : "transparent", color: active === "chat" ? "#fff" : "rgba(255,255,255,0.5)", fontSize: 12 }}>
+      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", padding: "16px 8px 4px", textTransform: "uppercase", letterSpacing: 0.5 }}>Direct messages</div>
+      <div onClick={() => onNav("chat")} style={{ padding: "5px 10px", borderRadius: 5, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, background: active === "chat" ? "rgba(90,63,160,0.35)" : "transparent", color: active === "chat" ? "#fff" : "rgba(255,255,255,0.5)", fontSize: 13 }}>
         <div style={{ position: "relative" }}>
-          <div style={{ width: 18, height: 18, borderRadius: 4, background: PURPLE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, fontWeight: 700, color: "#fff" }}>W</div>
+          <div style={{ width: 18, height: 18, borderRadius: 4, background: PURPLE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, color: "#fff" }}>W</div>
           <div style={{ position: "absolute", bottom: -1, right: -1, width: 7, height: 7, borderRadius: "50%", background: "#44b700", border: "1.5px solid #16102a" }} />
         </div>
         William
@@ -204,11 +204,11 @@ function ChatView() {
           <div style={{ position: "absolute", bottom: -1, right: -1, width: 10, height: 10, borderRadius: "50%", background: "#44b700", border: "2px solid #fff" }} />
         </div>
         <div>
-          <div style={{ fontWeight: 600, fontSize: 17, display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ fontWeight: 600, fontSize: 18, display: "flex", alignItems: "center", gap: 6 }}>
             William
-            <span style={{ fontSize: 11, fontWeight: 600, background: PURPLE_PALE, color: PURPLE, padding: "2px 6px", borderRadius: 4 }}>AI</span>
+            <span style={{ fontSize: 12, fontWeight: 600, background: PURPLE_PALE, color: PURPLE, padding: "2px 6px", borderRadius: 4 }}>AI</span>
           </div>
-          <div style={{ fontSize: 13, color: GREEN }}>Online — always</div>
+          <div style={{ fontSize: 14, color: GREEN }}>Online — always</div>
         </div>
       </div>
 
@@ -216,8 +216,8 @@ function ChatView() {
         {msgs.length === 0 && (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", textAlign: "center" }}>
             <Avatar initials="W" size={56} />
-            <h2 style={{ fontSize: 18, fontWeight: 600, marginTop: 12, color: INK }}>Morning. I'm William.</h2>
-            <p style={{ fontSize: 13, color: INK_SOFT, maxWidth: 360, marginTop: 6 }}>Tell me about your product, who your ideal customers are, and I'll get to work.</p>
+            <h2 style={{ fontSize: 20, fontWeight: 600, marginTop: 12, color: INK }}>Morning. I'm William.</h2>
+            <p style={{ fontSize: 14, color: INK_SOFT, maxWidth: 360, marginTop: 6 }}>Tell me about your product, who your ideal customers are, and I'll get to work.</p>
           </div>
         )}
 
@@ -225,8 +225,8 @@ function ChatView() {
           <div key={m.id} style={{ display: "flex", gap: 10, flexDirection: m.sender === "user" ? "row-reverse" : "row" }}>
             {m.sender === "william" ? <Avatar initials="W" size={28} /> : <Avatar initials="Y" bg={PAPER_WARM} size={28} />}
             <div style={{ maxWidth: "75%", borderRadius: 16, padding: "10px 14px", background: m.sender === "william" ? PAPER_WARM : PURPLE, color: m.sender === "william" ? INK : "#fff" }}>
-              <p style={{ fontSize: 13, lineHeight: 1.55, whiteSpace: "pre-wrap", margin: 0 }}>{m.content}</p>
-              <p style={{ fontSize: 9, marginTop: 4, color: m.sender === "william" ? INK_GHOST : "rgba(255,255,255,0.6)", margin: 0 }}>{m.time}</p>
+              <p style={{ fontSize: 14, lineHeight: 1.55, whiteSpace: "pre-wrap", margin: 0 }}>{m.content}</p>
+              <p style={{ fontSize: 10, marginTop: 4, color: m.sender === "william" ? INK_GHOST : "rgba(255,255,255,0.6)", margin: 0 }}>{m.time}</p>
             </div>
           </div>
         ))}
@@ -238,7 +238,7 @@ function ChatView() {
               <div style={{ display: "flex", gap: 3 }}>
                 {[0, 1, 2].map(i => <div key={i} style={{ width: 6, height: 6, borderRadius: "50%", background: PURPLE, opacity: 0.5, animation: `pulse 1.2s ease-in-out ${i * 0.2}s infinite` }} />)}
               </div>
-              <span style={{ fontSize: 11, color: INK_SOFT, marginLeft: 4 }}>William is thinking...</span>
+              <span style={{ fontSize: 12, color: INK_SOFT, marginLeft: 4 }}>William is thinking...</span>
             </div>
           </div>
         )}
@@ -255,7 +255,7 @@ function ChatView() {
             onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
             placeholder="Message William..."
             rows={1}
-            style={{ flex: 1, resize: "none", borderRadius: 10, border: `1px solid ${RULE}`, padding: "10px 14px", fontSize: 13, outline: "none", fontFamily: "inherit", background: PAPER }}
+            style={{ flex: 1, resize: "none", borderRadius: 10, border: `1px solid ${RULE}`, padding: "10px 14px", fontSize: 14, outline: "none", fontFamily: "inherit", background: PAPER }}
           />
           <button onClick={send} disabled={!input.trim()} style={{ width: 40, height: 40, borderRadius: 10, background: input.trim() ? PURPLE : RULE, border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: input.trim() ? "pointer" : "default", color: "#fff", transition: "all 0.15s" }}>
             <IconSend s={16} />
@@ -349,18 +349,18 @@ function PipelineView() {
       <div style={{ padding: "16px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <IconHash s={14} />
-          <span style={{ fontWeight: 600, fontSize: 14 }}>pipeline</span>
-          <span style={{ fontSize: 10, color: INK_GHOST, marginLeft: 8 }}>{filteredProspects.length} prospects</span>
+          <span style={{ fontWeight: 600, fontSize: 15 }}>pipeline</span>
+          <span style={{ fontSize: 11, color: INK_GHOST, marginLeft: 8 }}>{filteredProspects.length} prospects</span>
         </div>
       </div>
 
       {/* Filters */}
       <div style={{ padding: "12px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", gap: 8, alignItems: "center", background: PAPER_WARM }}>
-        <span style={{ fontSize: 10, fontWeight: 600, color: INK_SOFT, textTransform: "uppercase" }}>Filter:</span>
+        <span style={{ fontSize: 11, fontWeight: 600, color: INK_SOFT, textTransform: "uppercase" }}>Filter:</span>
         <select
           value={filter.channel || ""}
           onChange={(e) => setFilter({ ...filter, channel: e.target.value || null })}
-          style={{ fontSize: 11, padding: "5px 8px", borderRadius: 6, border: `1px solid ${RULE}`, background: "#fff", cursor: "pointer" }}
+          style={{ fontSize: 12, padding: "5px 8px", borderRadius: 6, border: `1px solid ${RULE}`, background: "#fff", cursor: "pointer" }}
         >
           <option value="">All channels</option>
           <option value="email">Email</option>
@@ -370,7 +370,7 @@ function PipelineView() {
         <select
           value={filter.time || ""}
           onChange={(e) => setFilter({ ...filter, time: e.target.value || null })}
-          style={{ fontSize: 11, padding: "5px 8px", borderRadius: 6, border: `1px solid ${RULE}`, background: "#fff", cursor: "pointer" }}
+          style={{ fontSize: 12, padding: "5px 8px", borderRadius: 6, border: `1px solid ${RULE}`, background: "#fff", cursor: "pointer" }}
         >
           <option value="">All time</option>
           <option value="today">Today</option>
@@ -380,7 +380,7 @@ function PipelineView() {
         <select
           value={filter.score || ""}
           onChange={(e) => setFilter({ ...filter, score: e.target.value || null })}
-          style={{ fontSize: 11, padding: "5px 8px", borderRadius: 6, border: `1px solid ${RULE}`, background: "#fff", cursor: "pointer" }}
+          style={{ fontSize: 12, padding: "5px 8px", borderRadius: 6, border: `1px solid ${RULE}`, background: "#fff", cursor: "pointer" }}
         >
           <option value="">All scores</option>
           <option value="hot">Hot (80+)</option>
@@ -390,7 +390,7 @@ function PipelineView() {
         {(filter.channel || filter.time || filter.score) && (
           <button
             onClick={() => setFilter({ channel: null, time: null, score: null })}
-            style={{ fontSize: 10, padding: "5px 10px", borderRadius: 6, border: "none", background: RULE, color: INK, cursor: "pointer" }}
+            style={{ fontSize: 11, padding: "5px 10px", borderRadius: 6, border: "none", background: RULE, color: INK, cursor: "pointer" }}
           >
             Clear filters
           </button>
@@ -416,17 +416,17 @@ function PipelineView() {
               {/* Column Header with Conversion Rate */}
               <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 8 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 4px" }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: st.color }}>{st.label}</div>
-                  <span style={{ fontSize: 9, fontWeight: 600, color: INK_GHOST, background: "#fff", padding: "2px 6px", borderRadius: 6 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: st.color }}>{st.label}</div>
+                  <span style={{ fontSize: 10, fontWeight: 600, color: INK_GHOST, background: "#fff", padding: "2px 6px", borderRadius: 6 }}>
                     {items.length}
                   </span>
                 </div>
                 {conversionRate && (
-                  <div style={{ fontSize: 9, color: INK_GHOST, padding: "0 4px" }}>
+                  <div style={{ fontSize: 10, color: INK_GHOST, padding: "0 4px" }}>
                     {conversionRate}% converted from {stages[stages.findIndex(s => s.id === st.id) - 1].label}
                   </div>
                 )}
-                <div style={{ fontSize: 8, color: INK_GHOST, padding: "0 4px", fontStyle: "italic" }}>{st.desc}</div>
+                <div style={{ fontSize: 9, color: INK_GHOST, padding: "0 4px", fontStyle: "italic" }}>{st.desc}</div>
               </div>
 
               {/* Cards */}
@@ -455,10 +455,10 @@ function PipelineView() {
                       {/* Card Content */}
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
                         <div>
-                          <div style={{ fontSize: 12, fontWeight: 600, color: INK }}>{p.name}</div>
-                          <div style={{ fontSize: 10, color: INK_SOFT }}>{p.company}</div>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: INK }}>{p.name}</div>
+                          <div style={{ fontSize: 11, color: INK_SOFT }}>{p.company}</div>
                         </div>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: p.score >= 80 ? GREEN : p.score >= 50 ? AMBER : INK_GHOST }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: p.score >= 80 ? GREEN : p.score >= 50 ? AMBER : INK_GHOST }}>
                           {p.score}
                         </div>
                       </div>
@@ -469,12 +469,12 @@ function PipelineView() {
                       </div>
 
                       {/* Last Activity */}
-                      <div style={{ fontSize: 9, color: INK_GHOST, marginBottom: 6 }}>
+                      <div style={{ fontSize: 10, color: INK_GHOST, marginBottom: 6 }}>
                         {p.lastAction}
                       </div>
 
                       {/* Activity Timeline */}
-                      <div style={{ fontSize: 8, display: "flex", alignItems: "center", gap: 4, color: INK_GHOST }}>
+                      <div style={{ fontSize: 9, display: "flex", alignItems: "center", gap: 4, color: INK_GHOST }}>
                         <span style={{
                           width: 6,
                           height: 6,
@@ -568,7 +568,7 @@ function OutreachView() {
   ];
 
   function Badge({ text, bg, color }) {
-    return <span style={{ fontSize: 10, fontWeight: 600, padding: "3px 8px", borderRadius: 4, background: bg, color, whiteSpace: "nowrap" }}>{text}</span>;
+    return <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 8px", borderRadius: 4, background: bg, color, whiteSpace: "nowrap" }}>{text}</span>;
   }
 
   function ChannelBadge({ channel }) {
@@ -594,39 +594,39 @@ function OutreachView() {
     if (isSys) {
       return (
         <div style={{ textAlign: "center", padding: "8px 0" }}>
-          <span style={{ fontSize: 11, color: INK_GHOST, background: PAPER_WARM, padding: "4px 12px", borderRadius: 12 }}>{msg.text}</span>
-          <div style={{ fontSize: 10, color: INK_GHOST, marginTop: 4 }}>{msg.time}</div>
+          <span style={{ fontSize: 12, color: INK_GHOST, background: PAPER_WARM, padding: "4px 12px", borderRadius: 12 }}>{msg.text}</span>
+          <div style={{ fontSize: 11, color: INK_GHOST, marginTop: 4 }}>{msg.time}</div>
         </div>
       );
     }
 
     return (
       <div style={{ display: "flex", flexDirection: isP ? "row-reverse" : "row", gap: 8, marginBottom: 4 }}>
-        <div style={{ width: 24, height: 24, borderRadius: 6, background: isW ? PURPLE : PAPER_WARM, color: isW ? "#fff" : INK_SOFT, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, flexShrink: 0, marginTop: 2 }}>
+        <div style={{ width: 24, height: 24, borderRadius: 6, background: isW ? PURPLE : PAPER_WARM, color: isW ? "#fff" : INK_SOFT, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, flexShrink: 0, marginTop: 2 }}>
           {isW ? "W" : "P"}
         </div>
         <div style={{ maxWidth: "80%" }}>
-          <div style={{ fontSize: 10, fontWeight: 600, color: isW ? PURPLE : INK_MID, marginBottom: 3, display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: isW ? PURPLE : INK_MID, marginBottom: 3, display: "flex", alignItems: "center", gap: 6 }}>
             {isW ? "William" : "Prospect"}
-            {isW && <span style={{ fontSize: 8, fontWeight: 600, background: PURPLE_PALE, color: PURPLE, padding: "1px 5px", borderRadius: 3 }}>AI</span>}
-            {msg.draft && <span style={{ fontSize: 8, fontWeight: 600, background: "#fdf2e3", color: AMBER, padding: "1px 5px", borderRadius: 3 }}>DRAFT</span>}
-            {msg.queued && <span style={{ fontSize: 8, fontWeight: 600, background: "#e6f1fb", color: "#185fa5", padding: "1px 5px", borderRadius: 3 }}>QUEUED</span>}
+            {isW && <span style={{ fontSize: 9, fontWeight: 600, background: PURPLE_PALE, color: PURPLE, padding: "1px 5px", borderRadius: 3 }}>AI</span>}
+            {msg.draft && <span style={{ fontSize: 9, fontWeight: 600, background: "#fdf2e3", color: AMBER, padding: "1px 5px", borderRadius: 3 }}>DRAFT</span>}
+            {msg.queued && <span style={{ fontSize: 9, fontWeight: 600, background: "#e6f1fb", color: "#185fa5", padding: "1px 5px", borderRadius: 3 }}>QUEUED</span>}
           </div>
           <div style={{
             padding: "10px 14px",
             borderRadius: isP ? "14px 14px 4px 14px" : "14px 14px 14px 4px",
             background: isP ? "#e4f5ed" : msg.draft ? "#fdf2e3" : PAPER_WARM,
             border: msg.draft ? `1.5px dashed ${AMBER}` : msg.queued ? `1.5px dashed #378add` : "none",
-            fontSize: 12.5, lineHeight: 1.55, color: INK_MID, whiteSpace: "pre-wrap"
+            fontSize: 14, lineHeight: 1.55, color: INK_MID, whiteSpace: "pre-wrap"
           }}>
             {msg.text}
           </div>
           {msg.research && (
-            <div style={{ fontSize: 10, color: INK_GHOST, marginTop: 4, fontStyle: "italic" }}>
+            <div style={{ fontSize: 11, color: INK_GHOST, marginTop: 4, fontStyle: "italic" }}>
               Research: {msg.research}
             </div>
           )}
-          <div style={{ fontSize: 10, color: INK_GHOST, marginTop: 3 }}>{msg.time}</div>
+          <div style={{ fontSize: 11, color: INK_GHOST, marginTop: 3 }}>{msg.time}</div>
         </div>
       </div>
     );
@@ -648,15 +648,15 @@ function OutreachView() {
           <Avatar initials={convo.avatar} size={34} />
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ fontSize: 13, fontWeight: 600, color: INK }}>{convo.name}</span>
-              <span style={{ fontSize: 12, color: INK_SOFT }}>{convo.company}</span>
+              <span style={{ fontSize: 14, fontWeight: 600, color: INK }}>{convo.name}</span>
+              <span style={{ fontSize: 13, color: INK_SOFT }}>{convo.company}</span>
             </div>
-            <div style={{ fontSize: 11, color: INK_SOFT, marginTop: 2 }}>{convo.stage}</div>
+            <div style={{ fontSize: 12, color: INK_SOFT, marginTop: 2 }}>{convo.stage}</div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
             <ChannelBadge channel={convo.channel} />
             <StatusDot status={convo.status} />
-            <span style={{ fontSize: 11, color: INK_GHOST, minWidth: 50, textAlign: "right" }}>{convo.time}</span>
+            <span style={{ fontSize: 12, color: INK_GHOST, minWidth: 50, textAlign: "right" }}>{convo.time}</span>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={INK_GHOST} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transition: "transform 0.2s", transform: open ? "rotate(180deg)" : "rotate(0deg)" }}>
               <path d="M6 9l6 6 6-6" />
             </svg>
@@ -671,9 +671,9 @@ function OutreachView() {
 
             {convo.needsApproval && (
               <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-                <button style={{ padding: "8px 16px", borderRadius: 8, background: GREEN, color: "#fff", border: "none", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>Approve & send</button>
-                <button style={{ padding: "8px 16px", borderRadius: 8, background: "transparent", color: INK_SOFT, border: `1px solid ${RULE}`, fontSize: 12, fontWeight: 500, cursor: "pointer" }}>Edit before sending</button>
-                <button style={{ padding: "8px 16px", borderRadius: 8, background: "transparent", color: RED, border: `1px solid ${RULE}`, fontSize: 12, fontWeight: 500, cursor: "pointer" }}>Don't send</button>
+                <button style={{ padding: "8px 16px", borderRadius: 8, background: GREEN, color: "#fff", border: "none", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Approve & send</button>
+                <button style={{ padding: "8px 16px", borderRadius: 8, background: "transparent", color: INK_SOFT, border: `1px solid ${RULE}`, fontSize: 13, fontWeight: 500, cursor: "pointer" }}>Edit before sending</button>
+                <button style={{ padding: "8px 16px", borderRadius: 8, background: "transparent", color: RED, border: `1px solid ${RULE}`, fontSize: 13, fontWeight: 500, cursor: "pointer" }}>Don't send</button>
               </div>
             )}
 
@@ -683,10 +683,10 @@ function OutreachView() {
                 onChange={e => setReplyText(e.target.value)}
                 placeholder="Jump in and reply yourself..."
                 rows={1}
-                style={{ flex: 1, resize: "none", borderRadius: 8, border: `1px solid ${RULE}`, padding: "8px 12px", fontSize: 12, fontFamily: "inherit", outline: "none", background: "#fff" }}
+                style={{ flex: 1, resize: "none", borderRadius: 8, border: `1px solid ${RULE}`, padding: "8px 12px", fontSize: 13, fontFamily: "inherit", outline: "none", background: "#fff" }}
               />
-              <button style={{ padding: "8px 14px", borderRadius: 8, background: replyText.trim() ? PURPLE : RULE, color: "#fff", border: "none", fontSize: 12, fontWeight: 600, cursor: replyText.trim() ? "pointer" : "default", transition: "background 0.15s" }}>Send</button>
-              <button style={{ padding: "8px 14px", borderRadius: 8, background: "transparent", color: INK_SOFT, border: `1px solid ${RULE}`, fontSize: 12, fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap" }}>I'll handle this one</button>
+              <button style={{ padding: "8px 14px", borderRadius: 8, background: replyText.trim() ? PURPLE : RULE, color: "#fff", border: "none", fontSize: 13, fontWeight: 600, cursor: replyText.trim() ? "pointer" : "default", transition: "background 0.15s" }}>Send</button>
+              <button style={{ padding: "8px 14px", borderRadius: 8, background: "transparent", color: INK_SOFT, border: `1px solid ${RULE}`, fontSize: 13, fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap" }}>I'll handle this one</button>
             </div>
           </div>
         )}
@@ -709,8 +709,8 @@ function OutreachView() {
       <div style={{ padding: "16px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={INK_GHOST} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="9" x2="20" y2="9" /><line x1="4" y1="15" x2="20" y2="15" /><line x1="10" y1="3" x2="8" y2="21" /><line x1="16" y1="3" x2="14" y2="21" /></svg>
-          <span style={{ fontWeight: 600, fontSize: 14 }}>outreach-log</span>
-          <span style={{ fontSize: 11, color: INK_GHOST, marginLeft: 4 }}>{CONVOS.length} conversations</span>
+          <span style={{ fontWeight: 600, fontSize: 15 }}>outreach-log</span>
+          <span style={{ fontSize: 12, color: INK_GHOST, marginLeft: 4 }}>{CONVOS.length} conversations</span>
         </div>
       </div>
 
@@ -722,11 +722,11 @@ function OutreachView() {
             style={{
               padding: "5px 12px", borderRadius: 20, border: `1px solid ${filter === f.id ? PURPLE : RULE}`,
               background: filter === f.id ? PURPLE_PALE : "transparent", color: filter === f.id ? PURPLE : INK_SOFT,
-              fontSize: 11, fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 5, transition: "all 0.15s"
+              fontSize: 12, fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 5, transition: "all 0.15s"
             }}
           >
             {f.label}
-            <span style={{ fontSize: 10, fontWeight: 600, background: filter === f.id ? PURPLE : PAPER_WARM, color: filter === f.id ? "#fff" : INK_GHOST, padding: "1px 6px", borderRadius: 10 }}>{f.count}</span>
+            <span style={{ fontSize: 11, fontWeight: 600, background: filter === f.id ? PURPLE : PAPER_WARM, color: filter === f.id ? "#fff" : INK_GHOST, padding: "1px 6px", borderRadius: 10 }}>{f.count}</span>
           </button>
         ))}
       </div>
@@ -734,7 +734,7 @@ function OutreachView() {
       <div style={{ flex: 1, overflowY: "auto" }}>
         {filtered.map(c => <ConvoRow key={c.id} convo={c} />)}
         {filtered.length === 0 && (
-          <div style={{ padding: 40, textAlign: "center", color: INK_GHOST, fontSize: 13 }}>No conversations match this filter.</div>
+          <div style={{ padding: 40, textAlign: "center", color: INK_GHOST, fontSize: 14 }}>No conversations match this filter.</div>
         )}
       </div>
     </div>
@@ -753,19 +753,19 @@ function MeetingsView() {
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <div style={{ padding: "16px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6 }}>
         <IconHash s={14} />
-        <span style={{ fontWeight: 600, fontSize: 14 }}>meetings</span>
+        <span style={{ fontWeight: 600, fontSize: 15 }}>meetings</span>
       </div>
       <div style={{ flex: 1, overflowY: "auto", padding: 20 }}>
         {meetings.map(m => (
           <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", background: PAPER_WARM, borderRadius: 10, marginBottom: 8 }}>
             <div style={{ width: 48, textAlign: "center" }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: PURPLE }}>{m.time.split(" ")[0]}</div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: INK }}>{m.time.split(" ")[1]} {m.time.split(" ")[2]}</div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: PURPLE }}>{m.time.split(" ")[0]}</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: INK }}>{m.time.split(" ")[1]} {m.time.split(" ")[2]}</div>
             </div>
             <div style={{ width: 1, height: 36, background: RULE }} />
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, fontWeight: 600 }}>{m.prospect}</div>
-              <div style={{ fontSize: 11, color: INK_SOFT }}>{m.company} · {m.duration}</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{m.prospect}</div>
+              <div style={{ fontSize: 12, color: INK_SOFT }}>{m.company} · {m.duration}</div>
             </div>
             <Badge text={m.status === "confirmed" ? "Confirmed" : "Pending"} color={m.status === "confirmed" ? "won" : "warm"} />
           </div>
@@ -835,7 +835,7 @@ function AnalyticsView() {
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <div style={{ padding: "16px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6 }}>
         <IconHash s={14} />
-        <span style={{ fontWeight: 600, fontSize: 14 }}>analytics</span>
+        <span style={{ fontWeight: 600, fontSize: 15 }}>analytics</span>
         <div style={{ marginLeft: "auto", display: "flex", gap: 4 }}>
           {timeframes.map(tf => (
             <button
@@ -847,7 +847,7 @@ function AnalyticsView() {
                 border: `1px solid ${selectedTimeframe === tf.id ? PURPLE : RULE}`,
                 background: selectedTimeframe === tf.id ? PURPLE_PALE : "transparent",
                 color: selectedTimeframe === tf.id ? PURPLE : INK_SOFT,
-                fontSize: 10,
+                fontSize: 11,
                 fontWeight: 500,
                 cursor: "pointer",
                 transition: "all 0.2s"
@@ -893,10 +893,10 @@ function AnalyticsView() {
                 transition: "opacity 0.3s"
               }} />
 
-              <div style={{ fontSize: 24, marginBottom: 8 }}>{s.icon}</div>
-              <div style={{ fontSize: 11, color: INK_GHOST, marginBottom: 8, fontWeight: 500 }}>{s.label}</div>
+              <div style={{ fontSize: 26, marginBottom: 8 }}>{s.icon}</div>
+              <div style={{ fontSize: 12, color: INK_GHOST, marginBottom: 8, fontWeight: 500 }}>{s.label}</div>
               <div style={{
-                fontSize: 32,
+                fontSize: 34,
                 fontWeight: 800,
                 color: s.color,
                 marginBottom: 6,
@@ -905,7 +905,7 @@ function AnalyticsView() {
                 {animatedStats[index].toLocaleString()}
               </div>
               <div style={{
-                fontSize: 11,
+                fontSize: 12,
                 color: GREEN,
                 fontWeight: 600,
                 background: "#e4f5ed",
@@ -922,7 +922,7 @@ function AnalyticsView() {
                   position: "absolute",
                   top: 10,
                   right: 10,
-                  fontSize: 16,
+                  fontSize: 17,
                   animation: "sparkle 1.5s ease-in-out infinite"
                 }}>
                   ✨
@@ -942,17 +942,17 @@ function AnalyticsView() {
         }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
             <div>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: INK, margin: 0 }}>Activity Overview</h3>
-              <p style={{ fontSize: 12, color: INK_SOFT, margin: 4 }}>Messages sent vs replies over time</p>
+              <h3 style={{ fontSize: 17, fontWeight: 700, color: INK, margin: 0 }}>Activity Overview</h3>
+              <p style={{ fontSize: 13, color: INK_SOFT, margin: 4 }}>Messages sent vs replies over time</p>
             </div>
             <div style={{ display: "flex", gap: 12 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <div style={{ width: 12, height: 12, borderRadius: 3, background: PURPLE }} />
-                <span style={{ fontSize: 11, color: INK_SOFT }}>Sent</span>
+                <span style={{ fontSize: 12, color: INK_SOFT }}>Sent</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <div style={{ width: 12, height: 12, borderRadius: 3, background: GREEN }} />
-                <span style={{ fontSize: 11, color: INK_SOFT }}>Replies</span>
+                <span style={{ fontSize: 12, color: INK_SOFT }}>Replies</span>
               </div>
             </div>
           </div>
@@ -1010,7 +1010,7 @@ function AnalyticsView() {
                       color: "#fff",
                       padding: "6px 10px",
                       borderRadius: 6,
-                      fontSize: 10,
+                      fontSize: 11,
                       whiteSpace: "nowrap",
                       opacity: 0,
                       pointerEvents: "none",
@@ -1021,7 +1021,7 @@ function AnalyticsView() {
                     </div>
                   </div>
                 </div>
-                <div style={{ fontSize: 11, color: INK_SOFT, fontWeight: 500 }}>{d.day}</div>
+                <div style={{ fontSize: 12, color: INK_SOFT, fontWeight: 500 }}>{d.day}</div>
               </div>
             ))}
           </div>
@@ -1034,7 +1034,7 @@ function AnalyticsView() {
           padding: 24,
           boxShadow: "0 4px 20px rgba(0,0,0,0.05)"
         }}>
-          <h3 style={{ fontSize: 16, fontWeight: 700, color: INK, margin: "0 0 16px 0" }}>Conversion Funnel</h3>
+          <h3 style={{ fontSize: 17, fontWeight: 700, color: INK, margin: "0 0 16px 0" }}>Conversion Funnel</h3>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {[
               { stage: "Messages Sent", count: 312, rate: "100%", color: PURPLE },
@@ -1060,15 +1060,15 @@ function AnalyticsView() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: 14,
+                  fontSize: 15,
                   fontWeight: 700,
                   color: "#fff"
                 }}>
                   {stage.count}
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: INK }}>{stage.stage}</div>
-                  <div style={{ fontSize: 11, color: INK_SOFT }}>{stage.rate} conversion rate</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: INK }}>{stage.stage}</div>
+                  <div style={{ fontSize: 12, color: INK_SOFT }}>{stage.rate} conversion rate</div>
                 </div>
                 <div style={{
                   width: 80,
@@ -1118,26 +1118,26 @@ function AnalyticsView() {
 function RightPanel() {
   const hot = MOCK_PROSPECTS.filter(p => p.score >= 45).sort((a, b) => b.score - a.score).slice(0, 4);
   return (
-    <div style={{ width: 200, borderLeft: `1px solid ${RULE}`, padding: 12, fontSize: 11, background: PAPER, flexShrink: 0, overflowY: "auto" }}>
-      <div style={{ fontSize: 9, fontWeight: 600, color: INK_GHOST, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Overnight results</div>
+    <div style={{ width: 200, borderLeft: `1px solid ${RULE}`, padding: 12, fontSize: 12, background: PAPER, flexShrink: 0, overflowY: "auto" }}>
+      <div style={{ fontSize: 10, fontWeight: 600, color: INK_GHOST, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Overnight results</div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginBottom: 16 }}>
         {[{ l: "Sent", v: "47", c: "While you slept" }, { l: "Replies", v: "6", c: "12.7% rate" }, { l: "Meetings", v: "2", c: "Booked Thu" }, { l: "Hot leads", v: "4", c: "Need follow-up" }].map(s => (
           <div key={s.l} style={{ background: PAPER_WARM, borderRadius: 8, padding: "8px 10px" }}>
-            <div style={{ fontSize: 9, color: INK_GHOST }}>{s.l}</div>
-            <div style={{ fontSize: 18, fontWeight: 700 }}>{s.v}</div>
-            <div style={{ fontSize: 9, color: GREEN }}>{s.c}</div>
+            <div style={{ fontSize: 10, color: INK_GHOST }}>{s.l}</div>
+            <div style={{ fontSize: 20, fontWeight: 700 }}>{s.v}</div>
+            <div style={{ fontSize: 10, color: GREEN }}>{s.c}</div>
           </div>
         ))}
       </div>
-      <div style={{ fontSize: 9, fontWeight: 600, color: INK_GHOST, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Hot leads</div>
+      <div style={{ fontSize: 10, fontWeight: 600, color: INK_GHOST, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Hot leads</div>
       {hot.map(p => {
         const heat = p.score >= 80 ? "hot" : p.score >= 60 ? "warm" : "new";
         return (
           <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 0" }}>
             <Avatar initials={p.avatar} bg={heat === "hot" ? "#fcebeb" : heat === "warm" ? "#fdf2e3" : "#e6f1fb"} size={22} />
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 10, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</div>
-              <div style={{ fontSize: 9, color: INK_GHOST }}>{p.lastAction}</div>
+              <div style={{ fontSize: 11, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</div>
+              <div style={{ fontSize: 10, color: INK_GHOST }}>{p.lastAction}</div>
             </div>
           </div>
         );
@@ -1168,16 +1168,16 @@ function ForFoundersView({ onNav }) {
     <div style={{ height: "100%", display: "flex", flexDirection: "column", overflowY: "auto" }}>
       <div style={{ padding: "20px 24px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6 }}>
         <IconLock s={14} />
-        <span style={{ fontWeight: 600, fontSize: 16 }}>for-founders</span>
+        <span style={{ fontWeight: 600, fontSize: 17 }}>for-founders</span>
       </div>
 
       <div style={{ flex: 1, padding: "28px 28px 40px", maxWidth: 860 }}>
         {/* Hero */}
         <div style={{ marginBottom: 32 }}>
-          <h1 style={{ fontSize: 26, fontWeight: 700, color: INK, margin: "0 0 10px" }}>
+          <h1 style={{ fontSize: 28, fontWeight: 700, color: INK, margin: "0 0 10px" }}>
             Your AI Sales Rep — Working 24/7
           </h1>
-          <p style={{ fontSize: 14, color: INK_SOFT, lineHeight: 1.65, maxWidth: 620, margin: 0 }}>
+          <p style={{ fontSize: 15, color: INK_SOFT, lineHeight: 1.65, maxWidth: 620, margin: 0 }}>
             HireWilliam replaces your first sales hire with an AI that prospects, personalizes and follows up at scale.
             Built specifically for early-stage founders who need pipeline fast without burning runway on headcount.
           </p>
@@ -1187,29 +1187,29 @@ function ForFoundersView({ onNav }) {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 32 }}>
           {metrics.map(m => (
             <div key={m.label} style={{ background: PAPER_WARM, borderRadius: 10, padding: "16px 18px" }}>
-              <div style={{ fontSize: 22, fontWeight: 700, color: PURPLE }}>{m.value}</div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: INK, marginTop: 4 }}>{m.label}</div>
-              <div style={{ fontSize: 11, color: INK_SOFT, marginTop: 2 }}>{m.sub}</div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: PURPLE }}>{m.value}</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: INK, marginTop: 4 }}>{m.label}</div>
+              <div style={{ fontSize: 12, color: INK_SOFT, marginTop: 2 }}>{m.sub}</div>
             </div>
           ))}
         </div>
 
         {/* Feature highlights */}
-        <h2 style={{ fontSize: 15, fontWeight: 700, color: INK, margin: "0 0 14px" }}>Why founders choose William</h2>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: INK, margin: "0 0 14px" }}>Why founders choose William</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 14, marginBottom: 32 }}>
           {highlights.map(h => (
             <div key={h.title} style={{ background: "#fff", border: `1px solid ${RULE}`, borderRadius: 10, padding: "18px 20px", display: "flex", gap: 14 }}>
-              <div style={{ fontSize: 24, lineHeight: 1 }}>{h.icon}</div>
+              <div style={{ fontSize: 26, lineHeight: 1 }}>{h.icon}</div>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: INK, marginBottom: 6 }}>{h.title}</div>
-                <div style={{ fontSize: 12, color: INK_SOFT, lineHeight: 1.6 }}>{h.body}</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: INK, marginBottom: 6 }}>{h.title}</div>
+                <div style={{ fontSize: 13, color: INK_SOFT, lineHeight: 1.6 }}>{h.body}</div>
               </div>
             </div>
           ))}
         </div>
 
         {/* Channels */}
-        <h2 style={{ fontSize: 15, fontWeight: 700, color: INK, margin: "0 0 14px" }}>Where William works</h2>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: INK, margin: "0 0 14px" }}>Where William works</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14, marginBottom: 32 }}>
           {[
             { icon: "📧", label: "Email", desc: "Cold outreach, follow-up sequences, and inbox management — all from a warmed dedicated domain." },
@@ -1217,15 +1217,15 @@ function ForFoundersView({ onNav }) {
             { icon: "📱", label: "Instagram DM", desc: "Reach founders and decision-makers where they're most responsive — via direct message." },
           ].map(ch => (
             <div key={ch.label} style={{ background: "#fff", border: `1px solid ${RULE}`, borderRadius: 10, padding: "18px 20px" }}>
-              <div style={{ fontSize: 26, marginBottom: 10 }}>{ch.icon}</div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: INK, marginBottom: 6 }}>{ch.label}</div>
-              <div style={{ fontSize: 12, color: INK_SOFT, lineHeight: 1.6 }}>{ch.desc}</div>
+              <div style={{ fontSize: 28, marginBottom: 10 }}>{ch.icon}</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: INK, marginBottom: 6 }}>{ch.label}</div>
+              <div style={{ fontSize: 13, color: INK_SOFT, lineHeight: 1.6 }}>{ch.desc}</div>
             </div>
           ))}
         </div>
 
         {/* Dashboard Mockup */}
-        <h2 style={{ fontSize: 15, fontWeight: 700, color: INK, margin: "0 0 14px" }}>See it in action</h2>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: INK, margin: "0 0 14px" }}>See it in action</h2>
         <div style={{ background: "#1e1a2e", borderRadius: 12, overflow: "hidden", marginBottom: 32, border: `1px solid ${RULE}` }}>
           {/* Mockup title bar */}
           <div style={{ padding: "10px 16px", borderBottom: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", gap: 8 }}>
@@ -1234,7 +1234,7 @@ function ForFoundersView({ onNav }) {
               <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#ffbd2e" }} />
               <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#27c93f" }} />
             </div>
-            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginLeft: 6 }}>william · talk-to-william</span>
+            <span style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginLeft: 6 }}>william · talk-to-william</span>
           </div>
           {/* Chat messages */}
           <div style={{ padding: "20px 20px 8px" }}>
@@ -1245,21 +1245,21 @@ function ForFoundersView({ onNav }) {
               { from: "William", avatar: "W", avatarBg: PURPLE, text: "📅 Alex replied positively. I've drafted a follow-up and suggested two meeting slots. Awaiting your approval before sending.", time: "9:43 AM" },
             ].map((msg, i) => (
               <div key={i} style={{ display: "flex", gap: 10, marginBottom: 16 }}>
-                <div style={{ width: 28, height: 28, borderRadius: 6, background: msg.avatarBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, color: "#fff", flexShrink: 0, marginTop: 2 }}>
+                <div style={{ width: 28, height: 28, borderRadius: 6, background: msg.avatarBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#fff", flexShrink: 0, marginTop: 2 }}>
                   {msg.avatar}
                 </div>
                 <div>
                   <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 3 }}>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: msg.from === "William" ? PURPLE_LIGHT : "#6ab0f5" }}>{msg.from}</span>
-                    <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)" }}>{msg.time}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: msg.from === "William" ? PURPLE_LIGHT : "#6ab0f5" }}>{msg.from}</span>
+                    <span style={{ fontSize: 11, color: "rgba(255,255,255,0.25)" }}>{msg.time}</span>
                   </div>
-                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.8)", lineHeight: 1.55 }}>{msg.text}</div>
+                  <div style={{ fontSize: 13, color: "rgba(255,255,255,0.8)", lineHeight: 1.55 }}>{msg.text}</div>
                 </div>
               </div>
             ))}
           </div>
           <div style={{ padding: "8px 16px 14px", display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ flex: 1, background: "rgba(255,255,255,0.06)", borderRadius: 8, padding: "8px 14px", fontSize: 11, color: "rgba(255,255,255,0.25)", border: "1px solid rgba(255,255,255,0.08)" }}>
+            <div style={{ flex: 1, background: "rgba(255,255,255,0.06)", borderRadius: 8, padding: "8px 14px", fontSize: 12, color: "rgba(255,255,255,0.25)", border: "1px solid rgba(255,255,255,0.08)" }}>
               Message #talk-to-william…
             </div>
           </div>
@@ -1268,12 +1268,12 @@ function ForFoundersView({ onNav }) {
         {/* CTA */}
         <div style={{ background: PURPLE, borderRadius: 12, padding: "24px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: "#fff", marginBottom: 6 }}>Ready to fill your pipeline?</div>
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.75)" }}>Talk to William now — he's online and ready to learn about your product.</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginBottom: 6 }}>Ready to fill your pipeline?</div>
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.75)" }}>Talk to William now — he's online and ready to learn about your product.</div>
           </div>
           <button
             onClick={() => onNav("chat")}
-            style={{ background: "#fff", color: PURPLE, border: "none", borderRadius: 8, padding: "10px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}
+            style={{ background: "#fff", color: PURPLE, border: "none", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}
           >
             Talk to William →
           </button>
