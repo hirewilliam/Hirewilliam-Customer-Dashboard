@@ -1114,6 +1114,86 @@ function AnalyticsView() {
   );
 }
 
+// ── For Founders View ──
+function ForFoundersView({ onNav }) {
+  const highlights = [
+    { icon: "🎯", title: "Zero SDR Overhead", body: "William handles cold outreach end-to-end — research, personalised messages, follow-ups — so you can stay focused on building the product." },
+    { icon: "⚡", title: "Pipeline in Days, Not Months", body: "Most founders see their first qualified meetings within 48 hours of onboarding. William works around the clock with no ramp-up time." },
+    { icon: "🔍", title: "ICP-Precision Targeting", body: "Define your Ideal Customer Profile once. William surfaces lookalike prospects from a live database of 300 M+ contacts and enriches every lead automatically." },
+    { icon: "📈", title: "Compounding Learning", body: "Every reply, bounce and booking trains William's model on your audience so reply rates and conversion improve week over week." },
+    { icon: "🤝", title: "Human-Quality Personalisation", body: "Messages are crafted per prospect using their LinkedIn activity, company news and funding signals — not mail-merge templates." },
+    { icon: "🔒", title: "Founder-Safe Sending", body: "Domain warm-up, sending throttles and spam-score checks protect your deliverability so your own inbox never gets burned." },
+  ];
+
+  const metrics = [
+    { label: "Avg. reply rate", value: "14%", sub: "vs 2–3% industry avg" },
+    { label: "Time to first meeting", value: "48 hrs", sub: "from onboarding" },
+    { label: "Prospects contacted", value: "300M+", sub: "live database" },
+    { label: "Founder hours saved", value: "20 hrs/wk", sub: "per customer" },
+  ];
+
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", overflowY: "auto" }}>
+      <div style={{ padding: "20px 24px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6 }}>
+        <IconHash s={14} />
+        <span style={{ fontWeight: 600, fontSize: 16 }}>for-founders</span>
+      </div>
+
+      <div style={{ flex: 1, padding: "28px 28px 40px", maxWidth: 860 }}>
+        {/* Hero */}
+        <div style={{ marginBottom: 32 }}>
+          <h1 style={{ fontSize: 26, fontWeight: 700, color: INK, margin: "0 0 10px" }}>
+            Your AI Sales Rep — Working 24/7
+          </h1>
+          <p style={{ fontSize: 14, color: INK_SOFT, lineHeight: 1.65, maxWidth: 620, margin: 0 }}>
+            HireWilliam replaces your first sales hire with an AI that prospects, personalizes and follows up at scale.
+            Built specifically for early-stage founders who need pipeline fast without burning runway on headcount.
+          </p>
+        </div>
+
+        {/* Metrics row */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 32 }}>
+          {metrics.map(m => (
+            <div key={m.label} style={{ background: PAPER_WARM, borderRadius: 10, padding: "16px 18px" }}>
+              <div style={{ fontSize: 22, fontWeight: 700, color: PURPLE }}>{m.value}</div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: INK, marginTop: 4 }}>{m.label}</div>
+              <div style={{ fontSize: 11, color: INK_SOFT, marginTop: 2 }}>{m.sub}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Feature highlights */}
+        <h2 style={{ fontSize: 15, fontWeight: 700, color: INK, margin: "0 0 14px" }}>Why founders choose William</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 14, marginBottom: 32 }}>
+          {highlights.map(h => (
+            <div key={h.title} style={{ background: "#fff", border: `1px solid ${RULE}`, borderRadius: 10, padding: "18px 20px", display: "flex", gap: 14 }}>
+              <div style={{ fontSize: 24, lineHeight: 1 }}>{h.icon}</div>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: INK, marginBottom: 6 }}>{h.title}</div>
+                <div style={{ fontSize: 12, color: INK_SOFT, lineHeight: 1.6 }}>{h.body}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <div style={{ background: PURPLE, borderRadius: 12, padding: "24px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: "#fff", marginBottom: 6 }}>Ready to fill your pipeline?</div>
+            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.75)" }}>Talk to William now — he's online and ready to learn about your product.</div>
+          </div>
+          <button
+            onClick={() => onNav("chat")}
+            style={{ background: "#fff", color: PURPLE, border: "none", borderRadius: 8, padding: "10px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}
+          >
+            Talk to William →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Right Panel (shown on chat view) ──
 function RightPanel() {
   const hot = MOCK_PROSPECTS.filter(p => p.score >= 45).sort((a, b) => b.score - a.score).slice(0, 4);
