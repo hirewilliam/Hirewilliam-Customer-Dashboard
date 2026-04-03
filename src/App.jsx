@@ -182,18 +182,13 @@ function Sidebar({ active, onNav, onClose }) {
 }
 
 // ── Chat View ──
-const WILLIAM_INITIAL_MSG = `So You found me. Good
-
-I'm William and by the time I'm done setting up, I'll know your buyers better than they know themselves. I'll reach them on the right channel, at the right moment, with a message so specific they'll wonder who told me about them.
-
-
-Click around  this dashboard is yours. This is where you can communicate with me as your new sales hire . The pipeline. The outreach log. The analytics. This is what 10am looks like after you sleep in while I have been still closing deals at 3am.
-
-
-Message Terry Lee the founder at terrylee@hirewilliam.com
-Tell her I sent you and you want in.
-
-She built me. But between us  I'm the one who does all  the work she just checks her emails now`;
+const WILLIAM_INTRO_MESSAGES = [
+  { id: "intro-1", sender: "william", content: "So You found me. Good", time: "now" },
+  { id: "intro-2", sender: "william", content: "I'm William and by the time I'm done setting up, I'll know your buyers better than they know themselves. I'll reach them on the right channel, at the right moment, with a message so specific they'll wonder who told me about them.", time: "now" },
+  { id: "intro-3", sender: "william", content: "Click around  this dashboard is yours. This is where you can communicate with me as your new sales hire . The pipeline. The outreach log. The analytics. This is what 10am looks like after you sleep in while I have been still closing deals at 3am.", time: "now" },
+  { id: "intro-4", sender: "william", content: "Message Terry Lee the founder at terrylee@hirewilliam.com\nTell her I sent you and you want in.", time: "now" },
+  { id: "intro-5", sender: "william", content: "She built me. But between us  I'm the one who does all  the work she just checks her emails now", time: "now" },
+];
 
 const WILLIAM_FINAL_MSG = `Look, I could sit here and chat all day but that's not what I was built for. I was built to fill your calendar with people who want to buy what you're selling. And I'm almost ready to prove it.
 
@@ -201,9 +196,7 @@ I'm not live yet. Message Terry Lee (terrylee@hirewilliam.com)
 I promise she will get you all set`;
 
 function ChatView() {
-  const [msgs, setMsgs] = useState([
-    { id: "intro", sender: "william", content: WILLIAM_INITIAL_MSG, time: "now" }
-  ]);
+  const [msgs, setMsgs] = useState(WILLIAM_INTRO_MESSAGES);
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
   const [chatLocked, setChatLocked] = useState(false);
@@ -245,7 +238,7 @@ function ChatView() {
         </div>
       </div>
 
-      <div style={{ flex: 1, overflowY: "auto", padding: isMobile ? "12px 14px" : "16px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: isMobile ? "12px 14px" : "16px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
         {msgs.length === 0 && (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", textAlign: "center" }}>
             <Avatar initials="W" size={56} />
@@ -1690,15 +1683,15 @@ function RightPanel({ isMobile = false }) {
           ))}
         </div>
         <div style={{ fontSize: 10, fontWeight: 600, color: INK_GHOST, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Hot leads</div>
-        <div style={{ display: "flex", gap: 12, overflowX: "auto" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
           {hot.map(p => {
             const heat = p.score >= 80 ? "hot" : p.score >= 60 ? "warm" : "new";
             return (
-              <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+              <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 0", borderBottom: `1px solid ${RULE}` }}>
                 <Avatar initials={p.avatar} bg={heat === "hot" ? "#fcebeb" : heat === "warm" ? "#fdf2e3" : "#e6f1fb"} size={22} />
-                <div>
-                  <div style={{ fontSize: 11, fontWeight: 600, whiteSpace: "nowrap" }}>{p.name}</div>
-                  <div style={{ fontSize: 10, color: INK_GHOST, whiteSpace: "nowrap" }}>{p.lastAction}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</div>
+                  <div style={{ fontSize: 10, color: INK_GHOST, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.lastAction}</div>
                 </div>
               </div>
             );
