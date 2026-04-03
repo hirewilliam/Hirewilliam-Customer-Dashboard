@@ -149,7 +149,7 @@ function Sidebar({ active, onNav, onClose }) {
   ];
 
   return (
-    <div style={{ width: 220, background: "#16102a", padding: "20px 12px 14px", color: "rgba(255,255,255,0.45)", fontSize: 14, display: "flex", flexDirection: "column", height: "100%", flexShrink: 0 }}>
+    <div style={{ width: 220, maxWidth: "80vw", background: "#16102a", padding: "20px 12px 14px", color: "rgba(255,255,255,0.45)", fontSize: 14, display: "flex", flexDirection: "column", height: "100%", flexShrink: 0 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 9, padding: "0 8px 20px", color: "#fff", fontSize: 17, fontWeight: 700 }}>
         <div style={{ width: 32, height: 32, borderRadius: 8, background: PURPLE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 800, color: "#fff", flexShrink: 0 }}>W</div>
         HireWilliam
@@ -224,7 +224,7 @@ function ChatView() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 10 : 14, padding: isMobile ? "12px 16px" : "22px 24px", borderBottom: `1px solid ${RULE}`, flexShrink: 0, minHeight: isMobile ? 60 : 84 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 10 : 14, padding: isMobile ? "8px 16px" : "22px 24px", borderBottom: `1px solid ${RULE}`, flexShrink: 0, minHeight: isMobile ? 60 : 84, boxSizing: "border-box" }}>
         <div style={{ position: "relative", flexShrink: 0 }}>
           <Avatar initials="W" size={isMobile ? 36 : 46} />
           <div style={{ position: "absolute", bottom: 0, right: 0, width: isMobile ? 9 : 12, height: isMobile ? 9 : 12, borderRadius: "50%", background: "#44b700", border: "2.5px solid #fff" }} />
@@ -238,7 +238,7 @@ function ChatView() {
         </div>
       </div>
 
-      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: isMobile ? "12px 14px" : "16px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: isMobile ? "12px 14px" : "16px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
         {msgs.length === 0 && (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", textAlign: "center" }}>
             <Avatar initials="W" size={56} />
@@ -414,20 +414,20 @@ function PipelineView() {
         </div>
 
         {/* Vertical list grouped by stage */}
-        <div style={{ flex: 1, overflowY: "auto", padding: "12px 16px" }}>
+        <div style={{ flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: "12px 16px" }}>
           {stages.map(st => {
             const items = filteredProspects.filter(p => p.stage === st.id);
             if (items.length === 0) return null;
             return (
               <div key={st.id} style={{ marginBottom: 20 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, minHeight: 44 }}>
                   <div style={{ width: 8, height: 8, borderRadius: "50%", background: st.color, flexShrink: 0 }} />
                   <span style={{ fontSize: 11, fontWeight: 700, color: st.color, textTransform: "uppercase", letterSpacing: 0.5 }}>{st.label}</span>
                   <span style={{ fontSize: 11, color: INK_GHOST }}>{items.length}</span>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {items.map(p => (
-                    <div key={p.id} style={{ background: "#fff", border: `1px solid ${RULE}`, borderRadius: 10, padding: "12px 14px" }}>
+                    <div key={p.id} style={{ background: "#fff", border: `1px solid ${RULE}`, borderRadius: 10, padding: "14px 16px" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontSize: 13, fontWeight: 600, color: INK }}>{p.name}</div>
@@ -684,9 +684,16 @@ function OutreachView() {
     return <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 8px", borderRadius: 4, background: bg, color, whiteSpace: "nowrap" }}>{text}</span>;
   }
 
-  function ChannelBadge({ channel }) {
-    const c = { linkedin: { bg: "#e6f1fb", color: "#185fa5", label: "LinkedIn" }, email: { bg: PAPER_WARM, color: INK_SOFT, label: "Email" }, instagram: { bg: PURPLE_PALE, color: PURPLE, label: "Instagram" } };
+  function ChannelBadge({ channel, compact = false }) {
+    const c = { linkedin: { bg: "#e6f1fb", color: "#185fa5", label: "LinkedIn", icon: "in" }, email: { bg: PAPER_WARM, color: INK_SOFT, label: "Email", icon: "✉" }, instagram: { bg: PURPLE_PALE, color: PURPLE, label: "Instagram", icon: "ig" } };
     const ch = c[channel] || c.email;
+    if (compact) {
+      return (
+        <span aria-label={ch.label} style={{ fontSize: 9, fontWeight: 700, background: ch.bg, color: ch.color, padding: "2px 5px", borderRadius: 4, flexShrink: 0, letterSpacing: 0.2 }}>
+          {ch.icon}
+        </span>
+      );
+    }
     return <Badge text={ch.label} bg={ch.bg} color={ch.color} />;
   }
 
@@ -769,6 +776,7 @@ function OutreachView() {
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 4 : 8, flexShrink: 0 }}>
             {!isMobile && <ChannelBadge channel={convo.channel} />}
+            {isMobile && <ChannelBadge channel={convo.channel} compact />}
             <StatusDot status={convo.status} />
             <span style={{ fontSize: 12, color: INK_GHOST, minWidth: isMobile ? 30 : 50, textAlign: "right" }}>{convo.time}</span>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={INK_GHOST} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transition: "transform 0.2s", transform: open ? "rotate(180deg)" : "rotate(0deg)" }}>
@@ -845,7 +853,7 @@ function OutreachView() {
         ))}
       </div>
 
-      <div style={{ flex: 1, overflowY: "auto" }}>
+      <div style={{ flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
         {filtered.map(c => <ConvoRow key={c.id} convo={c} />)}
         {filtered.length === 0 && (
           <div style={{ padding: 40, textAlign: "center", color: INK_GHOST, fontSize: 14 }}>No conversations match this filter.</div>
@@ -870,14 +878,14 @@ function MeetingsView() {
         <IconHash s={14} />
         <span style={{ fontWeight: 600, fontSize: 15 }}>meetings</span>
       </div>
-      <div style={{ flex: 1, overflowY: "auto", padding: isMobile ? 16 : 20 }}>
+      <div style={{ flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: isMobile ? 16 : 20 }}>
         {meetings.map(m => (
-          <div key={m.id} style={{ display: "flex", alignItems: "center", gap: isMobile ? 10 : 14, padding: isMobile ? "12px 14px" : "14px 16px", background: PAPER_WARM, borderRadius: 10, marginBottom: 8, flexWrap: isMobile ? "wrap" : "nowrap" }}>
+          <div key={m.id} style={{ display: "flex", alignItems: isMobile ? "flex-start" : "center", gap: isMobile ? 10 : 14, padding: isMobile ? "12px 14px" : "14px 16px", background: PAPER_WARM, borderRadius: 10, marginBottom: 8, flexDirection: isMobile ? "column" : "row" }}>
             <div style={{ width: 48, textAlign: "center", flexShrink: 0 }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: PURPLE }}>{m.time.split(" ")[0]}</div>
               <div style={{ fontSize: 15, fontWeight: 700, color: INK }}>{m.time.split(" ")[1]} {m.time.split(" ")[2]}</div>
             </div>
-            <div style={{ width: 1, height: 36, background: RULE, flexShrink: 0 }} />
+            {!isMobile && <div style={{ width: 1, height: 36, background: RULE, flexShrink: 0 }} />}
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 14, fontWeight: 600 }}>{m.prospect}</div>
               <div style={{ fontSize: 12, color: INK_SOFT }}>{m.company} · {m.duration}</div>
@@ -977,7 +985,7 @@ function AnalyticsView() {
         </div>
       </div>
 
-      <div style={{ flex: 1, overflowY: "auto", padding: isMobile ? 16 : 20 }}>
+      <div style={{ flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: isMobile ? 16 : 20 }}>
         {/* Hero Stats Grid */}
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(auto-fit, minmax(130px, 1fr))" : "repeat(auto-fit, minmax(200px, 1fr))", gap: isMobile ? 10 : 16, marginBottom: isMobile ? 20 : 32 }}>
           {stats.map((s, index) => (
@@ -1256,7 +1264,7 @@ function ForFoundersView({ onNav }) {
   const divider = { borderTop: `1px solid ${RULE}`, margin: isMobile ? "28px 0" : "40px 0" };
 
   return (
-    <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", overflowY: "auto", background: PAPER }}>
+    <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", overflowY: "auto", WebkitOverflowScrolling: "touch", background: PAPER }}>
       {/* Channel header */}
       <div style={{ padding: "22px 24px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6, background: "#fff", flexShrink: 0 }}>
         <IconHash s={14} />
@@ -1341,7 +1349,7 @@ function ForFoundersView({ onNav }) {
             </div>
             <div style={{ display: "flex", height: isMobile ? "auto" : 340, minHeight: isMobile ? 260 : undefined, overflow: "hidden" }}>
               {/* Sidebar */}
-              <div style={{ width: isMobile ? 110 : 170, background: "#120d22", padding: "12px 0", flexShrink: 0 }}>
+              <div style={{ width: isMobile ? 90 : 170, background: "#120d22", padding: "12px 0", flexShrink: 0, overflow: "hidden" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "4px 12px 12px" }}>
                   <div style={{ width: 20, height: 20, borderRadius: 5, background: PURPLE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: "#fff" }}>W</div>
                   {!isMobile && <span style={{ fontSize: 11, fontWeight: 700, color: "#fff" }}>HireWilliam</span>}
@@ -1673,7 +1681,7 @@ function RightPanel({ isMobile = false }) {
     return (
       <div style={{ borderTop: `1px solid ${RULE}`, padding: "12px 16px 14px", fontSize: 12, background: PAPER, flexShrink: 0 }}>
         <div style={{ fontSize: 10, fontWeight: 600, color: INK_GHOST, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Overnight results</div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6, marginBottom: 12 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 6, marginBottom: 12 }}>
           {stats.map(s => (
             <div key={s.l} style={{ background: PAPER_WARM, borderRadius: 8, padding: "8px 6px", textAlign: "center" }}>
               <div style={{ fontSize: 9, color: INK_GHOST }}>{s.l}</div>
@@ -1687,7 +1695,7 @@ function RightPanel({ isMobile = false }) {
           {hot.map(p => {
             const heat = p.score >= 80 ? "hot" : p.score >= 60 ? "warm" : "new";
             return (
-              <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 0", borderBottom: `1px solid ${RULE}` }}>
+              <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 0", borderBottom: `1px solid ${RULE}` }}>
                 <Avatar initials={p.avatar} bg={heat === "hot" ? "#fcebeb" : heat === "warm" ? "#fdf2e3" : "#e6f1fb"} size={22} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 11, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</div>
@@ -1780,6 +1788,8 @@ export default function App() {
               onClose={() => setSidebarOpen(false)}
             />
             <div
+              role="button"
+              aria-label="Close menu"
               onClick={() => setSidebarOpen(false)}
               style={{ flex: 1, background: "rgba(0,0,0,0.45)" }}
             />
