@@ -224,7 +224,7 @@ function ChatView() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 10 : 14, padding: isMobile ? "0 16px" : "22px 24px", borderBottom: `1px solid ${RULE}`, flexShrink: 0, minHeight: isMobile ? 60 : 84, boxSizing: "border-box" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 10 : 14, padding: isMobile ? "8px 16px" : "22px 24px", borderBottom: `1px solid ${RULE}`, flexShrink: 0, minHeight: isMobile ? 60 : 84, boxSizing: "border-box" }}>
         <div style={{ position: "relative", flexShrink: 0 }}>
           <Avatar initials="W" size={isMobile ? 36 : 46} />
           <div style={{ position: "absolute", bottom: 0, right: 0, width: isMobile ? 9 : 12, height: isMobile ? 9 : 12, borderRadius: "50%", background: "#44b700", border: "2.5px solid #fff" }} />
@@ -689,7 +689,7 @@ function OutreachView() {
     const ch = c[channel] || c.email;
     if (compact) {
       return (
-        <span style={{ fontSize: 9, fontWeight: 700, background: ch.bg, color: ch.color, padding: "2px 5px", borderRadius: 4, flexShrink: 0, letterSpacing: 0.2 }}>
+        <span aria-label={ch.label} style={{ fontSize: 9, fontWeight: 700, background: ch.bg, color: ch.color, padding: "2px 5px", borderRadius: 4, flexShrink: 0, letterSpacing: 0.2 }}>
           {ch.icon}
         </span>
       );
