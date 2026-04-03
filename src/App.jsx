@@ -43,24 +43,24 @@ const MOCK_OUTREACH = [
   {
     id: "2", prospect: "Priya Kumar", company: "DataStack", channel: "email",
     subject: "Saw your Product Hunt launch",
-    message: "Hey Priya, congrats on the PH launch. 200+ upvotes is solid. Quick question: now that you've got product attention, who's doing outbound to convert that into pipeline? If the answer is \"nobody\" or \"me, badly\" — I might be able to help.",
+    message: "Hey Priya, congrats on the PH launch. 200+ upvotes is solid. Quick question: now that you've got product attention, who's doing outbound to convert that into pipeline? If the answer is \"nobody\" or \"me, badly\" - I might be able to help.",
     status: "opened", research: "PH launch 4 days ago, upvote count", openCount: 3, time: "4h ago"
   },
   {
     id: "3", prospect: "Leo Tanaka", company: "Kitemaker", channel: "instagram",
     message: "Hey Leo, been following the Kitemaker journey. Building in public is hard when you're also trying to sell. What if the selling part ran itself?",
-    status: "replied", research: "Leo actively posts build-in-public content — Instagram was the right channel",
+    status: "replied", research: "Leo actively posts build-in-public content - Instagram was the right channel",
     reply: "Intrigued. How does this work?", time: "6h ago"
   },
   {
     id: "4", prospect: "Nina Patel", company: "FormFlow", channel: "linkedin",
-    message: "Hi Nina — I noticed FormFlow just crossed 1K users on your changelog. That's the inflection point where outbound starts mattering. Happy to show you what that looks like without hiring.",
+    message: "Hi Nina - I noticed FormFlow just crossed 1K users on your changelog. That's the inflection point where outbound starts mattering. Happy to show you what that looks like without hiring.",
     status: "sent", research: "FormFlow changelog update 2 days ago", time: "8h ago"
   },
   {
     id: "5", prospect: "Jake Rivera", company: "Launchpad", channel: "email",
     subject: "Quick question about Launchpad",
-    message: "Hey Jake, I've been watching Launchpad grow — the no-code space is heating up. Curious: are you doing any outbound right now, or is it all inbound? Either way, I think I can help you 3x your pipeline this quarter.",
+    message: "Hey Jake, I've been watching Launchpad grow - the no-code space is heating up. Curious: are you doing any outbound right now, or is it all inbound? Either way, I think I can help you 3x your pipeline this quarter.",
     status: "opened", research: "Recent funding announcement, growing team", openCount: 3, time: "12h ago"
   },
 ];
@@ -216,7 +216,7 @@ function ChatView() {
             William
             <span style={{ fontSize: 12, fontWeight: 600, background: PURPLE_PALE, color: PURPLE, padding: "2px 7px", borderRadius: 4 }}>AI</span>
           </div>
-          <div style={{ fontSize: 14, color: GREEN, marginTop: 2 }}>Online — always</div>
+          <div style={{ fontSize: 14, color: GREEN, marginTop: 2 }}>Online - always</div>
         </div>
       </div>
 
@@ -515,7 +515,7 @@ function OutreachView() {
       thread: [
         { from: "william", text: "Hey Alex, saw your post about struggling to hire your first SDR. What if you didn't have to? I help solo founders fill their pipeline without hiring. No calls, no contracts, you can see it working in 48 hours. Worth 15 mins?", time: "Yesterday, 11:32 PM", research: "Alex's LinkedIn post from 3 days ago about hiring challenges" },
         { from: "prospect", text: "This looks great, let's chat. Thursday work?", time: "Today, 8:14 AM" },
-        { from: "william", text: "Thursday's perfect. I've sent you a calendar link for 2pm — does that work? Looking forward to it.", time: "Today, 8:22 AM" },
+        { from: "william", text: "Thursday's perfect. I've sent you a calendar link for 2pm - does that work? Looking forward to it.", time: "Today, 8:22 AM" },
         { from: "prospect", text: "Confirmed. See you then.", time: "Today, 8:30 AM" },
       ]
     },
@@ -523,9 +523,9 @@ function OutreachView() {
       id: "2", name: "Priya Kumar", company: "DataStack", channel: "email", status: "pending approval", stage: "Awaiting your review",
       stageColor: AMBER, time: "4h ago", avatar: "PK", needsApproval: true,
       thread: [
-        { from: "william", text: "Subject: Saw your Product Hunt launch\n\nHey Priya, congrats on the PH launch. 200+ upvotes is solid. Quick question: now that you've got product attention, who's doing outbound to convert that into pipeline? If the answer is \"nobody\" or \"me, badly\" — I might be able to help.", time: "Yesterday, 10:15 PM", research: "Product Hunt launch 4 days ago, 200+ upvotes" },
+        { from: "william", text: "Subject: Saw your Product Hunt launch\n\nHey Priya, congrats on the PH launch. 200+ upvotes is solid. Quick question: now that you've got product attention, who's doing outbound to convert that into pipeline? If the answer is \"nobody\" or \"me, badly\" - I might be able to help.", time: "Yesterday, 10:15 PM", research: "Product Hunt launch 4 days ago, 200+ upvotes" },
         { from: "prospect", text: "Hey, thanks! We're actually struggling with exactly this. What does pricing look like?", time: "Today, 6:45 AM" },
-        { from: "william", text: "DRAFT — waiting for your approval:\n\nGreat question, Priya. It's $499/month, everything included — outreach, follow-ups, meeting booking, the works. No per-message fees, no contracts. Want me to show you what I'd do for DataStack specifically? I can find 5 prospects and draft outreach right now, free.", time: "Today, 7:02 AM", draft: true },
+        { from: "william", text: "DRAFT - waiting for your approval:\n\nGreat question, Priya. It's $499/month, everything included - outreach, follow-ups, meeting booking, the works. No per-message fees, no contracts. Want me to show you what I'd do for DataStack specifically? I can find 5 prospects and draft outreach right now, free.", time: "Today, 7:02 AM", draft: true },
       ]
     },
     {
@@ -534,31 +534,31 @@ function OutreachView() {
       thread: [
         { from: "william", text: "Hey Leo, been following the Kitemaker journey. Building in public is hard when you're also trying to sell. What if the selling part ran itself?", time: "Yesterday, 9:45 PM", research: "Leo actively posts build-in-public content on Instagram" },
         { from: "prospect", text: "Intrigued. How does this work?", time: "Today, 5:30 AM" },
-        { from: "william", text: "Short version: I handle your entire outbound — finding the right people, writing personalised messages, handling replies, booking meetings. You wake up to calls on your calendar instead of an empty pipeline. Want me to show you what I'd send to your ideal customers?", time: "Today, 5:48 AM" },
+        { from: "william", text: "Short version: I handle your entire outbound - finding the right people, writing personalised messages, handling replies, booking meetings. You wake up to calls on your calendar instead of an empty pipeline. Want me to show you what I'd send to your ideal customers?", time: "Today, 5:48 AM" },
       ]
     },
     {
-      id: "4", name: "Jake Rivera", company: "Launchpad", channel: "email", status: "opened", stage: "Engaged — no reply yet",
+      id: "4", name: "Jake Rivera", company: "Launchpad", channel: "email", status: "opened", stage: "Engaged - no reply yet",
       stageColor: "#378add", time: "12h ago", avatar: "JR",
       thread: [
-        { from: "william", text: "Subject: Quick question about Launchpad\n\nHey Jake, I've been watching Launchpad grow — the no-code space is heating up. Curious: are you doing any outbound right now, or is it all inbound? Either way, I think I can help you 3x your pipeline this quarter.", time: "2 days ago, 10:00 PM", research: "Recent funding announcement, growing team, no visible outbound" },
+        { from: "william", text: "Subject: Quick question about Launchpad\n\nHey Jake, I've been watching Launchpad grow - the no-code space is heating up. Curious: are you doing any outbound right now, or is it all inbound? Either way, I think I can help you 3x your pipeline this quarter.", time: "2 days ago, 10:00 PM", research: "Recent funding announcement, growing team, no visible outbound" },
         { from: "system", text: "Opened 3 times. Last opened 4 hours ago. No reply yet.", time: "Today" },
-        { from: "william", text: "QUEUED — follow-up in 24h:\n\nHey Jake, just bumping this up. I know you're busy shipping — that's exactly why I exist. Happy to show you what personalised outreach to your ICP looks like. Takes 5 minutes to see it.", time: "Scheduled: Tomorrow, 9:00 AM", queued: true },
+        { from: "william", text: "QUEUED - follow-up in 24h:\n\nHey Jake, just bumping this up. I know you're busy shipping - that's exactly why I exist. Happy to show you what personalised outreach to your ICP looks like. Takes 5 minutes to see it.", time: "Scheduled: Tomorrow, 9:00 AM", queued: true },
       ]
     },
     {
       id: "5", name: "Nina Patel", company: "FormFlow", channel: "linkedin", status: "sent", stage: "Contacted",
       stageColor: "#378add", time: "8h ago", avatar: "NP",
       thread: [
-        { from: "william", text: "Hi Nina — I noticed FormFlow just crossed 1K users on your changelog. That's the inflection point where outbound starts mattering. Happy to show you what that looks like without hiring.", time: "Yesterday, 11:00 PM", research: "FormFlow changelog update showing 1K users milestone" },
+        { from: "william", text: "Hi Nina - I noticed FormFlow just crossed 1K users on your changelog. That's the inflection point where outbound starts mattering. Happy to show you what that looks like without hiring.", time: "Yesterday, 11:00 PM", research: "FormFlow changelog update showing 1K users milestone" },
         { from: "system", text: "Connection request accepted. Message delivered.", time: "Today, 3:15 AM" },
       ]
     },
     {
-      id: "6", name: "Sara Chen", company: "Metrify", channel: "linkedin", status: "sent", stage: "New — first contact",
+      id: "6", name: "Sara Chen", company: "Metrify", channel: "linkedin", status: "sent", stage: "New - first contact",
       stageColor: INK_SOFT, time: "1d ago", avatar: "SC",
       thread: [
-        { from: "william", text: "Hey Sara, saw Metrify is building in the analytics space — competitive market but your positioning around real-time dashboards stands out. Are you doing any outbound to get in front of data teams, or is it all inbound right now?", time: "2 days ago, 11:30 PM", research: "Metrify website review, LinkedIn profile, recent analytics industry posts" },
+        { from: "william", text: "Hey Sara, saw Metrify is building in the analytics space - competitive market but your positioning around real-time dashboards stands out. Are you doing any outbound to get in front of data teams, or is it all inbound right now?", time: "2 days ago, 11:30 PM", research: "Metrify website review, LinkedIn profile, recent analytics industry posts" },
         { from: "system", text: "Connection request pending.", time: "Yesterday" },
       ]
     },
@@ -566,9 +566,9 @@ function OutreachView() {
       id: "7", name: "Dan Fields", company: "Beacon", channel: "email", status: "won", stage: "Signed up",
       stageColor: GREEN, time: "3d ago", avatar: "DF",
       thread: [
-        { from: "william", text: "Subject: Beacon + better outbound\n\nHey Dan, I noticed Beacon is hiring its first AE — which tells me you've got product-market fit and now need pipeline. What if you could skip the SDR hire entirely and have someone filling your AE's calendar from day one?", time: "2 weeks ago", research: "Job posting for AE on Beacon careers page" },
+        { from: "william", text: "Subject: Beacon + better outbound\n\nHey Dan, I noticed Beacon is hiring its first AE - which tells me you've got product-market fit and now need pipeline. What if you could skip the SDR hire entirely and have someone filling your AE's calendar from day one?", time: "2 weeks ago", research: "Job posting for AE on Beacon careers page" },
         { from: "prospect", text: "This is exactly what we need. Can we talk this week?", time: "12 days ago" },
-        { from: "william", text: "Absolutely. I've sent a calendar link — pick any slot that works. Looking forward to showing you what I can do for Beacon.", time: "12 days ago" },
+        { from: "william", text: "Absolutely. I've sent a calendar link - pick any slot that works. Looking forward to showing you what I can do for Beacon.", time: "12 days ago" },
         { from: "system", text: "Meeting held. Dan signed up for HireWilliam.", time: "1 week ago" },
         { from: "prospect", text: "Just signed up. Let's get started.", time: "1 week ago" },
         { from: "william", text: "Welcome aboard, Dan. Already researching your ICP. You'll have your first batch of prospects by tomorrow morning.", time: "1 week ago" },
@@ -1176,7 +1176,7 @@ function ForFoundersView({ onNav }) {
           {/* ── 3. SOUND FAMILIAR ── */}
           <div style={divider} />
           <h2 style={h2Style}>Sound familiar?</h2>
-          <p style={bodyText}>It's 11pm. You're writing cold outreach instead of building product. Your pipeline is empty. You've tried the tools — 47 settings, spam filters, a restricted LinkedIn account. <strong>The problem was never the tool. It's that you're a builder, not a salesperson.</strong> The sales industry wants to sell you another framework. Nobody wants to just do the work for you.</p>
+          <p style={bodyText}>It's 11pm. You're writing cold outreach instead of building product. Your pipeline is empty. You've tried the tools - 47 settings, spam filters, a restricted LinkedIn account. <strong>The problem was never the tool. It's that you're a builder, not a salesperson.</strong> The sales industry wants to sell you another framework. Nobody wants to just do the work for you.</p>
 
           {/* ── 4. UNTIL NOW ── */}
           <div style={divider} />
@@ -1257,9 +1257,9 @@ function ForFoundersView({ onNav }) {
                 <div style={{ flex: 1, padding: "14px 16px", display: "flex", flexDirection: "column", gap: 12, overflowY: "hidden" }}>
                   {[
                     { who: "W", bg: PURPLE, name: "William", msg: "Morning ☀️  While you were asleep I sent 47 personalised messages across email and LinkedIn.", time: "7:01 AM" },
-                    { who: "W", bg: PURPLE, name: "William", msg: "6 founders replied. 2 want to book a call — I've put them in your Thursday slots. Nothing left for you to do.", time: "7:02 AM" },
+                    { who: "W", bg: PURPLE, name: "William", msg: "6 founders replied. 2 want to book a call - I've put them in your Thursday slots. Nothing left for you to do.", time: "7:02 AM" },
                     { who: "Y", bg: PAPER_WARM, name: "You", msg: "Who are the 2 meetings with?", time: "7:09 AM", right: true },
-                    { who: "W", bg: PURPLE, name: "William", msg: "Alex Morin (Shipyard) — Thu 2pm. Nina Patel (FormFlow) — Thu 4pm. Both context notes in #meetings.", time: "7:09 AM" },
+                    { who: "W", bg: PURPLE, name: "William", msg: "Alex Morin (Shipyard) - Thu 2pm. Nina Patel (FormFlow) - Thu 4pm. Both context notes in #meetings.", time: "7:09 AM" },
                   ].map((m, i) => (
                     <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start", flexDirection: m.right ? "row-reverse" : "row" }}>
                       <div style={{ width: 24, height: 24, borderRadius: 6, background: m.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, color: m.right ? INK : "#fff", flexShrink: 0 }}>{m.who}</div>
@@ -1365,13 +1365,13 @@ function ForFoundersView({ onNav }) {
                 name: "Priya Kumar", co: "DataStack", channel: "Email", channelColor: INK_SOFT, channelBg: PAPER_WARM,
                 research: "Referenced Product Hunt launch, 200+ upvotes",
                 subject: "Saw your Product Hunt launch",
-                message: "Hey Priya, congrats on the PH launch. 200+ upvotes is solid. Quick question: now that you've got product attention, who's doing outbound to convert that into pipeline? If the answer is \"nobody\" or \"me, badly\" — I might be able to help.",
+                message: "Hey Priya, congrats on the PH launch. 200+ upvotes is solid. Quick question: now that you've got product attention, who's doing outbound to convert that into pipeline? If the answer is \"nobody\" or \"me, badly\" - I might be able to help.",
                 status: "opened ×3", statusColor: AMBER, statusBg: AMBER_PALE,
               },
               {
                 name: "Leo Tanaka", co: "Kitemaker", channel: "Instagram", channelColor: "#c13584", channelBg: "#fce4ec",
-                research: "Build-in-public founder — Instagram is his channel",
-                message: "Hey Leo — love the build log. The journey from 0 to 200 users is exactly the kind of signal I look for. Question: who's helping you turn that audience into customers? If the answer is nobody, might be worth a quick chat.",
+                research: "Build-in-public founder - Instagram is his channel",
+                message: "Hey Leo - love the build log. The journey from 0 to 200 users is exactly the kind of signal I look for. Question: who's helping you turn that audience into customers? If the answer is nobody, might be worth a quick chat.",
                 status: "replied", statusColor: GREEN, statusBg: GREEN_PALE,
                 reply: "Tell me more.",
               },
