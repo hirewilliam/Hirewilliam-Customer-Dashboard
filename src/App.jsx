@@ -82,6 +82,23 @@ function IconLock({ s = 14 }) {
   return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>;
 }
 
+// ── Responsive Hook ──
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.innerWidth <= breakpoint
+  );
+  useEffect(() => {
+    let timer;
+    const handler = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => setIsMobile(window.innerWidth <= breakpoint), 100);
+    };
+    window.addEventListener("resize", handler);
+    return () => { clearTimeout(timer); window.removeEventListener("resize", handler); };
+  }, [breakpoint]);
+  return isMobile;
+}
+
 // ── Utility Components ──
 function Avatar({ initials, bg = PURPLE, size = 32 }) {
   return (
@@ -121,7 +138,7 @@ function ScoreBar({ score }) {
 }
 
 // ── Sidebar ──
-function Sidebar({ active, onNav }) {
+function Sidebar({ active, onNav, onClose }) {
   const channels = [
     { id: "chat", label: "talk-to-william", dot: true },
     { id: "outreach", label: "outreach-log", badge: "3" },
@@ -136,6 +153,13 @@ function Sidebar({ active, onNav }) {
       <div style={{ display: "flex", alignItems: "center", gap: 9, padding: "0 8px 20px", color: "#fff", fontSize: 17, fontWeight: 700 }}>
         <div style={{ width: 32, height: 32, borderRadius: 8, background: PURPLE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 800, color: "#fff", flexShrink: 0 }}>W</div>
         HireWilliam
+        {onClose && (
+          <button
+            onClick={onClose}
+            aria-label="Close menu"
+            style={{ marginLeft: "auto", background: "none", border: "none", color: "rgba(255,255,255,0.6)", cursor: "pointer", fontSize: 20, lineHeight: 1, padding: "0 4px", touchAction: "manipulation" }}
+          >×</button>
+        )}
       </div>
       <div style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", padding: "10px 8px 4px", textTransform: "uppercase", letterSpacing: 0.5 }}>Channels</div>
       {channels.map(ch => (
@@ -407,7 +431,8 @@ function PipelineView() {
       </div>
 
       {/* Kanban Board */}
-      <div style={{ flex: 1, display: "grid", gridTemplateColumns: `repeat(${stages.length}, 1fr)`, gap: 8, padding: 12, background: PAPER_WARM, overflowY: "auto" }}>
+      <div style={{ flex: 1, overflowY: "auto", overflowX: "auto", background: PAPER_WARM }}>
+        <div style={{ display: "grid", gridTemplateColumns: `repeat(${stages.length}, minmax(160px, 1fr))`, gap: 8, padding: 12, minWidth: stages.length * 168 + "px" }}>
         {stages.map(st => {
           const items = filteredProspects.filter(p => p.stage === st.id);
           const conversionRate = getConversionRate(st.id);
@@ -499,6 +524,7 @@ function PipelineView() {
             </div>
           );
         })}
+        </div>
       </div>
     </div>
   );
@@ -644,6 +670,7 @@ function OutreachView() {
   function ConvoRow({ convo }) {
     const [open, setOpen] = useState(false);
     const [replyText, setReplyText] = useState("");
+    const isMobile = useIsMobile();
 
     return (
       <div style={{ borderBottom: `1px solid ${RULE}` }}>
@@ -662,10 +689,10 @@ function OutreachView() {
             </div>
             <div style={{ fontSize: 12, color: INK_SOFT, marginTop: 2 }}>{convo.stage}</div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-            <ChannelBadge channel={convo.channel} />
+          <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 4 : 8, flexShrink: 0 }}>
+            {!isMobile && <ChannelBadge channel={convo.channel} />}
             <StatusDot status={convo.status} />
-            <span style={{ fontSize: 12, color: INK_GHOST, minWidth: 50, textAlign: "right" }}>{convo.time}</span>
+            <span style={{ fontSize: 12, color: INK_GHOST, minWidth: isMobile ? 30 : 50, textAlign: "right" }}>{convo.time}</span>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={INK_GHOST} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transition: "transform 0.2s", transform: open ? "rotate(180deg)" : "rotate(0deg)" }}>
               <path d="M6 9l6 6 6-6" />
             </svg>
@@ -673,29 +700,29 @@ function OutreachView() {
         </div>
 
         {open && (
-          <div style={{ padding: "0 20px 20px 66px" }}>
+          <div style={{ padding: isMobile ? "0 12px 16px 12px" : "0 20px 20px 66px" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 16 }}>
               {convo.thread.map((msg, i) => <MessageBubble key={i} msg={msg} />)}
             </div>
 
             {convo.needsApproval && (
-              <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
                 <button style={{ padding: "8px 16px", borderRadius: 8, background: GREEN, color: "#fff", border: "none", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Approve & send</button>
                 <button style={{ padding: "8px 16px", borderRadius: 8, background: "transparent", color: INK_SOFT, border: `1px solid ${RULE}`, fontSize: 13, fontWeight: 500, cursor: "pointer" }}>Edit before sending</button>
                 <button style={{ padding: "8px 16px", borderRadius: 8, background: "transparent", color: RED, border: `1px solid ${RULE}`, fontSize: 13, fontWeight: 500, cursor: "pointer" }}>Don't send</button>
               </div>
             )}
 
-            <div style={{ display: "flex", gap: 8 }}>
+            <div style={{ display: "flex", flexWrap: isMobile ? "wrap" : "nowrap", gap: 8 }}>
               <textarea
                 value={replyText}
                 onChange={e => setReplyText(e.target.value)}
                 placeholder="Jump in and reply yourself..."
                 rows={1}
-                style={{ flex: 1, resize: "none", borderRadius: 8, border: `1px solid ${RULE}`, padding: "8px 12px", fontSize: 13, fontFamily: "inherit", outline: "none", background: "#fff" }}
+                style={{ flex: 1, minWidth: isMobile ? "100%" : undefined, resize: "none", borderRadius: 8, border: `1px solid ${RULE}`, padding: "8px 12px", fontSize: 13, fontFamily: "inherit", outline: "none", background: "#fff" }}
               />
               <button style={{ padding: "8px 14px", borderRadius: 8, background: replyText.trim() ? PURPLE : RULE, color: "#fff", border: "none", fontSize: 13, fontWeight: 600, cursor: replyText.trim() ? "pointer" : "default", transition: "background 0.15s" }}>Send</button>
-              <button style={{ padding: "8px 14px", borderRadius: 8, background: "transparent", color: INK_SOFT, border: `1px solid ${RULE}`, fontSize: 13, fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap" }}>I'll handle this one</button>
+              {!isMobile && <button style={{ padding: "8px 14px", borderRadius: 8, background: "transparent", color: INK_SOFT, border: `1px solid ${RULE}`, fontSize: 13, fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap" }}>I'll handle this one</button>}
             </div>
           </div>
         )}
@@ -1129,17 +1156,18 @@ function ForFoundersView({ onNav }) {
   const sans = "'DM Sans', sans-serif";
   const GREEN_PALE = "#e4f5ed";
   const AMBER_PALE = "#fdf2e3";
+  const isMobile = useIsMobile();
 
   const h2Style = {
     fontFamily: serif,
-    fontSize: 24, fontWeight: 700, color: INK,
+    fontSize: isMobile ? 20 : 24, fontWeight: 700, color: INK,
     margin: "0 0 14px", lineHeight: 1.25,
   };
   const bodyText = {
     fontFamily: sans,
     fontSize: 14, color: INK_SOFT, lineHeight: 1.7, margin: "0 0 14px",
   };
-  const divider = { borderTop: `1px solid ${RULE}`, margin: "40px 0" };
+  const divider = { borderTop: `1px solid ${RULE}`, margin: isMobile ? "28px 0" : "40px 0" };
 
   return (
     <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", overflowY: "auto", background: PAPER }}>
@@ -1151,22 +1179,22 @@ function ForFoundersView({ onNav }) {
 
       <div style={{ flex: 1 }}>
         {/* ── 1. COVER ── */}
-        <div style={{ background: "#16102a", padding: "56px 40px 52px", textAlign: "center" }}>
+        <div style={{ background: "#16102a", padding: isMobile ? "40px 20px 36px" : "56px 40px 52px", textAlign: "center" }}>
           <div style={{ width: 56, height: 56, borderRadius: 14, background: PURPLE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, fontWeight: 800, color: "#fff", margin: "0 auto 20px" }}>W</div>
-          <h1 style={{ fontFamily: serif, fontSize: 38, fontWeight: 700, color: "#fff", margin: "0 0 14px", lineHeight: 1.15 }}>HireWilliam</h1>
-          <p style={{ fontFamily: sans, fontSize: 17, color: "rgba(255,255,255,0.7)", margin: "0 auto 24px", maxWidth: 440, lineHeight: 1.5 }}>Meet William. Your entire sales team.</p>
-          <div style={{ display: "inline-flex", gap: 20, background: "rgba(255,255,255,0.08)", borderRadius: 100, padding: "10px 24px" }}>
+          <h1 style={{ fontFamily: serif, fontSize: isMobile ? 28 : 38, fontWeight: 700, color: "#fff", margin: "0 0 14px", lineHeight: 1.15 }}>HireWilliam</h1>
+          <p style={{ fontFamily: sans, fontSize: isMobile ? 15 : 17, color: "rgba(255,255,255,0.7)", margin: "0 auto 24px", maxWidth: 440, lineHeight: 1.5 }}>Meet William. Your entire sales team.</p>
+          <div style={{ display: "inline-flex", flexWrap: "wrap", justifyContent: "center", gap: isMobile ? 10 : 20, background: "rgba(255,255,255,0.08)", borderRadius: 100, padding: isMobile ? "8px 16px" : "10px 24px" }}>
             <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>hirewilliam.com</span>
             <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>$299/month</span>
             <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>Cancel anytime</span>
           </div>
         </div>
 
-        <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 32px 80px" }}>
+        <div style={{ maxWidth: 800, margin: "0 auto", padding: isMobile ? "0 16px 60px" : "0 32px 80px" }}>
 
           {/* ── 2. PULL QUOTE ── */}
-          <div style={{ borderLeft: `4px solid ${PURPLE}`, background: PURPLE_PALE, borderRadius: "0 12px 12px 0", padding: "24px 28px", margin: "40px 0" }}>
-            <p style={{ fontFamily: serif, fontSize: 18, color: INK, lineHeight: 1.6, margin: 0 }}>
+          <div style={{ borderLeft: `4px solid ${PURPLE}`, background: PURPLE_PALE, borderRadius: "0 12px 12px 0", padding: isMobile ? "16px 18px" : "24px 28px", margin: isMobile ? "28px 0" : "40px 0" }}>
+            <p style={{ fontFamily: serif, fontSize: isMobile ? 15 : 18, color: INK, lineHeight: 1.6, margin: 0 }}>
               The average startup spends{" "}
               <em style={{ color: PURPLE, fontStyle: "normal", fontWeight: 700 }}>$62,000 a year</em>
               {" "}on a junior sales rep who takes 3 months to ramp, calls in sick on Mondays, and quits before they're productive. You don't need to hire a sales team. You need to hire William.
@@ -1187,7 +1215,7 @@ function ForFoundersView({ onNav }) {
           {/* ── 5. CHANNELS ── */}
           <div style={divider} />
           <h2 style={h2Style}>Where William works</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 8 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 16, marginBottom: 8 }}>
             {[
               {
                 icon: "📧", name: "Email",
@@ -1225,12 +1253,12 @@ function ForFoundersView({ onNav }) {
               <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#ffbd2e" }} />
               <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#27c93f" }} />
             </div>
-            <div style={{ display: "flex", height: 340 }}>
+            <div style={{ display: "flex", height: isMobile ? "auto" : 340, minHeight: isMobile ? 260 : undefined, overflow: "hidden" }}>
               {/* Sidebar */}
-              <div style={{ width: 170, background: "#120d22", padding: "12px 0", flexShrink: 0 }}>
+              <div style={{ width: isMobile ? 110 : 170, background: "#120d22", padding: "12px 0", flexShrink: 0 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "4px 12px 12px" }}>
                   <div style={{ width: 20, height: 20, borderRadius: 5, background: PURPLE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: "#fff" }}>W</div>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: "#fff" }}>HireWilliam</span>
+                  {!isMobile && <span style={{ fontSize: 11, fontWeight: 700, color: "#fff" }}>HireWilliam</span>}
                 </div>
                 <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", color: "rgba(255,255,255,0.3)", padding: "0 12px 6px" }}>Channels</div>
                 {[
@@ -1280,6 +1308,7 @@ function ForFoundersView({ onNav }) {
                 </div>
               </div>
               {/* Right stats panel */}
+              {!isMobile && (
               <div style={{ width: 175, background: "#120d22", borderLeft: "1px solid rgba(255,255,255,0.06)", padding: "12px", flexShrink: 0, overflowY: "hidden" }}>
                 <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>Overnight</div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginBottom: 14 }}>
@@ -1311,6 +1340,7 @@ function ForFoundersView({ onNav }) {
                   </div>
                 ))}
               </div>
+              )}
             </div>
           </div>
 
@@ -1400,55 +1430,101 @@ function ForFoundersView({ onNav }) {
           {/* ── 9. COST COMPARISON ── */}
           <div style={divider} />
           <h2 style={h2Style}>What you're really paying for sales right now</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 0, alignItems: "stretch" }}>
-            {/* SDR card */}
-            <div style={{ background: "#fff", border: `1px solid ${RULE}`, borderTopLeftRadius: 12, borderBottomLeftRadius: 12, padding: "24px" }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: RED, marginBottom: 4 }}>Junior SDR</div>
-              <div style={{ fontSize: 26, fontWeight: 800, color: RED, marginBottom: 16 }}>$5,200<span style={{ fontSize: 14, fontWeight: 600 }}>+/mo</span></div>
-              {[
-                ["Base salary", "$3,500/mo"],
-                ["Benefits", "$600/mo"],
-                ["Tools & software", "$400/mo"],
-                ["Management overhead", "$500/mo"],
-                ["Recruitment cost", "$200/mo"],
-              ].map(([k, v]) => (
-                <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: `1px solid ${RULE}`, fontSize: 12 }}>
-                  <span style={{ color: INK_SOFT }}>{k}</span>
-                  <span style={{ fontWeight: 600, color: INK }}>{v}</span>
-                </div>
-              ))}
+          {isMobile ? (
+            /* Mobile: stacked layout */
+            <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+              {/* SDR card */}
+              <div style={{ background: "#fff", border: `1px solid ${RULE}`, borderTopLeftRadius: 12, borderTopRightRadius: 12, padding: "20px" }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: RED, marginBottom: 4 }}>Junior SDR</div>
+                <div style={{ fontSize: 26, fontWeight: 800, color: RED, marginBottom: 16 }}>$5,200<span style={{ fontSize: 14, fontWeight: 600 }}>+/mo</span></div>
+                {[
+                  ["Base salary", "$3,500/mo"],
+                  ["Benefits", "$600/mo"],
+                  ["Tools & software", "$400/mo"],
+                  ["Management overhead", "$500/mo"],
+                  ["Recruitment cost", "$200/mo"],
+                ].map(([k, v]) => (
+                  <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: `1px solid ${RULE}`, fontSize: 12 }}>
+                    <span style={{ color: INK_SOFT }}>{k}</span>
+                    <span style={{ fontWeight: 600, color: INK }}>{v}</span>
+                  </div>
+                ))}
+              </div>
+              {/* VS divider */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "12px 0", background: PAPER_WARM, border: `1px solid ${RULE}`, borderTop: "none", borderBottom: "none" }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: INK_GHOST }}>vs</div>
+              </div>
+              {/* William card */}
+              <div style={{ background: PURPLE, border: `1px solid ${PURPLE}`, borderBottomLeftRadius: 12, borderBottomRightRadius: 12, padding: "20px" }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "rgba(255,255,255,0.7)", marginBottom: 4 }}>William</div>
+                <div style={{ fontSize: 26, fontWeight: 800, color: "#fff", marginBottom: 6 }}>$299<span style={{ fontSize: 14, fontWeight: 600 }}>/mo</span></div>
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", marginBottom: 16 }}>$10/day for a full sales team</div>
+                {[
+                  ["Subscription", "$299/mo"],
+                  ["Setup fee", "$0"],
+                  ["Management overhead", "Minimal"],
+                  ["Ramp time", "48 hours"],
+                  ["Cancel anytime", "Yes"],
+                ].map(([k, v]) => (
+                  <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid rgba(255,255,255,0.15)", fontSize: 12 }}>
+                    <span style={{ color: "rgba(255,255,255,0.65)" }}>{k}</span>
+                    <span style={{ fontWeight: 600, color: "#fff" }}>{v}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            {/* VS divider */}
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 20px" }}>
-              <div style={{ width: 1, height: 40, background: RULE }} />
-              <div style={{ fontSize: 13, fontWeight: 700, color: INK_GHOST, padding: "8px 0" }}>vs</div>
-              <div style={{ width: 1, height: 40, background: RULE }} />
+          ) : (
+            /* Desktop: side-by-side layout */
+            <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 0, alignItems: "stretch" }}>
+              {/* SDR card */}
+              <div style={{ background: "#fff", border: `1px solid ${RULE}`, borderTopLeftRadius: 12, borderBottomLeftRadius: 12, padding: "24px" }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: RED, marginBottom: 4 }}>Junior SDR</div>
+                <div style={{ fontSize: 26, fontWeight: 800, color: RED, marginBottom: 16 }}>$5,200<span style={{ fontSize: 14, fontWeight: 600 }}>+/mo</span></div>
+                {[
+                  ["Base salary", "$3,500/mo"],
+                  ["Benefits", "$600/mo"],
+                  ["Tools & software", "$400/mo"],
+                  ["Management overhead", "$500/mo"],
+                  ["Recruitment cost", "$200/mo"],
+                ].map(([k, v]) => (
+                  <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: `1px solid ${RULE}`, fontSize: 12 }}>
+                    <span style={{ color: INK_SOFT }}>{k}</span>
+                    <span style={{ fontWeight: 600, color: INK }}>{v}</span>
+                  </div>
+                ))}
+              </div>
+              {/* VS divider */}
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 20px" }}>
+                <div style={{ width: 1, height: 40, background: RULE }} />
+                <div style={{ fontSize: 13, fontWeight: 700, color: INK_GHOST, padding: "8px 0" }}>vs</div>
+                <div style={{ width: 1, height: 40, background: RULE }} />
+              </div>
+              {/* William card */}
+              <div style={{ background: PURPLE, border: `1px solid ${PURPLE}`, borderTopRightRadius: 12, borderBottomRightRadius: 12, padding: "24px" }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "rgba(255,255,255,0.7)", marginBottom: 4 }}>William</div>
+                <div style={{ fontSize: 26, fontWeight: 800, color: "#fff", marginBottom: 6 }}>$299<span style={{ fontSize: 14, fontWeight: 600 }}>/mo</span></div>
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", marginBottom: 16 }}>$10/day for a full sales team</div>
+                {[
+                  ["Subscription", "$299/mo"],
+                  ["Setup fee", "$0"],
+                  ["Management overhead", "Minimal"],
+                  ["Ramp time", "48 hours"],
+                  ["Cancel anytime", "Yes"],
+                ].map(([k, v]) => (
+                  <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid rgba(255,255,255,0.15)", fontSize: 12 }}>
+                    <span style={{ color: "rgba(255,255,255,0.65)" }}>{k}</span>
+                    <span style={{ fontWeight: 600, color: "#fff" }}>{v}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            {/* William card */}
-            <div style={{ background: PURPLE, border: `1px solid ${PURPLE}`, borderTopRightRadius: 12, borderBottomRightRadius: 12, padding: "24px" }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "rgba(255,255,255,0.7)", marginBottom: 4 }}>William</div>
-              <div style={{ fontSize: 26, fontWeight: 800, color: "#fff", marginBottom: 6 }}>$299<span style={{ fontSize: 14, fontWeight: 600 }}>/mo</span></div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", marginBottom: 16 }}>$10/day for a full sales team</div>
-              {[
-                ["Subscription", "$299/mo"],
-                ["Setup fee", "$0"],
-                ["Management overhead", "Minimal"],
-                ["Ramp time", "48 hours"],
-                ["Cancel anytime", "Yes"],
-              ].map(([k, v]) => (
-                <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid rgba(255,255,255,0.15)", fontSize: 12 }}>
-                  <span style={{ color: "rgba(255,255,255,0.65)" }}>{k}</span>
-                  <span style={{ fontWeight: 600, color: "#fff" }}>{v}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          )}
 
           {/* ── 10. PRICING ── */}
           <div style={divider} />
           <h2 style={h2Style}>One price. Everything included.</h2>
-          <div style={{ background: PURPLE, borderRadius: 16, padding: "36px 40px", textAlign: "center" }}>
-            <div style={{ fontSize: 52, fontWeight: 800, color: "#fff", lineHeight: 1 }}>$299</div>
+          <div style={{ background: PURPLE, borderRadius: 16, padding: isMobile ? "28px 20px" : "36px 40px", textAlign: "center" }}>
+            <div style={{ fontSize: isMobile ? 44 : 52, fontWeight: 800, color: "#fff", lineHeight: 1 }}>$299</div>
             <div style={{ fontFamily: sans, fontSize: 15, color: "rgba(255,255,255,0.65)", marginTop: 6, marginBottom: 20 }}>/month</div>
             <div style={{ fontFamily: sans, fontSize: 13, color: "rgba(255,255,255,0.8)", marginBottom: 20 }}>Cancel anytime. No questions asked.</div>
             <div style={{ textAlign: "left", maxWidth: 480, margin: "0 auto" }}>
@@ -1466,21 +1542,21 @@ function ForFoundersView({ onNav }) {
 
           {/* ── 12. CTA ── */}
           <div style={divider} />
-          <div style={{ background: INK, borderRadius: 16, padding: "40px 44px", textAlign: "center" }}>
-            <h3 style={{ fontFamily: serif, fontSize: 26, fontWeight: 700, color: "#fff", margin: "0 0 16px" }}>While your competitors' SDR sleeps</h3>
+          <div style={{ background: INK, borderRadius: 16, padding: isMobile ? "28px 20px" : "40px 44px", textAlign: "center" }}>
+            <h3 style={{ fontFamily: serif, fontSize: isMobile ? 20 : 26, fontWeight: 700, color: "#fff", margin: "0 0 16px" }}>While your competitors' SDR sleeps</h3>
             <p style={{ fontFamily: sans, fontSize: 13, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, margin: "0 auto 14px", maxWidth: 520 }}>Your competitors' sales rep clocked off at 6pm. William didn't. He sent 23 messages while they were at dinner, followed up at 6am, and booked a call before their SDR had their morning coffee.</p>
             <p style={{ fontFamily: sans, fontSize: 13, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, margin: "0 auto 14px", maxWidth: 520 }}>No onboarding. No sick days. No slow Mondays. No resignation letter. William is available every hour of every day, gets sharper every week, and costs less than a single day of a junior hire.</p>
             <p style={{ fontFamily: sans, fontSize: 13, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, margin: "0 auto 24px", maxWidth: 520 }}>He's ready to start right now.</p>
             <button
               onClick={() => onNav("chat")}
-              style={{ background: PURPLE, color: "#fff", border: "none", borderRadius: 10, padding: "14px 32px", fontSize: 14, fontWeight: 700, cursor: "pointer" }}
+              style={{ background: PURPLE, color: "#fff", border: "none", borderRadius: 10, padding: "14px 32px", fontSize: 14, fontWeight: 700, cursor: "pointer", touchAction: "manipulation" }}
             >hirewilliam.com</button>
           </div>
 
           {/* ── 13. FOUNDER FOOTER ── */}
           <div style={divider} />
           <h2 style={h2Style}>Built by a founder, for founders</h2>
-          <div style={{ background: "#fff", border: `1px solid ${RULE}`, borderRadius: 14, padding: "28px", display: "flex", gap: 18, alignItems: "flex-start" }}>
+          <div style={{ background: "#fff", border: `1px solid ${RULE}`, borderRadius: 14, padding: isMobile ? "20px" : "28px", display: "flex", flexDirection: isMobile ? "column" : "row", gap: 18, alignItems: "flex-start" }}>
             <div style={{ width: 44, height: 44, borderRadius: 12, background: PURPLE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontWeight: 800, color: "#fff", flexShrink: 0 }}>T</div>
             <div>
               <p style={{ fontFamily: sans, fontSize: 13, color: INK, lineHeight: 1.75, margin: "0 0 12px" }}><strong>I'm Terry Lee.</strong> I hated sales. I was spending 3 hours every night writing cold outreach instead of building product, and getting nowhere. Which founder doesn't know that feeling?</p>
@@ -1535,6 +1611,8 @@ function RightPanel() {
 // ── Main App ──
 export default function App() {
   const [page, setPage] = useState("chat");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const views = {
     chat: <ChatView />,
@@ -1546,13 +1624,53 @@ export default function App() {
   };
 
   return (
-    <div style={{ display: "flex", height: "100vh", fontFamily: "'DM Sans', system-ui, sans-serif", color: INK, background: "#fff", overflow: "hidden" }}>
-      <Sidebar active={page} onNav={setPage} />
-      <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
-        <div style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
-          {views[page]}
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh", fontFamily: "'DM Sans', system-ui, sans-serif", color: INK, background: "#fff", overflow: "hidden" }}>
+      {/* Mobile top bar */}
+      {isMobile && (
+        <div style={{ display: "flex", alignItems: "center", padding: "0 16px", background: "#16102a", height: 52, flexShrink: 0, gap: 12 }}>
+          <button
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Open menu"
+            style={{ background: "none", border: "none", color: "rgba(255,255,255,0.85)", cursor: "pointer", padding: "6px 4px", display: "flex", flexDirection: "column", gap: 4, touchAction: "manipulation" }}
+          >
+            <span style={{ display: "block", width: 20, height: 2, background: "currentColor", borderRadius: 2 }} />
+            <span style={{ display: "block", width: 20, height: 2, background: "currentColor", borderRadius: 2 }} />
+            <span style={{ display: "block", width: 20, height: 2, background: "currentColor", borderRadius: 2 }} />
+          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ width: 26, height: 26, borderRadius: 6, background: PURPLE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 800, color: "#fff" }}>W</div>
+            <span style={{ color: "#fff", fontSize: 15, fontWeight: 700 }}>HireWilliam</span>
+          </div>
         </div>
-        {page === "chat" && <RightPanel />}
+      )}
+
+      {/* Main layout row */}
+      <div style={{ flex: 1, display: "flex", overflow: "hidden", position: "relative" }}>
+        {/* Desktop sidebar (always visible) */}
+        {!isMobile && <Sidebar active={page} onNav={setPage} />}
+
+        {/* Mobile sidebar overlay */}
+        {isMobile && sidebarOpen && (
+          <div style={{ position: "absolute", inset: 0, zIndex: 200, display: "flex" }}>
+            <Sidebar
+              active={page}
+              onNav={(p) => { setPage(p); setSidebarOpen(false); }}
+              onClose={() => setSidebarOpen(false)}
+            />
+            <div
+              onClick={() => setSidebarOpen(false)}
+              style={{ flex: 1, background: "rgba(0,0,0,0.45)" }}
+            />
+          </div>
+        )}
+
+        {/* Content area */}
+        <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+          <div style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+            {views[page]}
+          </div>
+          {page === "chat" && !isMobile && <RightPanel />}
+        </div>
       </div>
     </div>
   );
