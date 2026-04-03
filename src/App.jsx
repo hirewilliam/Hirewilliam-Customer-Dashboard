@@ -1542,40 +1542,7 @@ function ForFoundersView({ onNav }) {
                   </div>
                 ))}
               </div>
-              ) : (
-              /* Mobile: condensed 2×2 stat grid + hot leads list below chat */
-              <div style={{ background: "#120d22", borderTop: "1px solid rgba(255,255,255,0.06)", padding: "10px 12px" }}>
-                <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>Overnight</div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6, marginBottom: 10 }}>
-                  {[
-                    { label: "Sent", value: "47" },
-                    { label: "Replies", value: "6" },
-                    { label: "Meetings", value: "2" },
-                    { label: "Hot leads", value: "4" },
-                  ].map(s => (
-                    <div key={s.label} style={{ background: "rgba(255,255,255,0.05)", borderRadius: 7, padding: "6px 8px", textAlign: "center" }}>
-                      <div style={{ fontSize: 9, color: "rgba(255,255,255,0.35)" }}>{s.label}</div>
-                      <div style={{ fontSize: 16, fontWeight: 700, color: "#fff", lineHeight: 1.2 }}>{s.value}</div>
-                    </div>
-                  ))}
-                </div>
-                <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>Hot leads</div>
-                {[
-                  { name: "Alex Morin", note: "Replied" },
-                  { name: "Priya Kumar", note: "Opened 3×" },
-                  { name: "Leo Tanaka", note: "Replied" },
-                  { name: "Jake Rivera", note: "Opened" },
-                ].map(l => (
-                  <div key={l.name} style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                    <div style={{ width: 20, height: 20, borderRadius: 5, background: "rgba(90,63,160,0.4)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, fontWeight: 700, color: PURPLE_LIGHT, flexShrink: 0 }}>{l.name.split(" ").filter(n => n).map(n => n[0]).join("")}</div>
-                    <div>
-                      <div style={{ fontSize: 10, fontWeight: 600, color: "rgba(255,255,255,0.7)" }}>{l.name}</div>
-                      <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)" }}>{l.note}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              )}
+              ) : null}
             </div>
           </div>
 
@@ -1819,35 +1786,7 @@ function RightPanel({ isMobile = false }) {
   const stats = RIGHT_PANEL_STATS;
 
   if (isMobile) {
-    return (
-      <div style={{ borderTop: `1px solid ${RULE}`, padding: "12px 16px 14px", fontSize: 12, background: PAPER, flexShrink: 0, maxHeight: 220, overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
-        <div style={{ fontSize: 10, fontWeight: 600, color: INK_GHOST, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Overnight results</div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 6, marginBottom: 12 }}>
-          {stats.map(s => (
-            <div key={s.l} style={{ background: PAPER_WARM, borderRadius: 8, padding: "8px 6px", textAlign: "center" }}>
-              <div style={{ fontSize: 9, color: INK_GHOST }}>{s.l}</div>
-              <div style={{ fontSize: 18, fontWeight: 700 }}>{s.v}</div>
-              <div style={{ fontSize: 9, color: GREEN, lineHeight: 1.2 }}>{s.c}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{ fontSize: 10, fontWeight: 600, color: INK_GHOST, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Hot leads</div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-          {hot.map(p => {
-            const heat = p.score >= 80 ? "hot" : p.score >= 60 ? "warm" : "new";
-            return (
-              <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 0", borderBottom: `1px solid ${RULE}` }}>
-                <Avatar initials={p.avatar} bg={heat === "hot" ? "#fcebeb" : heat === "warm" ? "#fdf2e3" : "#e6f1fb"} size={22} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</div>
-                  <div style={{ fontSize: 10, color: INK_GHOST, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.lastAction}</div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (
