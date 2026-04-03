@@ -388,7 +388,7 @@ function PipelineView() {
       </div>
 
       {/* Filters */}
-      <div style={{ padding: "12px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", gap: 8, alignItems: "center", background: PAPER_WARM, flexShrink: 0 }}>
+      <div style={{ padding: "12px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", gap: 8, alignItems: "center", background: PAPER_WARM, flexShrink: 0, flexWrap: "wrap" }}>
         <span style={{ fontSize: 11, fontWeight: 600, color: INK_SOFT, textTransform: "uppercase" }}>Filter:</span>
         <select
           value={filter.channel || ""}
@@ -1577,13 +1577,49 @@ function ForFoundersView({ onNav }) {
 }
 
 // ── Right Panel (shown on chat view) ──
-function RightPanel() {
+const RIGHT_PANEL_STATS = [{ l: "Sent", v: "47", c: "While you slept" }, { l: "Replies", v: "6", c: "12.7% rate" }, { l: "Meetings", v: "2", c: "Booked Thu" }, { l: "Hot leads", v: "4", c: "Need follow-up" }];
+
+function RightPanel({ isMobile = false }) {
   const hot = MOCK_PROSPECTS.filter(p => p.score >= 45).sort((a, b) => b.score - a.score).slice(0, 4);
+  const stats = RIGHT_PANEL_STATS;
+
+  if (isMobile) {
+    return (
+      <div style={{ borderTop: `1px solid ${RULE}`, padding: "12px 16px 14px", fontSize: 12, background: PAPER, flexShrink: 0 }}>
+        <div style={{ fontSize: 10, fontWeight: 600, color: INK_GHOST, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Overnight results</div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6, marginBottom: 12 }}>
+          {stats.map(s => (
+            <div key={s.l} style={{ background: PAPER_WARM, borderRadius: 8, padding: "8px 6px", textAlign: "center" }}>
+              <div style={{ fontSize: 9, color: INK_GHOST }}>{s.l}</div>
+              <div style={{ fontSize: 18, fontWeight: 700 }}>{s.v}</div>
+              <div style={{ fontSize: 9, color: GREEN, lineHeight: 1.2 }}>{s.c}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ fontSize: 10, fontWeight: 600, color: INK_GHOST, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Hot leads</div>
+        <div style={{ display: "flex", gap: 12, overflowX: "auto" }}>
+          {hot.map(p => {
+            const heat = p.score >= 80 ? "hot" : p.score >= 60 ? "warm" : "new";
+            return (
+              <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                <Avatar initials={p.avatar} bg={heat === "hot" ? "#fcebeb" : heat === "warm" ? "#fdf2e3" : "#e6f1fb"} size={22} />
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 600, whiteSpace: "nowrap" }}>{p.name}</div>
+                  <div style={{ fontSize: 10, color: INK_GHOST, whiteSpace: "nowrap" }}>{p.lastAction}</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ width: 210, borderLeft: `1px solid ${RULE}`, padding: "22px 14px 14px", fontSize: 12, background: PAPER, flexShrink: 0, overflowY: "auto" }}>
       <div style={{ fontSize: 10, fontWeight: 600, color: INK_GHOST, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Overnight results</div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginBottom: 16 }}>
-        {[{ l: "Sent", v: "47", c: "While you slept" }, { l: "Replies", v: "6", c: "12.7% rate" }, { l: "Meetings", v: "2", c: "Booked Thu" }, { l: "Hot leads", v: "4", c: "Need follow-up" }].map(s => (
+        {stats.map(s => (
           <div key={s.l} style={{ background: PAPER_WARM, borderRadius: 8, padding: "8px 10px" }}>
             <div style={{ fontSize: 10, color: INK_GHOST }}>{s.l}</div>
             <div style={{ fontSize: 20, fontWeight: 700 }}>{s.v}</div>
@@ -1665,11 +1701,11 @@ export default function App() {
         )}
 
         {/* Content area */}
-        <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
-          <div style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+        <div style={{ flex: 1, display: "flex", overflow: "hidden", flexDirection: isMobile && page === "chat" ? "column" : "row" }}>
+          <div style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column", minHeight: 0 }}>
             {views[page]}
           </div>
-          {page === "chat" && !isMobile && <RightPanel />}
+          {page === "chat" && <RightPanel isMobile={isMobile} />}
         </div>
       </div>
     </div>
