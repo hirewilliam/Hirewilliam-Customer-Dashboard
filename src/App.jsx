@@ -1753,7 +1753,7 @@ export default function App() {
           <button
             onClick={() => setSidebarOpen(true)}
             aria-label="Open menu"
-            style={{ background: "none", border: "none", color: "rgba(255,255,255,0.85)", cursor: "pointer", padding: "6px 4px", display: "flex", flexDirection: "column", gap: 4, touchAction: "manipulation" }}
+            style={{ background: "none", border: "none", color: "rgba(255,255,255,0.85)", cursor: "pointer", padding: "10px 12px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, touchAction: "manipulation", minWidth: 44, minHeight: 44 }}
           >
             <span style={{ display: "block", width: 20, height: 2, background: "currentColor", borderRadius: 2 }} />
             <span style={{ display: "block", width: 20, height: 2, background: "currentColor", borderRadius: 2 }} />
