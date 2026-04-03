@@ -209,6 +209,7 @@ function ChatView() {
   const [chatLocked, setChatLocked] = useState(false);
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [msgs, typing]);
 
@@ -230,21 +231,21 @@ function ChatView() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "22px 24px", borderBottom: `1px solid ${RULE}`, flexShrink: 0, minHeight: 84 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 10 : 14, padding: isMobile ? "12px 16px" : "22px 24px", borderBottom: `1px solid ${RULE}`, flexShrink: 0, minHeight: isMobile ? 60 : 84 }}>
         <div style={{ position: "relative", flexShrink: 0 }}>
-          <Avatar initials="W" size={46} />
-          <div style={{ position: "absolute", bottom: 0, right: 0, width: 12, height: 12, borderRadius: "50%", background: "#44b700", border: "2.5px solid #fff" }} />
+          <Avatar initials="W" size={isMobile ? 36 : 46} />
+          <div style={{ position: "absolute", bottom: 0, right: 0, width: isMobile ? 9 : 12, height: isMobile ? 9 : 12, borderRadius: "50%", background: "#44b700", border: "2.5px solid #fff" }} />
         </div>
         <div>
-          <div style={{ fontWeight: 700, fontSize: 18, display: "flex", alignItems: "center", gap: 8, lineHeight: 1.3 }}>
+          <div style={{ fontWeight: 700, fontSize: isMobile ? 15 : 18, display: "flex", alignItems: "center", gap: 8, lineHeight: 1.3 }}>
             William
             <span style={{ fontSize: 12, fontWeight: 600, background: PURPLE_PALE, color: PURPLE, padding: "2px 7px", borderRadius: 4 }}>AI</span>
           </div>
-          <div style={{ fontSize: 14, color: GREEN, marginTop: 2 }}>Online - always</div>
+          <div style={{ fontSize: isMobile ? 12 : 14, color: GREEN, marginTop: 2 }}>Online - always</div>
         </div>
       </div>
 
-      <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: isMobile ? "12px 14px" : "16px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
         {msgs.length === 0 && (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", textAlign: "center" }}>
             <Avatar initials="W" size={56} />
@@ -278,7 +279,7 @@ function ChatView() {
         <div ref={bottomRef} />
       </div>
 
-      <div style={{ padding: "14px 20px", borderTop: `1px solid ${RULE}`, flexShrink: 0 }}>
+      <div style={{ padding: isMobile ? "10px 14px" : "14px 20px", borderTop: `1px solid ${RULE}`, flexShrink: 0 }}>
         <div style={{ display: "flex", gap: 10 }}>
           <textarea
             ref={inputRef}
@@ -306,6 +307,7 @@ function PipelineView() {
   const [prospects, setProspects] = useState(MOCK_PROSPECTS);
   const [filter, setFilter] = useState({ channel: null, time: null, score: null });
   const [draggedCard, setDraggedCard] = useState(null);
+  const isMobile = useIsMobile();
 
   const stages = [
     { id: "new", label: "New", color: INK_SOFT, desc: "Researching" },
@@ -375,6 +377,89 @@ function PipelineView() {
     ));
     setDraggedCard(null);
   };
+
+  if (isMobile) {
+    return (
+      <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+        {/* Header */}
+        <div style={{ padding: "14px 16px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <IconHash s={14} />
+            <span style={{ fontWeight: 600, fontSize: 15 }}>pipeline</span>
+            <span style={{ fontSize: 11, color: INK_GHOST, marginLeft: 8 }}>{filteredProspects.length} prospects</span>
+          </div>
+        </div>
+
+        {/* Compact Filters */}
+        <div style={{ padding: "10px 16px", borderBottom: `1px solid ${RULE}`, display: "flex", gap: 6, alignItems: "center", background: PAPER_WARM, flexShrink: 0, flexWrap: "wrap" }}>
+          <select
+            value={filter.channel || ""}
+            onChange={(e) => setFilter({ ...filter, channel: e.target.value || null })}
+            style={{ fontSize: 12, padding: "4px 6px", borderRadius: 6, border: `1px solid ${RULE}`, background: "#fff", cursor: "pointer" }}
+          >
+            <option value="">All channels</option>
+            <option value="email">Email</option>
+            <option value="linkedin">LinkedIn</option>
+            <option value="instagram">Instagram</option>
+          </select>
+          <select
+            value={filter.score || ""}
+            onChange={(e) => setFilter({ ...filter, score: e.target.value || null })}
+            style={{ fontSize: 12, padding: "4px 6px", borderRadius: 6, border: `1px solid ${RULE}`, background: "#fff", cursor: "pointer" }}
+          >
+            <option value="">All scores</option>
+            <option value="hot">Hot (80+)</option>
+            <option value="warm">Warm (50-79)</option>
+            <option value="cold">Cold (0-49)</option>
+          </select>
+          {(filter.channel || filter.time || filter.score) && (
+            <button
+              onClick={() => setFilter({ channel: null, time: null, score: null })}
+              style={{ fontSize: 11, padding: "4px 8px", borderRadius: 6, border: "none", background: RULE, color: INK, cursor: "pointer" }}
+            >Clear</button>
+          )}
+        </div>
+
+        {/* Vertical list grouped by stage */}
+        <div style={{ flex: 1, overflowY: "auto", padding: "12px 16px" }}>
+          {stages.map(st => {
+            const items = filteredProspects.filter(p => p.stage === st.id);
+            if (items.length === 0) return null;
+            return (
+              <div key={st.id} style={{ marginBottom: 20 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: st.color, flexShrink: 0 }} />
+                  <span style={{ fontSize: 11, fontWeight: 700, color: st.color, textTransform: "uppercase", letterSpacing: 0.5 }}>{st.label}</span>
+                  <span style={{ fontSize: 11, color: INK_GHOST }}>{items.length}</span>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {items.map(p => (
+                    <div key={p.id} style={{ background: "#fff", border: `1px solid ${RULE}`, borderRadius: 10, padding: "12px 14px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: INK }}>{p.name}</div>
+                          <div style={{ fontSize: 11, color: INK_SOFT }}>{p.company} · {p.role}</div>
+                        </div>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: p.score >= 80 ? GREEN : p.score >= 50 ? AMBER : INK_GHOST, marginLeft: 8, flexShrink: 0 }}>{p.score}</div>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <Badge text={p.channel} color={p.channel} />
+                        <span style={{ fontSize: 10, color: INK_GHOST }}>{timeAgo(p.lastActivityTime)}</span>
+                      </div>
+                      <div style={{ fontSize: 11, color: INK_SOFT, marginTop: 6, lineHeight: 1.4 }}>{p.lastAction}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+          {filteredProspects.length === 0 && (
+            <div style={{ textAlign: "center", padding: 40, color: INK_GHOST, fontSize: 14 }}>No prospects match this filter.</div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
@@ -779,6 +864,7 @@ function OutreachView() {
 
 // ── Meetings ──
 function MeetingsView() {
+  const isMobile = useIsMobile();
   const meetings = [
     { id: "1", prospect: "Alex Morin", company: "Shipyard", time: "Thu 2:00 PM", duration: "30 min", status: "confirmed" },
     { id: "2", prospect: "Sarah Kim", company: "BuildKit", time: "Thu 4:30 PM", duration: "15 min", status: "pending" },
@@ -787,19 +873,19 @@ function MeetingsView() {
 
   return (
     <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
-      <div style={{ padding: "18px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+      <div style={{ padding: isMobile ? "14px 16px" : "18px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
         <IconHash s={14} />
         <span style={{ fontWeight: 600, fontSize: 15 }}>meetings</span>
       </div>
-      <div style={{ flex: 1, overflowY: "auto", padding: 20 }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: isMobile ? 16 : 20 }}>
         {meetings.map(m => (
-          <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", background: PAPER_WARM, borderRadius: 10, marginBottom: 8 }}>
-            <div style={{ width: 48, textAlign: "center" }}>
+          <div key={m.id} style={{ display: "flex", alignItems: "center", gap: isMobile ? 10 : 14, padding: isMobile ? "12px 14px" : "14px 16px", background: PAPER_WARM, borderRadius: 10, marginBottom: 8, flexWrap: isMobile ? "wrap" : "nowrap" }}>
+            <div style={{ width: 48, textAlign: "center", flexShrink: 0 }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: PURPLE }}>{m.time.split(" ")[0]}</div>
               <div style={{ fontSize: 15, fontWeight: 700, color: INK }}>{m.time.split(" ")[1]} {m.time.split(" ")[2]}</div>
             </div>
-            <div style={{ width: 1, height: 36, background: RULE }} />
-            <div style={{ flex: 1 }}>
+            <div style={{ width: 1, height: 36, background: RULE, flexShrink: 0 }} />
+            <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 14, fontWeight: 600 }}>{m.prospect}</div>
               <div style={{ fontSize: 12, color: INK_SOFT }}>{m.company} · {m.duration}</div>
             </div>
@@ -816,6 +902,7 @@ function AnalyticsView() {
   const [animatedStats, setAnimatedStats] = useState([0, 0, 0, 0]);
   const [hoveredCard, setHoveredCard] = useState(null);
   const [selectedTimeframe, setSelectedTimeframe] = useState("7d");
+  const isMobile = useIsMobile();
 
   const stats = [
     { label: "Messages sent", value: 312, change: "+47 today", icon: "📤", color: PURPLE },
@@ -869,21 +956,23 @@ function AnalyticsView() {
 
   return (
     <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
-      <div style={{ padding: "18px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-        <IconHash s={14} />
-        <span style={{ fontWeight: 600, fontSize: 15 }}>analytics</span>
-        <div style={{ marginLeft: "auto", display: "flex", gap: 4 }}>
+      <div style={{ padding: isMobile ? "12px 16px" : "18px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6, flexShrink: 0, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, flex: 1 }}>
+          <IconHash s={14} />
+          <span style={{ fontWeight: 600, fontSize: 15 }}>analytics</span>
+        </div>
+        <div style={{ display: "flex", gap: 4 }}>
           {timeframes.map(tf => (
             <button
               key={tf.id}
               onClick={() => setSelectedTimeframe(tf.id)}
               style={{
-                padding: "4px 8px",
+                padding: isMobile ? "3px 7px" : "4px 8px",
                 borderRadius: 12,
                 border: `1px solid ${selectedTimeframe === tf.id ? PURPLE : RULE}`,
                 background: selectedTimeframe === tf.id ? PURPLE_PALE : "transparent",
                 color: selectedTimeframe === tf.id ? PURPLE : INK_SOFT,
-                fontSize: 11,
+                fontSize: isMobile ? 10 : 11,
                 fontWeight: 500,
                 cursor: "pointer",
                 transition: "all 0.2s"
@@ -895,9 +984,9 @@ function AnalyticsView() {
         </div>
       </div>
 
-      <div style={{ flex: 1, overflowY: "auto", padding: 20 }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: isMobile ? 16 : 20 }}>
         {/* Hero Stats Grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 32 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(auto-fit, minmax(130px, 1fr))" : "repeat(auto-fit, minmax(200px, 1fr))", gap: isMobile ? 10 : 16, marginBottom: isMobile ? 20 : 32 }}>
           {stats.map((s, index) => (
             <div
               key={s.label}
@@ -906,7 +995,7 @@ function AnalyticsView() {
               style={{
                 background: hoveredCard === index ? `linear-gradient(135deg, ${PAPER_WARM} 0%, #fff 100%)` : PAPER_WARM,
                 borderRadius: 16,
-                padding: "20px",
+                padding: isMobile ? "14px 10px" : "20px",
                 textAlign: "center",
                 cursor: "pointer",
                 transform: hoveredCard === index ? "translateY(-4px)" : "translateY(0)",
@@ -929,10 +1018,10 @@ function AnalyticsView() {
                 transition: "opacity 0.3s"
               }} />
 
-              <div style={{ fontSize: 26, marginBottom: 8 }}>{s.icon}</div>
-              <div style={{ fontSize: 12, color: INK_GHOST, marginBottom: 8, fontWeight: 500 }}>{s.label}</div>
+              <div style={{ fontSize: isMobile ? 20 : 26, marginBottom: isMobile ? 4 : 8 }}>{s.icon}</div>
+              <div style={{ fontSize: isMobile ? 10 : 12, color: INK_GHOST, marginBottom: isMobile ? 4 : 8, fontWeight: 500 }}>{s.label}</div>
               <div style={{
-                fontSize: 34,
+                fontSize: isMobile ? 26 : 34,
                 fontWeight: 800,
                 color: s.color,
                 marginBottom: 6,
@@ -941,11 +1030,11 @@ function AnalyticsView() {
                 {animatedStats[index].toLocaleString()}
               </div>
               <div style={{
-                fontSize: 12,
+                fontSize: isMobile ? 10 : 12,
                 color: GREEN,
                 fontWeight: 600,
                 background: "#e4f5ed",
-                padding: "4px 8px",
+                padding: isMobile ? "3px 6px" : "4px 8px",
                 borderRadius: 12,
                 display: "inline-block"
               }}>
@@ -972,28 +1061,28 @@ function AnalyticsView() {
         <div style={{
           background: PAPER_WARM,
           borderRadius: 16,
-          padding: 24,
-          marginBottom: 24,
+          padding: isMobile ? 16 : 24,
+          marginBottom: isMobile ? 16 : 24,
           boxShadow: "0 4px 20px rgba(0,0,0,0.05)"
         }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+          <div style={{ display: "flex", alignItems: isMobile ? "flex-start" : "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 8 }}>
             <div>
-              <h3 style={{ fontSize: 17, fontWeight: 700, color: INK, margin: 0 }}>Activity Overview</h3>
-              <p style={{ fontSize: 13, color: INK_SOFT, margin: 4 }}>Messages sent vs replies over time</p>
+              <h3 style={{ fontSize: isMobile ? 14 : 17, fontWeight: 700, color: INK, margin: 0 }}>Activity Overview</h3>
+              <p style={{ fontSize: isMobile ? 11 : 13, color: INK_SOFT, margin: 4 }}>Messages sent vs replies over time</p>
             </div>
             <div style={{ display: "flex", gap: 12 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <div style={{ width: 12, height: 12, borderRadius: 3, background: PURPLE }} />
-                <span style={{ fontSize: 12, color: INK_SOFT }}>Sent</span>
+                <span style={{ fontSize: isMobile ? 10 : 12, color: INK_SOFT }}>Sent</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <div style={{ width: 12, height: 12, borderRadius: 3, background: GREEN }} />
-                <span style={{ fontSize: 12, color: INK_SOFT }}>Replies</span>
+                <span style={{ fontSize: isMobile ? 10 : 12, color: INK_SOFT }}>Replies</span>
               </div>
             </div>
           </div>
 
-          <div style={{ display: "flex", alignItems: "flex-end", gap: 12, height: 200, padding: "0 16px" }}>
+          <div style={{ display: "flex", alignItems: "flex-end", gap: isMobile ? 4 : 12, height: isMobile ? 140 : 200, padding: isMobile ? "0 4px" : "0 16px" }}>
             {currentData.map((d, index) => (
               <div
                 key={d.day}
@@ -1019,8 +1108,8 @@ function AnalyticsView() {
                 }}>
                   {/* Reply bar */}
                   <div style={{
-                    height: Math.max((d.replies / maxSent) * 160, 4),
-                    width: 24,
+                    height: Math.max((d.replies / maxSent) * (isMobile ? 100 : 160), 4),
+                    width: isMobile ? 14 : 24,
                     background: GREEN,
                     borderRadius: "4px 4px 0 0",
                     transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -1028,8 +1117,8 @@ function AnalyticsView() {
                   }} />
                   {/* Sent bar */}
                   <div style={{
-                    height: Math.max((d.sent / maxSent) * 160, 4),
-                    width: 32,
+                    height: Math.max((d.sent / maxSent) * (isMobile ? 100 : 160), 4),
+                    width: isMobile ? 18 : 32,
                     background: PURPLE,
                     borderRadius: "4px 4px 0 0",
                     transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -1057,7 +1146,7 @@ function AnalyticsView() {
                     </div>
                   </div>
                 </div>
-                <div style={{ fontSize: 12, color: INK_SOFT, fontWeight: 500 }}>{d.day}</div>
+                <div style={{ fontSize: isMobile ? 9 : 12, color: INK_SOFT, fontWeight: 500 }}>{d.day}</div>
               </div>
             ))}
           </div>
@@ -1067,11 +1156,11 @@ function AnalyticsView() {
         <div style={{
           background: `linear-gradient(135deg, ${PAPER_WARM} 0%, #fff 100%)`,
           borderRadius: 16,
-          padding: 24,
+          padding: isMobile ? 16 : 24,
           boxShadow: "0 4px 20px rgba(0,0,0,0.05)"
         }}>
-          <h3 style={{ fontSize: 17, fontWeight: 700, color: INK, margin: "0 0 16px 0" }}>Conversion Funnel</h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <h3 style={{ fontSize: isMobile ? 14 : 17, fontWeight: 700, color: INK, margin: "0 0 16px 0" }}>Conversion Funnel</h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? 8 : 12 }}>
             {[
               { stage: "Messages Sent", count: 312, rate: "100%", color: PURPLE },
               { stage: "Replies", count: 38, rate: "12.2%", color: "#378add" },
@@ -1081,47 +1170,51 @@ function AnalyticsView() {
               <div key={stage.stage} style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 16,
-                padding: 12,
+                gap: isMobile ? 10 : 16,
+                padding: isMobile ? 10 : 12,
                 background: "#fff",
                 borderRadius: 8,
                 border: `1px solid ${RULE}`,
                 animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`
               }}>
                 <div style={{
-                  width: 40,
-                  height: 40,
+                  width: isMobile ? 34 : 40,
+                  height: isMobile ? 34 : 40,
                   borderRadius: 8,
                   background: stage.color,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: 15,
+                  fontSize: isMobile ? 12 : 15,
                   fontWeight: 700,
-                  color: "#fff"
+                  color: "#fff",
+                  flexShrink: 0
                 }}>
                   {stage.count}
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: INK }}>{stage.stage}</div>
-                  <div style={{ fontSize: 12, color: INK_SOFT }}>{stage.rate} conversion rate</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: isMobile ? 12 : 14, fontWeight: 600, color: INK }}>{stage.stage}</div>
+                  <div style={{ fontSize: isMobile ? 10 : 12, color: INK_SOFT }}>{stage.rate} conversion rate</div>
                 </div>
-                <div style={{
-                  width: 80,
-                  height: 6,
-                  background: RULE,
-                  borderRadius: 3,
-                  overflow: "hidden"
-                }}>
+                {!isMobile && (
                   <div style={{
-                    width: `${stage.rate.replace('%', '')}%`,
-                    height: "100%",
-                    background: stage.color,
+                    width: 80,
+                    height: 6,
+                    background: RULE,
                     borderRadius: 3,
-                    transition: "width 1s ease-out",
-                    animation: `growWidth 1s ease-out ${index * 0.2}s both`
-                  }} />
-                </div>
+                    overflow: "hidden",
+                    flexShrink: 0
+                  }}>
+                    <div style={{
+                      width: `${stage.rate.replace('%', '')}%`,
+                      height: "100%",
+                      background: stage.color,
+                      borderRadius: 3,
+                      transition: "width 1s ease-out",
+                      animation: `growWidth 1s ease-out ${index * 0.2}s both`
+                    }} />
+                  </div>
+                )}
               </div>
             ))}
           </div>
