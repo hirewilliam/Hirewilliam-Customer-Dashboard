@@ -139,6 +139,7 @@ function ScoreBar({ score }) {
 
 // ── Sidebar ──
 function Sidebar({ active, onNav, onClose }) {
+  const isMobile = useIsMobile();
   const channels = [
     { id: "chat", label: "talk-to-william", dot: true },
     { id: "outreach", label: "outreach-log", badge: "3" },
@@ -163,14 +164,14 @@ function Sidebar({ active, onNav, onClose }) {
       </div>
       <div style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", padding: "10px 8px 4px", textTransform: "uppercase", letterSpacing: 0.5 }}>Channels</div>
       {channels.map(ch => (
-        <div key={ch.id} onClick={() => onNav(ch.id)} style={{ padding: "5px 10px", borderRadius: 5, marginBottom: 1, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, background: active === ch.id ? "rgba(90,63,160,0.35)" : "transparent", color: active === ch.id ? "#fff" : "rgba(255,255,255,0.5)", fontSize: 13, transition: "all 0.15s" }}>
+        <div key={ch.id} onClick={() => onNav(ch.id)} style={{ padding: isMobile ? "8px 10px" : "5px 10px", minHeight: isMobile ? 44 : undefined, borderRadius: 5, marginBottom: 1, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, background: active === ch.id ? "rgba(90,63,160,0.35)" : "transparent", color: active === ch.id ? "#fff" : "rgba(255,255,255,0.5)", fontSize: 13, transition: "all 0.15s", boxSizing: "border-box" }}>
           {ch.lock ? <IconLock s={11} /> : <IconHash s={11} />}
           {ch.label}
           {ch.badge && <span style={{ marginLeft: "auto", fontSize: 10, background: RED, color: "#fff", padding: "1px 5px", borderRadius: 8, fontWeight: 600 }}>{ch.badge}</span>}
         </div>
       ))}
       <div style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", padding: "16px 8px 4px", textTransform: "uppercase", letterSpacing: 0.5 }}>Direct messages</div>
-      <div onClick={() => onNav("chat")} style={{ padding: "5px 10px", borderRadius: 5, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, background: active === "chat" ? "rgba(90,63,160,0.35)" : "transparent", color: active === "chat" ? "#fff" : "rgba(255,255,255,0.5)", fontSize: 13 }}>
+      <div onClick={() => onNav("chat")} style={{ padding: isMobile ? "8px 10px" : "5px 10px", minHeight: isMobile ? 44 : undefined, borderRadius: 5, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, background: active === "chat" ? "rgba(90,63,160,0.35)" : "transparent", color: active === "chat" ? "#fff" : "rgba(255,255,255,0.5)", fontSize: 13, boxSizing: "border-box" }}>
         <div style={{ position: "relative" }}>
           <div style={{ width: 18, height: 18, borderRadius: 4, background: PURPLE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, color: "#fff" }}>W</div>
           <div style={{ position: "absolute", bottom: -1, right: -1, width: 7, height: 7, borderRadius: "50%", background: "#44b700", border: "1.5px solid #16102a" }} />
@@ -1293,18 +1294,18 @@ function AnalyticsView() {
                   </div>
                 ) : (
                   <div style={{
-                    width: 60,
+                    flex: 1,
                     height: 6,
                     background: RULE,
                     borderRadius: 3,
                     overflow: "hidden",
-                    flexShrink: 0
                   }}>
                     <div style={{
                       width: `${stage.rate.replace('%', '')}%`,
                       height: "100%",
                       background: stage.color,
                       borderRadius: 3,
+                      transition: "width 1s ease-out",
                     }} />
                   </div>
                 )}
@@ -1527,10 +1528,10 @@ function ForFoundersView({ onNav }) {
                 ))}
               </div>
               ) : (
-              /* Mobile: condensed 2×2 stat grid below chat, no hot-leads list */
+              /* Mobile: condensed 2×2 stat grid + hot leads list below chat */
               <div style={{ background: "#120d22", borderTop: "1px solid rgba(255,255,255,0.06)", padding: "10px 12px" }}>
                 <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>Overnight</div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6, marginBottom: 10 }}>
                   {[
                     { label: "Sent", value: "47" },
                     { label: "Replies", value: "6" },
@@ -1543,6 +1544,21 @@ function ForFoundersView({ onNav }) {
                     </div>
                   ))}
                 </div>
+                <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>Hot leads</div>
+                {[
+                  { name: "Alex Morin", note: "Replied" },
+                  { name: "Priya Kumar", note: "Opened 3×" },
+                  { name: "Leo Tanaka", note: "Replied" },
+                  { name: "Jake Rivera", note: "Opened" },
+                ].map(l => (
+                  <div key={l.name} style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                    <div style={{ width: 20, height: 20, borderRadius: 5, background: "rgba(90,63,160,0.4)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, fontWeight: 700, color: PURPLE_LIGHT, flexShrink: 0 }}>{l.name.split(" ").filter(n => n).map(n => n[0]).join("")}</div>
+                    <div>
+                      <div style={{ fontSize: 10, fontWeight: 600, color: "rgba(255,255,255,0.7)" }}>{l.name}</div>
+                      <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)" }}>{l.note}</div>
+                    </div>
+                  </div>
+                ))}
               </div>
               )}
             </div>
