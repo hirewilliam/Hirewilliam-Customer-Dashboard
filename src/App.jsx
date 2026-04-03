@@ -300,6 +300,7 @@ function PipelineView() {
   const [prospects, setProspects] = useState(MOCK_PROSPECTS);
   const [filter, setFilter] = useState({ channel: null, time: null, score: null });
   const [draggedCard, setDraggedCard] = useState(null);
+  const [expandedCardId, setExpandedCardId] = useState(null);
   const isMobile = useIsMobile();
 
   const stages = [
@@ -383,7 +384,7 @@ function PipelineView() {
           </div>
         </div>
 
-        {/* Compact Filters */}
+        {/* Compact Filters — channel + time + score */}
         <div style={{ padding: "10px 16px", borderBottom: `1px solid ${RULE}`, display: "flex", gap: 6, alignItems: "center", background: PAPER_WARM, flexShrink: 0, flexWrap: "wrap" }}>
           <select
             value={filter.channel || ""}
@@ -394,6 +395,16 @@ function PipelineView() {
             <option value="email">Email</option>
             <option value="linkedin">LinkedIn</option>
             <option value="instagram">Instagram</option>
+          </select>
+          <select
+            value={filter.time || ""}
+            onChange={(e) => setFilter({ ...filter, time: e.target.value || null })}
+            style={{ fontSize: 12, padding: "4px 6px", borderRadius: 6, border: `1px solid ${RULE}`, background: "#fff", cursor: "pointer" }}
+          >
+            <option value="">All time</option>
+            <option value="today">Today</option>
+            <option value="week">This week</option>
+            <option value="month">This month</option>
           </select>
           <select
             value={filter.score || ""}
@@ -413,36 +424,98 @@ function PipelineView() {
           )}
         </div>
 
-        {/* Vertical list grouped by stage */}
+        {/* Vertical list grouped by stage — all 6 stages always shown */}
         <div style={{ flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: "12px 16px" }}>
           {stages.map(st => {
             const items = filteredProspects.filter(p => p.stage === st.id);
-            if (items.length === 0) return null;
+            const conversionRate = getConversionRate(st.id);
+            const prevStage = stages[stages.findIndex(s => s.id === st.id) - 1];
             return (
               <div key={st.id} style={{ marginBottom: 20 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, minHeight: 44 }}>
-                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: st.color, flexShrink: 0 }} />
-                  <span style={{ fontSize: 11, fontWeight: 700, color: st.color, textTransform: "uppercase", letterSpacing: 0.5 }}>{st.label}</span>
-                  <span style={{ fontSize: 11, color: INK_GHOST }}>{items.length}</span>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {items.map(p => (
-                    <div key={p.id} style={{ background: "#fff", border: `1px solid ${RULE}`, borderRadius: 10, padding: "14px 16px" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: 13, fontWeight: 600, color: INK }}>{p.name}</div>
-                          <div style={{ fontSize: 11, color: INK_SOFT }}>{p.company} · {p.role}</div>
-                        </div>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: p.score >= 80 ? GREEN : p.score >= 50 ? AMBER : INK_GHOST, marginLeft: 8, flexShrink: 0 }}>{p.score}</div>
-                      </div>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                        <Badge text={p.channel} color={p.channel} />
-                        <span style={{ fontSize: 10, color: INK_GHOST }}>{timeAgo(p.lastActivityTime)}</span>
-                      </div>
-                      <div style={{ fontSize: 11, color: INK_SOFT, marginTop: 6, lineHeight: 1.4 }}>{p.lastAction}</div>
+                {/* Stage header: dot + label + count + conversion rate + description */}
+                <div style={{ marginBottom: 10 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 28 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: st.color, flexShrink: 0 }} />
+                    <span style={{ fontSize: 11, fontWeight: 700, color: st.color, textTransform: "uppercase", letterSpacing: 0.5 }}>{st.label}</span>
+                    <span style={{ fontSize: 11, color: INK_GHOST }}>{items.length}</span>
+                  </div>
+                  {conversionRate !== null && prevStage && (
+                    <div style={{ fontSize: 10, color: INK_GHOST, marginLeft: 16, marginTop: 2 }}>
+                      {conversionRate}% converted from {prevStage.label}
                     </div>
-                  ))}
+                  )}
+                  <div style={{ fontSize: 10, color: INK_GHOST, fontStyle: "italic", marginLeft: 16, marginTop: 1 }}>{st.desc}</div>
                 </div>
+
+                {items.length === 0 ? (
+                  <div style={{ padding: "12px 16px", background: PAPER_WARM, borderRadius: 8, fontSize: 12, color: INK_GHOST, textAlign: "center" }}>No prospects</div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {items.map(p => {
+                      const stale = isStale(p.lastActivityTime);
+                      const recentMove = Date.now() - p.lastActivityTime < 3600000;
+                      const isExpanded = expandedCardId === p.id;
+                      return (
+                        <div key={p.id}>
+                          <div
+                            onClick={() => setExpandedCardId(isExpanded ? null : p.id)}
+                            style={{
+                              background: stale ? "rgba(255,255,255,0.5)" : "#fff",
+                              border: recentMove ? `2px solid ${GREEN}` : `1px solid ${RULE}`,
+                              borderRadius: 10,
+                              padding: "14px 16px",
+                              opacity: stale ? 0.7 : 1,
+                              cursor: "pointer",
+                              boxShadow: recentMove ? `0 0 8px ${GREEN}40` : "none",
+                            }}
+                          >
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontSize: 13, fontWeight: 600, color: INK }}>{p.name}</div>
+                                <div style={{ fontSize: 11, color: INK_SOFT }}>{p.company} · {p.role}</div>
+                              </div>
+                              <div style={{ fontSize: 13, fontWeight: 700, color: p.score >= 80 ? GREEN : p.score >= 50 ? AMBER : INK_GHOST, marginLeft: 8, flexShrink: 0 }}>{p.score}</div>
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                              <Badge text={p.channel} color={p.channel} />
+                            </div>
+                            <div style={{ fontSize: 11, color: INK_SOFT, lineHeight: 1.4, marginBottom: 6 }}>{p.lastAction}</div>
+                            {/* "Moved X ago" timeline dot */}
+                            <div style={{ fontSize: 9, display: "flex", alignItems: "center", gap: 4, color: INK_GHOST }}>
+                              <span style={{ width: 6, height: 6, borderRadius: "50%", background: recentMove ? GREEN : st.color, display: "inline-block" }} />
+                              Moved {timeAgo(p.lastActivityTime)}
+                            </div>
+                          </div>
+
+                          {/* Inline stage-move row (tap-to-expand) */}
+                          {isExpanded && (
+                            <div style={{ background: PAPER_WARM, border: `1px solid ${RULE}`, borderTop: "none", borderRadius: "0 0 10px 10px", padding: "10px 12px" }}>
+                              <div style={{ fontSize: 10, color: INK_GHOST, marginBottom: 8 }}>Move to stage:</div>
+                              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                                {stages.filter(s => s.id !== st.id).map(s => (
+                                  <button
+                                    key={s.id}
+                                    onClick={() => {
+                                      setProspects(prev => prev.map(prospect =>
+                                        prospect.id === p.id
+                                          ? { ...prospect, stage: s.id, lastActivityTime: Date.now(), activities: [...(prospect.activities || []), { time: Date.now(), action: "Manually moved" }] }
+                                          : prospect
+                                      ));
+                                      setExpandedCardId(null);
+                                    }}
+                                    style={{ fontSize: 11, fontWeight: 600, padding: "5px 10px", borderRadius: 6, border: `1px solid ${s.color}`, background: "#fff", color: s.color, cursor: "pointer" }}
+                                  >
+                                    {s.label}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             );
           })}
@@ -762,7 +835,7 @@ function OutreachView() {
         <div
           onClick={() => setOpen(!open)}
           style={{
-            display: "flex", alignItems: "center", gap: 12, padding: "14px 20px", cursor: "pointer",
+            display: "flex", alignItems: "center", gap: 12, padding: isMobile ? "12px 16px" : "14px 20px", cursor: "pointer",
             background: open ? PAPER_WARM : "transparent", transition: "background 0.15s",
           }}
         >
@@ -810,6 +883,9 @@ function OutreachView() {
               <button style={{ padding: "8px 14px", borderRadius: 8, background: replyText.trim() ? PURPLE : RULE, color: "#fff", border: "none", fontSize: 13, fontWeight: 600, cursor: replyText.trim() ? "pointer" : "default", transition: "background 0.15s" }}>Send</button>
               {!isMobile && <button style={{ padding: "8px 14px", borderRadius: 8, background: "transparent", color: INK_SOFT, border: `1px solid ${RULE}`, fontSize: 13, fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap" }}>I'll handle this one</button>}
             </div>
+            {isMobile && (
+              <button style={{ marginTop: 8, width: "100%", padding: "8px 14px", borderRadius: 8, background: "transparent", color: INK_SOFT, border: `1px solid ${RULE}`, fontSize: 13, fontWeight: 500, cursor: "pointer" }}>I'll handle this one</button>
+            )}
           </div>
         )}
       </div>
@@ -880,12 +956,12 @@ function MeetingsView() {
       </div>
       <div style={{ flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: isMobile ? 16 : 20 }}>
         {meetings.map(m => (
-          <div key={m.id} style={{ display: "flex", alignItems: isMobile ? "flex-start" : "center", gap: isMobile ? 10 : 14, padding: isMobile ? "12px 14px" : "14px 16px", background: PAPER_WARM, borderRadius: 10, marginBottom: 8, flexDirection: isMobile ? "column" : "row" }}>
-            <div style={{ width: 48, textAlign: "center", flexShrink: 0 }}>
+          <div key={m.id} style={{ display: "flex", alignItems: "center", gap: isMobile ? 10 : 14, padding: isMobile ? "12px 14px" : "14px 16px", background: PAPER_WARM, borderRadius: 10, marginBottom: 8, flexDirection: "row" }}>
+            <div style={{ width: isMobile ? 52 : 48, textAlign: "center", flexShrink: 0 }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: PURPLE }}>{m.time.split(" ")[0]}</div>
               <div style={{ fontSize: 15, fontWeight: 700, color: INK }}>{m.time.split(" ")[1]} {m.time.split(" ")[2]}</div>
             </div>
-            {!isMobile && <div style={{ width: 1, height: 36, background: RULE, flexShrink: 0 }} />}
+            <div style={{ width: 1, height: 36, background: RULE, flexShrink: 0 }} />
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 14, fontWeight: 600 }}>{m.prospect}</div>
               <div style={{ fontSize: 12, color: INK_SOFT }}>{m.company} · {m.duration}</div>
@@ -1197,7 +1273,7 @@ function AnalyticsView() {
                   <div style={{ fontSize: isMobile ? 12 : 14, fontWeight: 600, color: INK }}>{stage.stage}</div>
                   <div style={{ fontSize: isMobile ? 10 : 12, color: INK_SOFT }}>{stage.rate} conversion rate</div>
                 </div>
-                {!isMobile && (
+                {!isMobile ? (
                   <div style={{
                     width: 80,
                     height: 6,
@@ -1213,6 +1289,22 @@ function AnalyticsView() {
                       borderRadius: 3,
                       transition: "width 1s ease-out",
                       animation: `growWidth 1s ease-out ${index * 0.2}s both`
+                    }} />
+                  </div>
+                ) : (
+                  <div style={{
+                    width: 60,
+                    height: 6,
+                    background: RULE,
+                    borderRadius: 3,
+                    overflow: "hidden",
+                    flexShrink: 0
+                  }}>
+                    <div style={{
+                      width: `${stage.rate.replace('%', '')}%`,
+                      height: "100%",
+                      background: stage.color,
+                      borderRadius: 3,
                     }} />
                   </div>
                 )}
@@ -1347,7 +1439,7 @@ function ForFoundersView({ onNav }) {
               <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#ffbd2e" }} />
               <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#27c93f" }} />
             </div>
-            <div style={{ display: "flex", height: isMobile ? "auto" : 340, minHeight: isMobile ? 260 : undefined, overflow: "hidden" }}>
+            <div style={{ display: "flex", height: isMobile ? "auto" : 340, minHeight: isMobile ? 260 : undefined, overflow: "hidden", flexDirection: isMobile ? "column" : "row" }}>
               {/* Sidebar */}
               <div style={{ width: isMobile ? 90 : 170, background: "#120d22", padding: "12px 0", flexShrink: 0, overflow: "hidden" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "4px 12px 12px" }}>
@@ -1401,8 +1493,8 @@ function ForFoundersView({ onNav }) {
                   <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: 7, padding: "7px 12px", fontSize: 11, color: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.07)" }}>Message #talk-to-william…</div>
                 </div>
               </div>
-              {/* Right stats panel */}
-              {!isMobile && (
+              {/* Right stats panel — full width 2×2 grid on mobile, fixed sidebar on desktop */}
+              {!isMobile ? (
               <div style={{ width: 175, background: "#120d22", borderLeft: "1px solid rgba(255,255,255,0.06)", padding: "12px", flexShrink: 0, overflowY: "hidden" }}>
                 <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>Overnight</div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginBottom: 14 }}>
@@ -1433,6 +1525,24 @@ function ForFoundersView({ onNav }) {
                     </div>
                   </div>
                 ))}
+              </div>
+              ) : (
+              /* Mobile: condensed 2×2 stat grid below chat, no hot-leads list */
+              <div style={{ background: "#120d22", borderTop: "1px solid rgba(255,255,255,0.06)", padding: "10px 12px" }}>
+                <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>Overnight</div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6 }}>
+                  {[
+                    { label: "Sent", value: "47" },
+                    { label: "Replies", value: "6" },
+                    { label: "Meetings", value: "2" },
+                    { label: "Hot leads", value: "4" },
+                  ].map(s => (
+                    <div key={s.label} style={{ background: "rgba(255,255,255,0.05)", borderRadius: 7, padding: "6px 8px", textAlign: "center" }}>
+                      <div style={{ fontSize: 9, color: "rgba(255,255,255,0.35)" }}>{s.label}</div>
+                      <div style={{ fontSize: 16, fontWeight: 700, color: "#fff", lineHeight: 1.2 }}>{s.value}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
               )}
             </div>
@@ -1679,7 +1789,7 @@ function RightPanel({ isMobile = false }) {
 
   if (isMobile) {
     return (
-      <div style={{ borderTop: `1px solid ${RULE}`, padding: "12px 16px 14px", fontSize: 12, background: PAPER, flexShrink: 0 }}>
+      <div style={{ borderTop: `1px solid ${RULE}`, padding: "12px 16px 14px", fontSize: 12, background: PAPER, flexShrink: 0, maxHeight: 220, overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
         <div style={{ fontSize: 10, fontWeight: 600, color: INK_GHOST, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Overnight results</div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 6, marginBottom: 12 }}>
           {stats.map(s => (
@@ -1769,7 +1879,12 @@ export default function App() {
           </button>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <div style={{ width: 26, height: 26, borderRadius: 6, background: PURPLE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 800, color: "#fff" }}>W</div>
-            <span style={{ color: "#fff", fontSize: 15, fontWeight: 700 }}>HireWilliam</span>
+            <div>
+              <span style={{ color: "#fff", fontSize: 15, fontWeight: 700 }}>HireWilliam</span>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", lineHeight: 1.2 }}>
+                {{ chat: "talk-to-william", pipeline: "pipeline", outreach: "outreach-log", meetings: "meetings", analytics: "analytics", founders: "for-founders" }[page]}
+              </div>
+            </div>
           </div>
         </div>
       )}
