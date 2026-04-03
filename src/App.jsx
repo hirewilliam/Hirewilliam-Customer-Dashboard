@@ -158,12 +158,31 @@ function Sidebar({ active, onNav }) {
 }
 
 // ── Chat View ──
+const WILLIAM_INITIAL_MSG = `So You found me. Good
+
+I'm William and by the time I'm done setting up, I'll know your buyers better than they know themselves. I'll reach them on the right channel, at the right moment, with a message so specific they'll wonder who told me about them.
+
+
+Click around  this dashboard is yours. This is where you can communicate with me as your new sales hire . The pipeline. The outreach log. The analytics. This is what 10am looks like after you sleep in while I have been still closing deals at 3am.
+
+
+Message Terry Lee the founder at terrylee@hirewilliam.com
+Tell her I sent you and you want in.
+
+She built me. But between us  I'm the one who does all  the work she just checks her emails now`;
+
+const WILLIAM_FINAL_MSG = `Look, I could sit here and chat all day but that's not what I was built for. I was built to fill your calendar with people who want to buy what you're selling. And I'm almost ready to prove it.
+
+I'm not live yet. Message Terry Lee (terrylee@hirewilliam.com) 
+I promise she will get you all set`;
+
 function ChatView() {
   const [msgs, setMsgs] = useState([
-    { id: "intro", sender: "william", content: "Hi there! I'm William, your AI sales assistant. I help founders like you fill their sales pipeline without hiring SDRs. Tell me about your product, your ideal customers, and what you're struggling with in sales right now. I'll get to work building your outreach strategy.", time: "now" }
+    { id: "intro", sender: "william", content: WILLIAM_INITIAL_MSG, time: "now" }
   ]);
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
+  const [chatLocked, setChatLocked] = useState(false);
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -171,28 +190,17 @@ function ChatView() {
 
   function send() {
     const text = input.trim();
-    if (!text) return;
+    if (!text || chatLocked) return;
     const userMsg = { id: Date.now().toString(), sender: "user", content: text, time: "now" };
     setMsgs(p => [...p, userMsg]);
     setInput("");
     setTyping(true);
 
-    // Call Claude API with William's personality
     (async () => {
-      const updatedMsgs = [...msgs, userMsg];
-      
-      // Add a delay to feel natural (William is thinking)
       await new Promise(resolve => setTimeout(resolve, 1200));
-      
-      const response = await getWilliamResponse(updatedMsgs);
-      
-      if (response) {
-        setMsgs(p => [...p, { id: (Date.now() + 1).toString(), sender: "william", content: response, time: "now" }]);
-      } else {
-        // Fallback if API fails
-        setMsgs(p => [...p, { id: (Date.now() + 1).toString(), sender: "william", content: "I'm having trouble connecting right now. Make sure your API key is set up in .env.local", time: "now" }]);
-      }
+      setMsgs(p => [...p, { id: (Date.now() + 1).toString(), sender: "william", content: WILLIAM_FINAL_MSG, time: "now" }]);
       setTyping(false);
+      setChatLocked(true);
     })();
   }
 
@@ -251,13 +259,14 @@ function ChatView() {
           <textarea
             ref={inputRef}
             value={input}
-            onChange={e => setInput(e.target.value)}
+            onChange={e => { if (!chatLocked) setInput(e.target.value); }}
             onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
-            placeholder="Message William..."
+            placeholder={chatLocked ? "Chat ended" : "Message William..."}
             rows={1}
-            style={{ flex: 1, resize: "none", borderRadius: 10, border: `1px solid ${RULE}`, padding: "10px 14px", fontSize: 14, outline: "none", fontFamily: "inherit", background: PAPER }}
+            disabled={chatLocked}
+            style={{ flex: 1, resize: "none", borderRadius: 10, border: `1px solid ${RULE}`, padding: "10px 14px", fontSize: 14, outline: "none", fontFamily: "inherit", background: chatLocked ? RULE : PAPER, color: chatLocked ? INK_GHOST : INK, cursor: chatLocked ? "not-allowed" : "text" }}
           />
-          <button onClick={send} disabled={!input.trim()} style={{ width: 40, height: 40, borderRadius: 10, background: input.trim() ? PURPLE : RULE, border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: input.trim() ? "pointer" : "default", color: "#fff", transition: "all 0.15s" }}>
+          <button onClick={send} disabled={!input.trim() || chatLocked} style={{ width: 40, height: 40, borderRadius: 10, background: (input.trim() && !chatLocked) ? PURPLE : RULE, border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: (input.trim() && !chatLocked) ? "pointer" : "default", color: "#fff", transition: "all 0.15s" }}>
             <IconSend s={16} />
           </button>
         </div>
