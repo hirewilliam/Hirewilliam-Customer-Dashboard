@@ -245,7 +245,7 @@ function ChatView() {
         </div>
       </div>
 
-      <div style={{ flex: 1, overflowY: "auto", padding: isMobile ? "12px 14px" : "16px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: isMobile ? "12px 14px" : "16px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
         {msgs.length === 0 && (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", textAlign: "center" }}>
             <Avatar initials="W" size={56} />
@@ -1690,15 +1690,15 @@ function RightPanel({ isMobile = false }) {
           ))}
         </div>
         <div style={{ fontSize: 10, fontWeight: 600, color: INK_GHOST, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Hot leads</div>
-        <div style={{ display: "flex", gap: 12, overflowX: "auto" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
           {hot.map(p => {
             const heat = p.score >= 80 ? "hot" : p.score >= 60 ? "warm" : "new";
             return (
-              <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+              <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 6, background: PAPER_WARM, borderRadius: 7, padding: "6px 8px", minWidth: 0 }}>
                 <Avatar initials={p.avatar} bg={heat === "hot" ? "#fcebeb" : heat === "warm" ? "#fdf2e3" : "#e6f1fb"} size={22} />
-                <div>
-                  <div style={{ fontSize: 11, fontWeight: 600, whiteSpace: "nowrap" }}>{p.name}</div>
-                  <div style={{ fontSize: 10, color: INK_GHOST, whiteSpace: "nowrap" }}>{p.lastAction}</div>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</div>
+                  <div style={{ fontSize: 10, color: INK_GHOST, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.lastAction}</div>
                 </div>
               </div>
             );
@@ -1760,7 +1760,7 @@ export default function App() {
           <button
             onClick={() => setSidebarOpen(true)}
             aria-label="Open menu"
-            style={{ background: "none", border: "none", color: "rgba(255,255,255,0.85)", cursor: "pointer", padding: "6px 4px", display: "flex", flexDirection: "column", gap: 4, touchAction: "manipulation" }}
+            style={{ background: "none", border: "none", color: "rgba(255,255,255,0.85)", cursor: "pointer", padding: "10px 12px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, touchAction: "manipulation", minWidth: 44, minHeight: 44 }}
           >
             <span style={{ display: "block", width: 20, height: 2, background: "currentColor", borderRadius: 2 }} />
             <span style={{ display: "block", width: 20, height: 2, background: "currentColor", borderRadius: 2 }} />
