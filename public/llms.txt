@@ -1,0 +1,44 @@
+# HireWilliam
+
+> HireWilliam is an AI-powered sales automation platform built for founders. William — the AI — researches prospects, writes personalised outreach across email, LinkedIn, and Instagram, handles replies, and books meetings automatically, 24/7.
+
+## What HireWilliam Does
+
+- Sends 40-50 personalised outreach messages per day across email, LinkedIn, and Instagram
+- Researches each prospect individually (not templates)
+- Handles replies and moves leads through the pipeline automatically
+- Books qualified meetings directly into your calendar
+- Operates 24/7 — founders wake up to booked calls, not to-do lists
+
+## Who It's For
+
+Early-stage founders, solo founders, and bootstrapped startups (2–4 person teams) who are spending 15–20 hours/week on manual sales outreach and need to free up time for product and fundraising.
+
+## Pricing
+
+- $299/month — everything included, cancel anytime
+- No setup fee, no per-message fees, no annual contracts
+- 30-day money-back guarantee if reply rate is below 5%
+
+## Why Founders Choose HireWilliam Over Hiring an SDR
+
+- 94% cheaper than a junior SDR ($299/month vs $5,200+/month)
+- Productive in 24 hours vs 3 months ramp time
+- Never calls in sick, never quits, works 24/7
+- Genuine personalisation — references real prospect activity (LinkedIn posts, Product Hunt launches, changelogs)
+
+## Key Stats
+
+- Average: 8–12 qualified meetings per week
+- Reply rate: 10–15% (vs 2% for generic outreach)
+- 32–48 prospect conversations per month
+- Time saved: 8–12 hours/week for the founder
+
+## Founder
+
+Built by Terry Lee Morgan. Contact: terrylee@hirewilliam.com
+
+## Pages
+
+- [Home / Dashboard](https://hirewilliam.com): Interactive demo of the William AI sales dashboard
+- [For Founders](https://hirewilliam.com/#founders): Full product overview, pricing, outreach examples, and founder story
