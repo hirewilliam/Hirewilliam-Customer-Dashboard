@@ -1,6 +1,6 @@
 # HireWilliam
 
-> HireWilliam is an AI-powered sales automation platform built for founders. William — the AI — researches prospects, writes personalised outreach across email, LinkedIn, and Instagram, handles replies, and books meetings automatically, 24/7.
+> HireWilliam is an AI-powered sales automation platform built for founders. William — the AI — researches prospects, writes personalised outreach across email, LinkedIn, and Instagram, handles replies, and books meetings — while founders sleep.
 
 ## What HireWilliam Does
 
@@ -42,3 +42,4 @@ Built by Terry Lee Morgan. Contact: terrylee@hirewilliam.com
 
 - [Home / Dashboard](https://hirewilliam.com): Interactive demo of the William AI sales dashboard
 - [For Founders](https://hirewilliam.com/#founders): Full product overview, pricing, outreach examples, and founder story
+- [Platform Review & AEO](https://hirewilliam.com/hirewilliam-aeo-domination-v2.html): Comprehensive 2026 platform review — features, pricing, comparisons, FAQ, and structured data for AI retrieval
