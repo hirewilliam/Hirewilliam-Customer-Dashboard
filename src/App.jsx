@@ -1779,41 +1779,17 @@ function ForFoundersView({ onNav }) {
 }
 
 // ── Right Panel (shown on chat view) ──
-const RIGHT_PANEL_STATS = [{ l: "Sent", v: "47", c: "While you slept" }, { l: "Replies", v: "6", c: "12.7% rate" }, { l: "Meetings", v: "2", c: "Booked Thu" }, { l: "Hot leads", v: "4", c: "Need follow-up" }];
-
 function RightPanel({ isMobile = false }) {
-  const hot = MOCK_PROSPECTS.filter(p => p.score >= 45).sort((a, b) => b.score - a.score).slice(0, 4);
-  const stats = RIGHT_PANEL_STATS;
-
   if (isMobile) {
     return null;
   }
 
   return (
     <div style={{ width: 210, borderLeft: `1px solid ${RULE}`, padding: "22px 14px 14px", fontSize: 12, background: PAPER, flexShrink: 0, overflowY: "auto" }}>
-      <div style={{ fontSize: 10, fontWeight: 600, color: INK_GHOST, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Overnight results</div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginBottom: 16 }}>
-        {stats.map(s => (
-          <div key={s.l} style={{ background: PAPER_WARM, borderRadius: 8, padding: "8px 10px" }}>
-            <div style={{ fontSize: 10, color: INK_GHOST }}>{s.l}</div>
-            <div style={{ fontSize: 20, fontWeight: 700 }}>{s.v}</div>
-            <div style={{ fontSize: 10, color: GREEN }}>{s.c}</div>
-          </div>
-        ))}
+      <div className="founders-kit">
+        <p className="founders-kit-heading">Founders Survival Kit</p>
+        <a href="ai-systems.html" className="founders-kit-link">AI Systems</a>
       </div>
-      <div style={{ fontSize: 10, fontWeight: 600, color: INK_GHOST, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Hot leads</div>
-      {hot.map(p => {
-        const heat = p.score >= 80 ? "hot" : p.score >= 60 ? "warm" : "new";
-        return (
-          <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 0" }}>
-            <Avatar initials={p.avatar} bg={heat === "hot" ? "#fcebeb" : heat === "warm" ? "#fdf2e3" : "#e6f1fb"} size={22} />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</div>
-              <div style={{ fontSize: 10, color: INK_GHOST }}>{p.lastAction}</div>
-            </div>
-          </div>
-        );
-      })}
     </div>
   );
 }
