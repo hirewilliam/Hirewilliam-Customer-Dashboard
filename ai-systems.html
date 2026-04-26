@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Systems - HireWilliam</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg: #f5f5f7; --panel: #ffffff; --sidebar-dark: #1a1a28; --border: #e4e4ec; --border-dark: rgba(255,255,255,0.07); --purple: #7c6af7; --purple-light: #a89af7; --purple-dim: rgba(124,106,247,0.09); --purple-dim-border: rgba(124,106,247,0.2); --text: #111118; --muted: #8888a8; --green: #22c55e; --green-bg: rgba(34,197,94,0.1); --green-border: rgba(34,197,94,0.25); }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  .channel-bar { position: sticky; top: 0; z-index: 50; background: var(--panel); border-bottom: 1px solid var(--border); padding: 0 32px; height: 52px; display: flex; align-items: center; gap: 10px; }
+  .ch-brand { display: flex; align-items: center; gap: 8px; margin-right: 16px; }
+  .brand-icon { width: 28px; height: 28px; background: var(--purple); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: white; }
+  .brand-name { font-size: 14px; font-weight: 700; color: var(--text); }
+  .ch-divider { width: 1px; height: 18px; background: var(--border); }
+  .ch-hash { font-size: 18px; color: var(--muted); font-weight: 300; line-height: 1; }
+  .ch-name { font-size: 14px; font-weight: 700; color: var(--text); }
+  .ch-desc { font-size: 12px; color: var(--muted); }
+  .ch-cta { margin-left: auto; background: var(--purple); color: white; border: none; border-radius: 6px; padding: 7px 18px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; text-decoration: none; transition: background 0.15s; }
+  .ch-cta:hover { background: #6a58e8; }
+  .feed { max-width: 860px; margin: 0 auto; padding: 28px 32px 60px; display: flex; flex-direction: column; gap: 20px; }
+  .divider { display: flex; align-items: center; gap: 12px; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .msg-block { display: flex; gap: 12px; align-items: flex-start; }
+  .msg-avatar { width: 36px; height: 36px; background: var(--purple); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; color: white; flex-shrink: 0; margin-top: 2px; }
+  .msg-body { flex: 1; }
+  .msg-meta { display: flex; align-items: baseline; gap: 8px; margin-bottom: 5px; }
+  .msg-name { font-size: 14px; font-weight: 700; color: var(--text); }
+  .ai-pill { background: var(--purple); color: white; font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 4px; letter-spacing: 0.04em; }
+  .msg-time { font-size: 11px; color: var(--muted); }
+  .msg-text { font-size: 14px; color: #222; line-height: 1.65; }
+  .attachment { margin-top: 10px; background: var(--panel); border: 1px solid var(--border); border-left: 3px solid var(--purple); border-radius: 0 8px 8px 0; overflow: hidden; }
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
+  .stat-cell { padding: 18px 20px; border-right: 1px solid var(--border); text-align: center; }
+  .stat-cell:last-child { border-right: none; }
+  .stat-num { font-size: 28px; font-weight: 800; color: var(--purple); line-height: 1; margin-bottom: 4px; }
+  .stat-label { font-size: 11px; color: var(--muted); line-height: 1.4; }
+  .attach-header { padding: 14px 18px 12px; border-bottom: 1px solid var(--border); font-size: 12px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .attach-header .count-badge { background: var(--purple-dim); color: var(--purple); border: 1px solid var(--purple-dim-border); font-size: 10px; font-weight: 700; padding: 1px 8px; border-radius: 999px; }
+  .del-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; }
+  .del-item { display: flex; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); align-items: flex-start; }
+  .del-item:nth-child(even) { border-right: none; }
+  .del-item:nth-last-child(1), .del-item:nth-last-child(2) { border-bottom: none; }
+  .del-num { font-size: 10px; font-weight: 700; color: var(--purple); background: var(--purple-dim); border-radius: 4px; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+  .del-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; line-height: 1.3; }
+  .del-desc { font-size: 11.5px; color: var(--muted); line-height: 1.55; font-weight: 300; }
+  .docs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
+  .doc-item { padding: 14px 18px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .doc-item:nth-child(3n) { border-right: none; }
+  .doc-item:nth-last-child(1), .doc-item:nth-last-child(2), .doc-item:nth-last-child(3) { border-bottom: none; }
+  .doc-label { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--purple-light); font-weight: 600; margin-bottom: 5px; }
+  .doc-title { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .doc-desc { font-size: 11px; color: var(--muted); line-height: 1.5; font-weight: 300; }
+  .pricing-attach { background: var(--sidebar-dark); border-radius: 0 8px 8px 0; overflow: hidden; position: relative; }
+  .pricing-attach::before { content: ''; position: absolute; top: -60px; right: -60px; width: 220px; height: 220px; background: radial-gradient(circle, rgba(124,106,247,0.2) 0%, transparent 70%); pointer-events: none; }
+  .pricing-inner { display: grid; grid-template-columns: 1fr auto; gap: 32px; padding: 28px; align-items: center; position: relative; z-index: 1; }
+  .pricing-eyebrow { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.3); font-weight: 600; margin-bottom: 8px; }
+  .pricing-title { font-size: 20px; font-weight: 800; color: #fff; line-height: 1.2; margin-bottom: 16px; letter-spacing: -0.01em; }
+  .pricing-title span { color: var(--purple-light); }
+  .pf-list { display: flex; flex-direction: column; gap: 7px; }
+  .pf-row { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: rgba(255,255,255,0.6); }
+  .pf-check { width: 16px; height: 16px; border-radius: 50%; background: var(--green-bg); border: 1px solid var(--green-border); display: flex; align-items: center; justify-content: center; font-size: 8px; color: var(--green); flex-shrink: 0; }
+  .pricing-right { text-align: center; flex-shrink: 0; }
+  .price-amount { font-size: 56px; font-weight: 800; color: #fff; line-height: 1; letter-spacing: -0.03em; margin-bottom: 3px; }
+  .price-amount sup { font-size: 24px; font-weight: 600; vertical-align: top; margin-top: 10px; display: inline-block; color: var(--purple-light); }
+  .price-duration { font-size: 11px; color: rgba(255,255,255,0.35); margin-bottom: 16px; }
+  .price-btn { background: var(--purple); color: white; border: none; border-radius: 7px; padding: 11px 24px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.15s, transform 0.1s; box-shadow: 0 4px 20px rgba(124,106,247,0.45); white-space: nowrap; text-decoration: none; display: inline-block; }
+  .price-btn:hover { background: #6a58e8; transform: translateY(-1px); }
+  .price-note { font-size: 10px; color: rgba(255,255,255,0.22); margin-top: 8px; line-height: 1.5; }
+  .compare-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
+  .cmp-cell { padding: 16px 18px; border-right: 1px solid rgba(255,255,255,0.07); text-align: center; }
+  .cmp-cell:last-child { border-right: none; }
+  .cmp-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.3); font-weight: 600; margin-bottom: 8px; }
+  .cmp-price { font-size: 18px; font-weight: 800; color: rgba(255,255,255,0.4); margin-bottom: 6px; line-height: 1; }
+  .cmp-desc { font-size: 11px; color: rgba(255,255,255,0.3); line-height: 1.5; }
+  .cmp-cell.ours { background: rgba(124,106,247,0.15); }
+  .cmp-cell.ours .cmp-label { color: var(--purple-light); }
+  .cmp-cell.ours .cmp-price { color: #fff; }
+  .cmp-cell.ours .cmp-desc { color: rgba(255,255,255,0.45); }
+  .input-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--panel); border-top: 1px solid var(--border); padding: 10px 32px; z-index: 40; }
+  .input-inner { max-width: 860px; margin: 0 auto; }
+  .input-fake { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 9px 16px; display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; cursor: text; }
+</style>
+</head>
+<body>
+<div class="channel-bar">
+  <div class="ch-brand"><div class="brand-icon">W</div><div class="brand-name">HireWilliam</div></div>
+  <div class="ch-divider"></div>
+  <span class="ch-hash">#</span>
+  <span class="ch-name">ai-systems</span>
+  <div class="ch-divider"></div>
+  <span class="ch-desc">Full AI architecture built and deployed for your business</span>
+  <a href="mailto:terrylee@hirewilliam.com" class="ch-cta">Get Started</a>
+</div>
+<div class="feed">
+  <div class="divider">Today</div>
+  <div class="msg-block">
+    <div class="msg-avatar">W</div>
+    <div class="msg-body">
+      <div class="msg-meta"><span class="msg-name">William</span><span class="ai-pill">AI</span><span class="msg-time">10:00 AM</span></div>
+      <div class="msg-text">Most founders come to me after months of duct-taping tools together that don't talk to each other. HireWilliam builds the whole system: AI employees, full automation, every tool connected, in 6 weeks. You own all of it. No agency. No lock-in. Here's what that looks like.</div>
+    </div>
+  </div>
+  <div class="msg-block">
+    <div class="msg-avatar">W</div>
+    <div class="msg-body">
+      <div class="msg-meta"><span class="msg-name">William</span><span class="ai-pill">AI</span><span class="msg-time">10:01 AM</span></div>
+      <div class="msg-text">Here's the engagement at a glance:</div>
+      <div class="attachment" style="margin-top:10px;">
+        <div class="stats-row">
+          <div class="stat-cell"><div class="stat-num">6</div><div class="stat-label">Weeks to full deployment</div></div>
+          <div class="stat-cell"><div class="stat-num">16</div><div class="stat-label">Core deliverables included</div></div>
+          <div class="stat-cell"><div class="stat-num">6</div><div class="stat-label">Documents delivered at handover</div></div>
+          <div class="stat-cell"><div class="stat-num">30</div><div class="stat-label">Days post-support included</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="divider">Core Deliverables</div>
+  <div class="msg-block">
+    <div class="msg-avatar">W</div>
+    <div class="msg-body">
+      <div class="msg-meta"><span class="msg-name">William</span><span class="ai-pill">AI</span><span class="msg-time">10:02 AM</span></div>
+      <div class="msg-text">Here's everything that gets built and handed over to you:</div>
+      <div class="attachment">
+        <div class="attach-header">Core Deliverables <span class="count-badge">16 Items</span></div>
+        <div class="del-grid">
+          <div class="del-item"><div class="del-num">01</div><div><div class="del-title">AI Business Audit</div><div class="del-desc">Deep audit of your entire operation, tools, workflows, team structure, and data. Maps every opportunity where AI agents can replace manual effort and 10x output.</div></div></div>
+          <div class="del-item"><div class="del-num">02</div><div><div class="del-title">AI Readiness Evaluation</div><div class="del-desc">Full assessment of your infrastructure and team readiness for autonomous AI deployment. Delivers a prioritised implementation roadmap with clear ROI milestones.</div></div></div>
+          <div class="del-item"><div class="del-num">03</div><div><div class="del-title">Company Brain and Knowledge Base</div><div class="del-desc">Your business intelligence fully structured and loaded into Claude. AI agents autonomously reference your knowledge, decisions, and processes with no human bottleneck.</div></div></div>
+          <div class="del-item"><div class="del-num">04</div><div><div class="del-title">Custom AI Employees</div><div class="del-desc">Dedicated AI agents built for your specific roles: sales, operations, content, support. Each trained on your business and operating autonomously 24/7.</div></div></div>
+          <div class="del-item"><div class="del-num">05</div><div><div class="del-title">Agentic Automation Architecture</div><div class="del-desc">End-to-end agentic workflows designed and deployed. AI agents trigger, execute, and complete multi-step tasks autonomously, freeing your team for high-value work only.</div></div></div>
+          <div class="del-item"><div class="del-num">06</div><div><div class="del-title">Full Stack Tool Integration</div><div class="del-desc">Every tool in your stack connected into one unified AI system. CRM, email, calendar, Slack, project management, all talking autonomously in real time.</div></div></div>
+          <div class="del-item"><div class="del-num">07</div><div><div class="del-title">GitHub Repository and Codebase</div><div class="del-desc">All custom code, scripts, automations, and configurations version-controlled and delivered in a private GitHub repository. Your IP, fully owned and documented.</div></div></div>
+          <div class="del-item"><div class="del-num">08</div><div><div class="del-title">Prompt Engineering Library</div><div class="del-desc">Production-grade prompt library powering every AI agent and workflow. Tested, version-controlled, and categorised so your team can scale output 10x without additional headcount.</div></div></div>
+          <div class="del-item"><div class="del-num">09</div><div><div class="del-title">Quality Assurance and Testing</div><div class="del-desc">Rigorous QA across every agent and automation before deployment. Edge cases stress-tested, outputs benchmarked, and performance validated against defined success criteria.</div></div></div>
+          <div class="del-item"><div class="del-num">10</div><div><div class="del-title">AI Usage Policy and Governance</div><div class="del-desc">Enterprise-grade AI governance framework: approved tools, data handling standards, agent permissions, and guardrails. Keeps your autonomous systems compliant and controlled.</div></div></div>
+          <div class="del-item"><div class="del-num">11</div><div><div class="del-title">Team Enablement and Training</div><div class="del-desc">Live training sessions that turn your team into AI-native operators. They leave knowing how to direct, expand, and get 10x output from every agent and system built.</div></div></div>
+          <div class="del-item"><div class="del-num">12</div><div><div class="del-title">90-Day AI Growth Roadmap</div><div class="del-desc">A strategic roadmap for what to build next: new agents, expanded automations, and scaling opportunities. Keeps your AI infrastructure growing beyond the engagement.</div></div></div>
+          <div class="del-item"><div class="del-num">13</div><div><div class="del-title">Weekly Progress Reports</div><div class="del-desc">Clear weekly updates on what was built, what's running autonomously, and what's next. Full visibility throughout with no guesswork on your investment.</div></div></div>
+          <div class="del-item"><div class="del-num">14</div><div><div class="del-title">Video Walkthrough Library</div><div class="del-desc">Recorded walkthroughs of every system, agent, and automation built. Onboard new team members instantly without a single call.</div></div></div>
+          <div class="del-item"><div class="del-num">15</div><div><div class="del-title">Competitor AI Intelligence Report</div><div class="del-desc">A snapshot of how your competitors are currently using AI, where they're ahead, where the gaps are, and exactly where you step in and win.</div></div></div>
+          <div class="del-item"><div class="del-num">16</div><div><div class="del-title">6-Week Dedicated Access</div><div class="del-desc">Direct access to HireWilliam throughout the full engagement via a dedicated priority channel. Questions answered, systems refined, agents optimised in real time.</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="divider">Documentation Delivered</div>
+  <div class="msg-block">
+    <div class="msg-avatar">W</div>
+    <div class="msg-body">
+      <div class="msg-meta"><span class="msg-name">William</span><span class="ai-pill">AI</span><span class="msg-time">10:03 AM</span></div>
+      <div class="msg-text">Six documents delivered at handover. Everything your team needs to run and grow the system independently:</div>
+      <div class="attachment">
+        <div class="attach-header">Documentation <span class="count-badge">6 Documents</span></div>
+        <div class="docs-grid">
+          <div class="doc-item"><div class="doc-label">Doc 01</div><div class="doc-title">AI Architecture Blueprint</div><div class="doc-desc">Full technical map of every system. Structure, logic, and connections documented.</div></div>
+          <div class="doc-item"><div class="doc-label">Doc 02</div><div class="doc-title">Prompt Engineering Library</div><div class="doc-desc">Full prompt library categorised by function, use case, and team member role.</div></div>
+          <div class="doc-item"><div class="doc-label">Doc 03</div><div class="doc-title">Automation Runbook</div><div class="doc-desc">Step-by-step guide for every automation. Triggers, outputs, and how to edit.</div></div>
+          <div class="doc-item"><div class="doc-label">Doc 04</div><div class="doc-title">QA Testing Report</div><div class="doc-desc">Full test results. Pass criteria, edge cases, and sign-off status for every system.</div></div>
+          <div class="doc-item"><div class="doc-label">Doc 05</div><div class="doc-title">AI Usage Policy</div><div class="doc-desc">Internal policy. Approved tools, data standards, responsibilities, and guardrails.</div></div>
+          <div class="doc-item"><div class="doc-label">Doc 06</div><div class="doc-title">Team Training Guide</div><div class="doc-desc">Reference guide your team keeps. How to use, maintain, and grow the system.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="divider">Investment</div>
+  <div class="msg-block">
+    <div class="msg-avatar">W</div>
+    <div class="msg-body">
+      <div class="msg-meta"><span class="msg-name">William</span><span class="ai-pill">AI</span><span class="msg-time">10:04 AM</span></div>
+      <div class="msg-text">One flat investment. Everything included. No retainers, no agency markup.</div>
+      <div class="attachment pricing-attach">
+        <div class="pricing-inner">
+          <div class="pricing-left">
+            <div class="pricing-eyebrow">Full AI Architecture - HireWilliam</div>
+            <div class="pricing-title">Everything built.<br><span>You own it all.</span></div>
+            <div class="pf-list">
+              <div class="pf-row"><div class="pf-check">v</div> 16 core deliverables + 6 documents</div>
+              <div class="pf-row"><div class="pf-check">v</div> Custom AI employees built for your specific roles</div>
+              <div class="pf-row"><div class="pf-check">v</div> Full tool stack integration: CRM, email, calendar and more</div>
+              <div class="pf-row"><div class="pf-check">v</div> 6 documents delivered at handover</div>
+              <div class="pf-row"><div class="pf-check">v</div> 30-day post-support after handover</div>
+              <div class="pf-row"><div class="pf-check">v</div> You own 100% of everything built. No lock-in.</div>
+            </div>
+          </div>
+          <div class="pricing-right">
+            <div class="price-amount"><sup>$</sup>4,400</div>
+            <div class="price-duration">6-Week Build - Full Architecture</div>
+            <a href="mailto:terrylee@hirewilliam.com" class="price-btn">Get Started</a>
+            <div class="price-note">[terrylee@hirewilliam.com](mailto:terrylee@hirewilliam.com)<br>Claude Certified - No agency overhead</div>
+          </div>
+        </div>
+        <div style="border-top: 1px solid rgba(255,255,255,0.07);">
+          <div class="compare-grid">
+            <div class="cmp-cell"><div class="cmp-label">Junior AI Hire</div><div class="cmp-price">$60,000/yr</div><div class="cmp-desc">Salary only. No expertise guaranteed. Months of onboarding.</div></div>
+            <div class="cmp-cell"><div class="cmp-label">AI Agency</div><div class="cmp-price">$25,000+</div><div class="cmp-desc">Bloated overhead. Junior staff. Account managers between you and the work.</div></div>
+            <div class="cmp-cell"><div class="cmp-label">AI Course</div><div class="cmp-price">$5,000+</div><div class="cmp-desc">You still build it yourself. Months of your time. No guarantee of results.</div></div>
+            <div class="cmp-cell ours"><div class="cmp-label">HireWilliam</div><div class="cmp-price">$4,400</div><div class="cmp-desc">Built for you. Done in 6 weeks. You own everything. Direct access throughout.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="height:52px;"></div>
+</div>
+<div class="input-bar">
+  <div class="input-inner">
+    <div class="input-fake">Message #ai-systems</div>
+  </div>
+</div>
+</body>
+</html>
