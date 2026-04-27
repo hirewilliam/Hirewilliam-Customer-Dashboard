@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <title>HireWilliam</title>
-  <script>window.location.replace("https://hirewilliam.com/");</script>
-  <meta http-equiv="refresh" content="0; url=https://hirewilliam.com/">
+  <script>
+    if (!window.location.pathname.endsWith('.html')) {
+      window.location.replace("https://hirewilliam.com/");
+    }
+  </script>
 </head>
 <body>
   <p>Redirecting to <a href="https://hirewilliam.com/">HireWilliam</a>…</p>
