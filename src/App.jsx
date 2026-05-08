@@ -1727,7 +1727,7 @@ function MobileBottomNav({ active, onNav }) {
 
 // ── Main App ──
 export default function App() {
-  const [page, setPage] = useState("chat");
+  const [page, setPage] = useState("founders");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const isMobile = useIsMobile();
 
