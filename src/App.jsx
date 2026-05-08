@@ -1354,429 +1354,261 @@ function AnalyticsView() {
 
 // ── For Founders View ──
 function ForFoundersView({ onNav }) {
-  const serif = "'Playfair Display', Georgia, 'Times New Roman', serif";
-  const sans = "'DM Sans', sans-serif";
-  const GREEN_PALE = "#e4f5ed";
-  const AMBER_PALE = "#fdf2e3";
-  const isMobile = useIsMobile();
-
-  const h2Style = {
-    fontFamily: serif,
-    fontSize: isMobile ? 20 : 24, fontWeight: 700, color: INK,
-    margin: "0 0 14px", lineHeight: 1.25,
-  };
-  const bodyText = {
-    fontFamily: sans,
-    fontSize: 14, color: INK_SOFT, lineHeight: 1.7, margin: "0 0 14px",
-  };
-  const divider = { borderTop: `1px solid ${RULE}`, margin: isMobile ? "28px 0" : "40px 0" };
-
   return (
-    <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", overflowY: "auto", WebkitOverflowScrolling: "touch", background: PAPER }}>
-      {/* Channel header */}
-      <div style={{ padding: "22px 24px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6, background: "#fff", flexShrink: 0 }}>
-        <IconHash s={14} />
-        <span style={{ fontWeight: 600, fontSize: 16 }}>for-founders</span>
-      </div>
+    <div className="ff-root" style={{ flex: 1, minHeight: 0, overflowY: "auto", WebkitOverflowScrolling: "touch", background: "#ffffff" }}>
+      <style>{`
+        .ff-root { font-family: 'Lato', sans-serif; font-size: 15px; line-height: 1.46668; color: #1d1c1d; }
+        .ff-root .ff-main { background: #ffffff; display: flex; flex-direction: column; }
+        .ff-root .ff-chanbar { height: 49px; padding: 0 20px; background: #ffffff; border-bottom: 1px solid #dddddd; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .ff-root .ff-chan-hash { color: #616061; font-size: 18px; font-weight: 300; line-height: 1; }
+        .ff-root .ff-chan-name { font-weight: 900; font-size: 15px; color: #1d1c1d; }
+        .ff-root .ff-chan-sep { width: 1px; height: 16px; background: #dddddd; }
+        .ff-root .ff-chan-desc { font-size: 13px; color: #616061; }
+        .ff-root .ff-ai-pill { background: rgba(18,100,163,.08); border: 1px solid rgba(18,100,163,.2); color: #1264a3; font-size: 10px; font-family: 'IBM Plex Mono', monospace; padding: 1px 6px; border-radius: 3px; font-weight: 700; letter-spacing: .03em; }
+        .ff-root .ff-msgs { padding: 20px 20px 0; display: flex; flex-direction: column; background: #ffffff; }
+        .ff-root .ff-ddiv { display: flex; align-items: center; gap: 12px; padding: 16px 0 8px; }
+        .ff-root .ff-dline { flex: 1; height: 1px; background: #dddddd; }
+        .ff-root .ff-dtxt { font-size: 12px; font-weight: 700; color: #616061; background: #ffffff; padding: 0 8px; border: 1px solid #dddddd; border-radius: 24px; letter-spacing: .01em; white-space: nowrap; }
+        .ff-root .ff-mg { display: flex; gap: 10px; padding: 4px 8px; border-radius: 6px; margin-bottom: 1px; transition: background .1s; animation: ff-fu .35s ease both; }
+        .ff-root .ff-mg:hover { background: #f2f2f2; }
+        @keyframes ff-fu { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .ff-root .ff-av { width: 36px; height: 36px; background: linear-gradient(135deg, #4a154b, #1264a3); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; color: #fff; flex-shrink: 0; margin-top: 3px; }
+        .ff-root .ff-av-t { background: linear-gradient(135deg, #d97706, #e01e5a); }
+        .ff-root .ff-msg-right { flex: 1; min-width: 0; }
+        .ff-root .ff-meta { display: flex; align-items: baseline; gap: 6px; margin-bottom: 2px; flex-wrap: wrap; }
+        .ff-root .ff-sender { font-weight: 900; font-size: 15px; color: #1d1c1d; line-height: 1.2; }
+        .ff-root .ff-sender-founder { color: #7c2d7c; }
+        .ff-root .ff-ts { font-size: 11.5px; color: #868686; font-weight: 400; }
+        .ff-root .ff-body { font-size: 15px; line-height: 1.46668; color: #1d1c1d; }
+        .ff-root .ff-body strong { font-weight: 700; color: #1d1c1d; }
+        .ff-root .ff-body a { color: #1264a3; text-decoration: none; }
+        .ff-root .ff-body a:hover { text-decoration: underline; }
+        .ff-root .ff-grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+        .ff-root .ff-card { background: #ffffff; border: 1px solid #dddddd; border-radius: 4px; padding: 12px; transition: box-shadow .15s, border-color .15s; cursor: default; }
+        .ff-root .ff-card:hover { border-color: #b3b3b3; box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+        .ff-root .ff-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+        .ff-root .ff-cico { font-size: 18px; }
+        .ff-root .ff-ctag { font-size: 9px; font-family: 'IBM Plex Mono', monospace; letter-spacing: .05em; padding: 2px 6px; border-radius: 3px; font-weight: 700; text-transform: uppercase; }
+        .ff-root .ff-tb { background: rgba(18,100,163,.08); color: #1264a3; border: 1px solid rgba(18,100,163,.2); }
+        .ff-root .ff-tp { background: #f3e8f3; color: #611f69; border: 1px solid rgba(74,21,75,.2); }
+        .ff-root .ff-tg { background: rgba(0,122,90,.08); color: #007a5a; border: 1px solid rgba(0,122,90,.2); }
+        .ff-root .ff-ty { background: rgba(217,119,6,.08); color: #d97706; border: 1px solid rgba(217,119,6,.2); }
+        .ff-root .ff-tr2 { background: rgba(224,30,90,.08); color: #c0143c; border: 1px solid rgba(224,30,90,.2); }
+        .ff-root .ff-ctitle { font-weight: 900; font-size: 13px; color: #1d1c1d; margin-bottom: 4px; }
+        .ff-root .ff-cbody { font-size: 12px; color: #616061; line-height: 1.5; }
+        .ff-root .ff-pflow { display: flex; flex-direction: column; margin-top: 10px; gap: 0; }
+        .ff-root .ff-pstep { display: flex; gap: 12px; padding-bottom: 14px; }
+        .ff-root .ff-pstep:last-child { padding-bottom: 0; }
+        .ff-root .ff-psl { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+        .ff-root .ff-psn { width: 24px; height: 24px; border-radius: 50%; background: #3f0e40; display: flex; align-items: center; justify-content: center; font-size: 11px; font-family: 'IBM Plex Mono', monospace; color: #fff; font-weight: 700; }
+        .ff-root .ff-psl-line { width: 1px; flex: 1; background: #dddddd; margin-top: 4px; }
+        .ff-root .ff-pstep:last-child .ff-psl-line { display: none; }
+        .ff-root .ff-psc { padding-top: 2px; }
+        .ff-root .ff-pst { font-size: 14px; font-weight: 700; color: #1d1c1d; margin-bottom: 2px; }
+        .ff-root .ff-psd { font-size: 13px; color: #616061; line-height: 1.5; }
+        .ff-root .ff-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+        .ff-root .ff-tag { background: #f2f2f2; border: 1px solid #dddddd; border-radius: 3px; padding: 3px 9px; font-size: 12px; font-family: 'IBM Plex Mono', monospace; color: #616061; letter-spacing: .02em; transition: all .12s; cursor: default; }
+        .ff-root .ff-tag:hover { border-color: #4a154b; color: #4a154b; background: #f3e8f3; }
+        .ff-root .ff-izone { padding: 12px 20px 20px; background: #ffffff; flex-shrink: 0; }
+        .ff-root .ff-ibar { border: 1px solid #dddddd; border-radius: 4px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.04); flex-wrap: wrap; }
+        .ff-root .ff-itext { flex: 1; font-size: 14px; color: #868686; min-width: 180px; }
+        .ff-root .ff-ial { display: flex; gap: 12px; flex-wrap: wrap; }
+        .ff-root .ff-ilink { color: #1264a3; font-size: 13px; font-weight: 700; text-decoration: none; transition: color .12s; }
+        .ff-root .ff-ilink:hover { color: #3f0e40; text-decoration: underline; }
+        @media (max-width: 720px) { .ff-root .ff-grid3 { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 480px) { .ff-root .ff-grid3 { grid-template-columns: 1fr; } }
+      `}</style>
 
-      <div style={{ flex: 1 }}>
-        {/* ── 1. COVER ── */}
-        <div style={{ background: "#16102a", padding: isMobile ? "40px 20px 36px" : "56px 40px 52px", textAlign: "center" }}>
-          <div style={{ width: 56, height: 56, borderRadius: 14, background: PURPLE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, fontWeight: 800, color: "#fff", margin: "0 auto 20px" }}>W</div>
-          <h1 style={{ fontFamily: serif, fontSize: isMobile ? 28 : 38, fontWeight: 700, color: "#fff", margin: "0 0 14px", lineHeight: 1.15 }}>HireWilliam</h1>
-          <p style={{ fontFamily: sans, fontSize: isMobile ? 15 : 17, color: "rgba(255,255,255,0.7)", margin: "0 auto 24px", maxWidth: 440, lineHeight: 1.5 }}>Meet William. Your entire sales team.</p>
-          <div style={{ display: "inline-flex", flexWrap: "wrap", justifyContent: "center", gap: isMobile ? 10 : 20, background: "rgba(255,255,255,0.08)", borderRadius: 100, padding: isMobile ? "8px 16px" : "10px 24px" }}>
-            <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>hirewilliam.com</span>
-            <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>$299/month</span>
-            <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>Cancel anytime</span>
+      <main className="ff-main">
+        <div className="ff-chanbar">
+          <span className="ff-chan-hash">#</span>
+          <span className="ff-chan-name">for-founders</span>
+          <span className="ff-chan-sep" />
+          <span className="ff-chan-desc">Your AI workforce</span>
+          <span className="ff-ai-pill">AI</span>
+        </div>
+
+        <div className="ff-msgs">
+          <div className="ff-mg">
+            <div className="ff-av">W</div>
+            <div className="ff-msg-right">
+              <div className="ff-meta"><span className="ff-sender">William</span><span className="ff-ai-pill">AI</span><span className="ff-ts">9:00 AM</span></div>
+              <div className="ff-body">
+                So you found me. Good.<br /><br />
+                Make Money? Save Time? Stay Unstoppable? All of the above? <strong>That's what we're here for.</strong>
+              </div>
+            </div>
+          </div>
+
+          <div className="ff-ddiv"><div className="ff-dline" /><div className="ff-dtxt">how it works</div><div className="ff-dline" /></div>
+
+          <div className="ff-mg">
+            <div className="ff-av">W</div>
+            <div className="ff-msg-right">
+              <div className="ff-meta"><span className="ff-sender">William</span><span className="ff-ai-pill">AI</span><span className="ff-ts">9:01 AM</span></div>
+              <div className="ff-body">
+                Three steps between you and a business that runs itself.
+                <div className="ff-pflow">
+                  <div className="ff-pstep">
+                    <div className="ff-psl"><div className="ff-psn">1</div><div className="ff-psl-line" /></div>
+                    <div className="ff-psc">
+                      <div className="ff-pst">Discovery & Audit</div>
+                      <div className="ff-psd">We map your current stack, identify bottlenecks, and pinpoint exactly where AI delivers the fastest ROI for your specific business.</div>
+                    </div>
+                  </div>
+                  <div className="ff-pstep">
+                    <div className="ff-psl"><div className="ff-psn">2</div><div className="ff-psl-line" /></div>
+                    <div className="ff-psc">
+                      <div className="ff-pst">Build & Deploy</div>
+                      <div className="ff-psd">Custom agents, automations, and integrations scoped to your business. Live in days - not months. We handle the full build from prompt architecture to production.</div>
+                    </div>
+                  </div>
+                  <div className="ff-pstep">
+                    <div className="ff-psl"><div className="ff-psn">3</div><div className="ff-psl-line" /></div>
+                    <div className="ff-psc">
+                      <div className="ff-pst">Run, Optimise & Scale</div>
+                      <div className="ff-psd">William keeps working around the clock. We monitor performance, tune outputs, and expand capabilities as your business grows - so the ROI compounds over time.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="ff-ddiv"><div className="ff-dline" /><div className="ff-dtxt">9 things we do for founders</div><div className="ff-dline" /></div>
+
+          <div className="ff-mg">
+            <div className="ff-av">W</div>
+            <div className="ff-msg-right">
+              <div className="ff-meta"><span className="ff-sender">William</span><span className="ff-ai-pill">AI</span><span className="ff-ts">9:02 AM</span></div>
+              <div className="ff-body">
+                This is what gets deployed inside your business:
+                <div className="ff-grid3">
+                  <div className="ff-card">
+                    <div className="ff-card-top"><span className="ff-cico">🤖</span><span className="ff-ctag ff-tp">AGENTS</span></div>
+                    <div className="ff-ctitle">AI Agents & Autonomous Workflows</div>
+                    <div className="ff-cbody">Custom-built digital employees that execute multi-step tasks without human sign-off. They monitor queues, make decisions, and complete work end-to-end - from lead research to ticket resolution.</div>
+                  </div>
+                  <div className="ff-card">
+                    <div className="ff-card-top"><span className="ff-cico">📡</span><span className="ff-ctag ff-tb">OUTREACH</span></div>
+                    <div className="ff-ctitle">Sales & Outreach Automation</div>
+                    <div className="ff-cbody">Email, LinkedIn, Instagram - personalised at scale. William finds your prospects, writes the messages, manages replies, and books the meetings. Your pipeline fills while you sleep.</div>
+                  </div>
+                  <div className="ff-card">
+                    <div className="ff-card-top"><span className="ff-cico">💬</span><span className="ff-ctag ff-tg">SUPPORT</span></div>
+                    <div className="ff-ctitle">AI-Powered Customer Support</div>
+                    <div className="ff-cbody">Handle inbound queries across every channel automatically. Auto-tagging, smart routing, instant responses, escalation logic - 83% of tickets resolved without a human touching them.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="ff-mg">
+            <div className="ff-av">W</div>
+            <div className="ff-msg-right">
+              <div className="ff-meta"><span className="ff-sender">William</span><span className="ff-ai-pill">AI</span><span className="ff-ts">9:03 AM</span></div>
+              <div className="ff-body">
+                The ones that turn your revenue engine up a gear:
+                <div className="ff-grid3">
+                  <div className="ff-card">
+                    <div className="ff-card-top"><span className="ff-cico">📊</span><span className="ff-ctag ff-ty">CRM</span></div>
+                    <div className="ff-ctitle">CRM & Revenue Intelligence</div>
+                    <div className="ff-cbody">AI embedded in your revenue stack - tracking every contact, activity, and signal. Know which deals are moving, which accounts are at risk, and exactly where to focus next.</div>
+                  </div>
+                  <div className="ff-card">
+                    <div className="ff-card-top"><span className="ff-cico">🧠</span><span className="ff-ctag ff-tp">STRATEGY</span></div>
+                    <div className="ff-ctitle">AI Strategy & Roadmapping</div>
+                    <div className="ff-cbody">We audit your business, map where AI creates real leverage, and build a prioritised roadmap. No fluff - just a clear plan for what to automate first and why it moves the needle.</div>
+                  </div>
+                  <div className="ff-card">
+                    <div className="ff-card-top"><span className="ff-cico">⚡</span><span className="ff-ctag ff-tg">AUTOMATION</span></div>
+                    <div className="ff-ctitle">Workflow & Process Automation</div>
+                    <div className="ff-cbody">Every repetitive task your team does manually - tagging, reporting, data entry, follow-ups, scheduling - handed to William. Your ops run on autopilot so your team focuses on what matters.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="ff-mg">
+            <div className="ff-av">W</div>
+            <div className="ff-msg-right">
+              <div className="ff-meta"><span className="ff-sender">William</span><span className="ff-ai-pill">AI</span><span className="ff-ts">9:04 AM</span></div>
+              <div className="ff-body">
+                And honestly? This is where most businesses leave the biggest money on the table:
+                <div className="ff-grid3">
+                  <div className="ff-card">
+                    <div className="ff-card-top"><span className="ff-cico">✍️</span><span className="ff-ctag ff-tb">CONTENT</span></div>
+                    <div className="ff-ctitle">AI Content & Marketing Engine</div>
+                    <div className="ff-cbody">Blog posts, social copy, email sequences, ad creative - produced at scale and on-brand. William runs your content pipeline so you show up everywhere without burning out your team.</div>
+                  </div>
+                  <div className="ff-card">
+                    <div className="ff-card-top"><span className="ff-cico">🔗</span><span className="ff-ctag ff-ty">STACK</span></div>
+                    <div className="ff-ctitle">Integrations & Stack Connectivity</div>
+                    <div className="ff-cbody">Your tools don't talk to each other - William fixes that. We wire together your CRM, inbox, data sources, and automation layers so AI can act on everything in real time.</div>
+                  </div>
+                  <div className="ff-card">
+                    <div className="ff-card-top"><span className="ff-cico">👥</span><span className="ff-ctag ff-tr2">TEAM</span></div>
+                    <div className="ff-ctitle">AI Hiring & Team Augmentation</div>
+                    <div className="ff-cbody">Instead of hiring 5 people, deploy William. We build AI that fills the roles you can't afford yet - SDR, ops manager, content lead, analyst - without the headcount cost.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="ff-ddiv"><div className="ff-dline" /><div className="ff-dtxt">what we connect to</div><div className="ff-dline" /></div>
+
+          <div className="ff-mg">
+            <div className="ff-av">W</div>
+            <div className="ff-msg-right">
+              <div className="ff-meta"><span className="ff-sender">William</span><span className="ff-ai-pill">AI</span><span className="ff-ts">9:05 AM</span></div>
+              <div className="ff-body">
+                Already using tools you love? Good. I work with all of them.
+                <div className="ff-tags">
+                  <span className="ff-tag">HubSpot</span><span className="ff-tag">Salesforce</span><span className="ff-tag">Pipedrive</span>
+                  <span className="ff-tag">LinkedIn</span><span className="ff-tag">Gmail</span><span className="ff-tag">Outlook</span>
+                  <span className="ff-tag">Slack</span><span className="ff-tag">Notion</span><span className="ff-tag">Airtable</span>
+                  <span className="ff-tag">Zapier</span><span className="ff-tag">Make</span><span className="ff-tag">n8n</span>
+                  <span className="ff-tag">Shopify</span><span className="ff-tag">Stripe</span><span className="ff-tag">WhatsApp</span>
+                  <span className="ff-tag">Instagram</span><span className="ff-tag">Google Ads</span><span className="ff-tag">Meta Ads</span>
+                  <span className="ff-tag">Intercom</span><span className="ff-tag">Zendesk</span><span className="ff-tag">Any API</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="ff-mg" style={{ marginTop: 6 }}>
+            <div className="ff-av ff-av-t">T</div>
+            <div className="ff-msg-right">
+              <div className="ff-meta">
+                <span className="ff-sender ff-sender-founder">Terry Lee</span>
+                <span style={{ fontSize: 12, color: "#868686", fontWeight: 400 }}>Founder, HireWilliam</span>
+                <span className="ff-ts">9:06 AM</span>
+              </div>
+              <div className="ff-body">
+                Genuine question - why are you still doing manually what AI can do in 3 seconds? We need to talk.<br /><br />
+                Message me at <a href="mailto:terrylee@hirewilliam.com">terrylee@hirewilliam.com</a> - William does all the work, but I still check my emails.
+              </div>
+            </div>
           </div>
         </div>
 
-        <div style={{ maxWidth: 800, margin: "0 auto", padding: isMobile ? "0 16px 60px" : "0 32px 80px" }}>
-
-          {/* ── 2. PULL QUOTE ── */}
-          <div style={{ borderLeft: `4px solid ${PURPLE}`, background: PURPLE_PALE, borderRadius: "0 12px 12px 0", padding: isMobile ? "16px 18px" : "24px 28px", margin: isMobile ? "28px 0" : "40px 0" }}>
-            <p style={{ fontFamily: serif, fontSize: isMobile ? 15 : 18, color: INK, lineHeight: 1.6, margin: 0 }}>
-              The average startup spends{" "}
-              <em style={{ color: PURPLE, fontStyle: "normal", fontWeight: 700 }}>$62,000 a year</em>
-              {" "}on a junior sales rep who takes 3 months to ramp, calls in sick on Mondays, and quits before they're productive. You don't need to hire a sales team. You need to hire William.
-            </p>
-          </div>
-
-          {/* ── 3. SOUND FAMILIAR ── */}
-          <div style={divider} />
-          <h2 style={h2Style}>Sound familiar?</h2>
-          <p style={bodyText}>It's 11pm. You're writing cold outreach instead of building product. Your pipeline is empty. You've tried the tools - 47 settings, spam filters, a restricted LinkedIn account. <strong>The problem was never the tool. It's that you're a builder, not a salesperson.</strong> The sales industry wants to sell you another framework. Nobody wants to just do the work for you.</p>
-
-          {/* ── 4. UNTIL NOW ── */}
-          <div style={divider} />
-          <h2 style={h2Style}>Until now</h2>
-          <p style={bodyText}>Monday morning. Before coffee, you open your laptop: <em>"Morning. While you were asleep I sent 47 personalised messages. 6 founders replied. 2 want to book a call. I've put them in your Thursday slots."</em></p>
-          <p style={bodyText}>Three qualified calls booked. Zero messages sent by you. That's William.</p>
-
-          {/* ── 5. CHANNELS ── */}
-          <div style={divider} />
-          <h2 style={h2Style}>Where William works</h2>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 16, marginBottom: 8 }}>
-            {[
-              {
-                icon: "📧", name: "Email",
-                detail: "Cold outreach, follow-ups, reply handling. William manages sequences and adapts based on engagement signals.",
-                limit: "Best channel for volume and deliverability.",
-              },
-              {
-                icon: "💼", name: "LinkedIn",
-                detail: "Connection requests with personalised notes, DMs based on prospect activity. William operates within platform limits to protect your account.",
-                limit: "~20 connection requests/day to stay safe.",
-              },
-              {
-                icon: "📱", name: "Instagram DM",
-                detail: "Used selectively for founders who build in public or have active audiences. William identifies these cases and adjusts tone accordingly.",
-                limit: "Only where it's genuinely appropriate.",
-              },
-            ].map(ch => (
-              <div key={ch.name} style={{ background: "#fff", border: `1px solid ${RULE}`, borderRadius: 12, padding: "20px" }}>
-                <div style={{ fontSize: 26, marginBottom: 10 }}>{ch.icon}</div>
-                <div style={{ fontFamily: sans, fontSize: 14, fontWeight: 700, color: INK, marginBottom: 8 }}>{ch.name}</div>
-                <div style={{ fontFamily: sans, fontSize: 13, color: INK_SOFT, lineHeight: 1.6, marginBottom: 10 }}>{ch.detail}</div>
-                <div style={{ fontFamily: sans, fontSize: 12, color: INK_GHOST, fontStyle: "italic" }}>{ch.limit}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* ── 6. DASHBOARD MOCKUP ── */}
-          <div style={divider} />
-          <h2 style={h2Style}>This is what you see every morning</h2>
-          <p style={bodyText}>William lives inside a Slack-style interface you already know how to use. He updates you like a colleague, not a dashboard.</p>
-
-          <div style={{ background: "#16102a", borderRadius: 14, overflow: "hidden", border: "1px solid rgba(255,255,255,0.06)", marginBottom: 8 }}>
-            <div style={{ padding: "10px 14px", background: "#120d22", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", gap: 6 }}>
-              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#ff5f56" }} />
-              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#ffbd2e" }} />
-              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#27c93f" }} />
-            </div>
-            <div style={{ display: "flex", height: isMobile ? "auto" : 340, minHeight: isMobile ? 260 : undefined, overflow: "hidden", flexDirection: isMobile ? "column" : "row" }}>
-              {/* Sidebar */}
-              <div style={{ width: isMobile ? 90 : 170, background: "#120d22", padding: "12px 0", flexShrink: 0, overflow: "hidden" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "4px 12px 12px" }}>
-                  <div style={{ width: 20, height: 20, borderRadius: 5, background: PURPLE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: "#fff" }}>W</div>
-                  {!isMobile && <span style={{ fontSize: 11, fontWeight: 700, color: "#fff" }}>HireWilliam</span>}
-                </div>
-                <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", color: "rgba(255,255,255,0.3)", padding: "0 12px 6px" }}>Channels</div>
-                {[
-                  { name: "talk-to-william", active: true },
-                  { name: "pipeline" },
-                  { name: "outreach-log" },
-                  { name: "hot-leads" },
-                  { name: "meetings" },
-                  { name: "analytics" },
-                ].map(ch => (
-                  <div key={ch.name} style={{ padding: "4px 12px", margin: "1px 6px", borderRadius: 4, background: ch.active ? "rgba(90,63,160,0.45)" : "transparent", color: ch.active ? "#fff" : "rgba(255,255,255,0.38)", fontSize: 10, display: "flex", alignItems: "center", gap: 4 }}>
-                    <span style={{ opacity: 0.5, fontSize: 9 }}>#</span> {ch.name}
-                  </div>
-                ))}
-                <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", color: "rgba(255,255,255,0.3)", padding: "10px 12px 6px" }}>Direct Messages</div>
-                <div style={{ padding: "4px 12px", margin: "1px 6px", borderRadius: 4, color: "rgba(255,255,255,0.38)", fontSize: 10, display: "flex", alignItems: "center", gap: 6 }}>
-                  <div style={{ width: 12, height: 12, borderRadius: 3, background: PURPLE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 700, color: "#fff" }}>W</div>
-                  William
-                </div>
-              </div>
-              {/* Chat area */}
-              <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-                <div style={{ padding: "10px 16px", borderBottom: "1px solid rgba(255,255,255,0.06)", fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.6)" }}># talk-to-william</div>
-                <div style={{ flex: 1, padding: "14px 16px", display: "flex", flexDirection: "column", gap: 12, overflowY: "hidden" }}>
-                  {[
-                    { who: "W", bg: PURPLE, name: "William", msg: "Morning ☀️  While you were asleep I sent 47 personalised messages across email and LinkedIn.", time: "7:01 AM" },
-                    { who: "W", bg: PURPLE, name: "William", msg: "6 founders replied. 2 want to book a call - I've put them in your Thursday slots. Nothing left for you to do.", time: "7:02 AM" },
-                    { who: "Y", bg: PAPER_WARM, name: "You", msg: "Who are the 2 meetings with?", time: "7:09 AM", right: true },
-                    { who: "W", bg: PURPLE, name: "William", msg: "Alex Morin (Shipyard) - Thu 2pm. Nina Patel (FormFlow) - Thu 4pm. Both context notes in #meetings.", time: "7:09 AM" },
-                  ].map((m, i) => (
-                    <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start", flexDirection: m.right ? "row-reverse" : "row" }}>
-                      <div style={{ width: 24, height: 24, borderRadius: 6, background: m.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, color: m.right ? INK : "#fff", flexShrink: 0 }}>{m.who}</div>
-                      <div style={{ maxWidth: "72%" }}>
-                        <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 3, flexDirection: m.right ? "row-reverse" : "row" }}>
-                          <span style={{ fontSize: 11, fontWeight: 700, color: m.right ? "rgba(255,255,255,0.5)" : PURPLE_LIGHT }}>{m.name}</span>
-                          <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)" }}>{m.time}</span>
-                        </div>
-                        <div style={{ background: m.right ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.05)", borderRadius: 8, padding: "7px 10px" }}>
-                          <p style={{ fontSize: 11, color: "rgba(255,255,255,0.78)", margin: 0, lineHeight: 1.55 }}>{m.msg}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div style={{ padding: "8px 12px 12px" }}>
-                  <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: 7, padding: "7px 12px", fontSize: 11, color: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.07)" }}>Message #talk-to-william…</div>
-                </div>
-              </div>
-              {/* Right stats panel — full width 2×2 grid on mobile, fixed sidebar on desktop */}
-              {!isMobile ? (
-              <div style={{ width: 175, background: "#120d22", borderLeft: "1px solid rgba(255,255,255,0.06)", padding: "12px", flexShrink: 0, overflowY: "hidden" }}>
-                <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>Overnight</div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginBottom: 14 }}>
-                  {[
-                    { label: "Sent", value: "47" },
-                    { label: "Replies", value: "6" },
-                    { label: "Meetings", value: "2" },
-                    { label: "Hot leads", value: "4" },
-                  ].map(s => (
-                    <div key={s.label} style={{ background: "rgba(255,255,255,0.05)", borderRadius: 7, padding: "7px 8px" }}>
-                      <div style={{ fontSize: 9, color: "rgba(255,255,255,0.35)" }}>{s.label}</div>
-                      <div style={{ fontSize: 18, fontWeight: 700, color: "#fff", lineHeight: 1.2 }}>{s.value}</div>
-                    </div>
-                  ))}
-                </div>
-                <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>Hot leads</div>
-                {[
-                  { name: "Alex Morin", note: "Replied" },
-                  { name: "Priya Kumar", note: "Opened 3×" },
-                  { name: "Leo Tanaka", note: "Replied" },
-                  { name: "Jake Rivera", note: "Opened" },
-                ].map(l => (
-                  <div key={l.name} style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                    <div style={{ width: 20, height: 20, borderRadius: 5, background: "rgba(90,63,160,0.4)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, fontWeight: 700, color: PURPLE_LIGHT, flexShrink: 0 }}>{l.name.split(" ").filter(n => n).map(n => n[0]).join("")}</div>
-                    <div>
-                      <div style={{ fontSize: 10, fontWeight: 600, color: "rgba(255,255,255,0.7)" }}>{l.name}</div>
-                      <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)" }}>{l.note}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              ) : null}
+        <div className="ff-izone">
+          <div className="ff-ibar">
+            <div className="ff-itext">Message #for-founders</div>
+            <div className="ff-ial">
+              <a href="mailto:terrylee@hirewilliam.com" className="ff-ilink">✉ Email Terry</a>
+              <a href="https://hirewilliam.com" className="ff-ilink">↗ hirewilliam.com</a>
             </div>
           </div>
-
-          {/* ── 7. PIPELINE ── */}
-          <div style={divider} />
-          <h2 style={h2Style}>Your pipeline fills itself</h2>
-          <p style={bodyText}>Every prospect moves through stages automatically. You always know who's new, who's engaged, who's ready to close.</p>
-
-          <div style={{ background: "#fff", border: `1px solid ${RULE}`, borderRadius: 14, padding: "16px", overflow: "hidden" }}>
-            <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 4 }}>
-              {[
-                { label: "New", count: 24, color: INK_GHOST, cards: [{ name: "Sara Chen", co: "Metrify", score: 22 }, { name: "Tom Okoro", co: "Stackbase", score: 18 }, { name: "Rachel Green", co: "TechFlow", score: 15 }] },
-                { label: "Contacted", count: 15, color: "#378add", cards: [{ name: "Jake Rivera", co: "Launchpad", score: 45 }, { name: "Nina Patel", co: "FormFlow", score: 35 }, { name: "Marcus Chen", co: "BuildFlow", score: 55 }] },
-                { label: "Interested", count: 8, color: AMBER, cards: [{ name: "Priya Kumar", co: "DataStack", score: 72 }, { name: "Leo Tanaka", co: "Kitemaker", score: 65 }, { name: "Sofia Rodriguez", co: "PayFlow", score: 78 }] },
-                { label: "Meeting", count: 3, color: PURPLE, cards: [{ name: "Alex Morin", co: "Shipyard", score: 90 }] },
-                { label: "Won", count: 2, color: GREEN, cards: [{ name: "Dan Fields", co: "Beacon", score: 100 }] },
-              ].map(col => (
-                <div key={col.label} style={{ flex: "0 0 152px", background: PAPER_WARM, borderRadius: 10, padding: "10px 10px 14px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: col.color, textTransform: "uppercase", letterSpacing: 0.7 }}>{col.label}</span>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: INK_GHOST, background: "#fff", borderRadius: 10, padding: "1px 7px" }}>{col.count}</span>
-                  </div>
-                  {col.cards.map(c => (
-                    <div key={c.name} style={{ background: "#fff", borderRadius: 8, padding: "9px 10px", marginBottom: 6, border: `1px solid ${RULE}` }}>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: INK, marginBottom: 2 }}>{c.name}</div>
-                      <div style={{ fontSize: 10, color: INK_SOFT, marginBottom: 6 }}>{c.co}</div>
-                      <div style={{ height: 4, borderRadius: 2, background: PAPER_WARM, overflow: "hidden" }}>
-                        <div style={{ height: "100%", width: `${c.score}%`, borderRadius: 2, background: col.color }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* ── 8. OUTREACH EXAMPLES ── */}
-          <div style={divider} />
-          <h2 style={h2Style}>What William actually sends</h2>
-          <p style={bodyText}>Every message is visible in your outreach log. Nothing goes out without you knowing. Here's real outreach from William:</p>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 20 }}>
-            {[
-              {
-                name: "Alex Morin", co: "Shipyard", channel: "LinkedIn", channelColor: "#185fa5", channelBg: "#e6f1fb",
-                research: "Referenced his post about hiring struggles",
-                message: "Hey Alex, saw your post about struggling to hire your first SDR. What if you didn't have to? I help solo founders fill their pipeline without hiring. No calls, no contracts, you can see it working in 48 hours. Worth 15 mins?",
-                status: "replied", statusColor: GREEN, statusBg: GREEN_PALE,
-                reply: "This looks great, let's chat. Thursday work?",
-              },
-              {
-                name: "Priya Kumar", co: "DataStack", channel: "Email", channelColor: INK_SOFT, channelBg: PAPER_WARM,
-                research: "Referenced Product Hunt launch, 200+ upvotes",
-                subject: "Saw your Product Hunt launch",
-                message: "Hey Priya, congrats on the PH launch. 200+ upvotes is solid. Quick question: now that you've got product attention, who's doing outbound to convert that into pipeline? If the answer is \"nobody\" or \"me, badly\" - I might be able to help.",
-                status: "opened ×3", statusColor: AMBER, statusBg: AMBER_PALE,
-              },
-              {
-                name: "Leo Tanaka", co: "Kitemaker", channel: "Instagram", channelColor: "#c13584", channelBg: "#fce4ec",
-                research: "Build-in-public founder - Instagram is his channel",
-                message: "Hey Leo - love the build log. The journey from 0 to 200 users is exactly the kind of signal I look for. Question: who's helping you turn that audience into customers? If the answer is nobody, might be worth a quick chat.",
-                status: "replied", statusColor: GREEN, statusBg: GREEN_PALE,
-                reply: "Tell me more.",
-              },
-            ].map((ex, i) => (
-              <div key={i} style={{ background: "#fff", border: `1px solid ${RULE}`, borderRadius: 12, padding: "18px 20px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                  <div>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: INK }}>{ex.name}</span>
-                    <span style={{ fontSize: 12, color: INK_SOFT }}> · {ex.co}</span>
-                  </div>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: ex.channelColor, background: ex.channelBg, borderRadius: 6, padding: "3px 9px" }}>{ex.channel}</span>
-                </div>
-                <div style={{ background: PAPER_WARM, borderRadius: 8, padding: "8px 12px", marginBottom: 10, fontSize: 11, color: INK_SOFT, fontStyle: "italic" }}>🔍 {ex.research}</div>
-                {ex.subject && <div style={{ fontSize: 11, fontWeight: 600, color: INK_MID, marginBottom: 6 }}>Subject: {ex.subject}</div>}
-                <p style={{ fontSize: 12, color: INK, lineHeight: 1.65, margin: "0 0 10px", background: PAPER_WARM, borderRadius: 8, padding: "10px 12px" }}>{ex.message}</p>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: ex.statusColor, background: ex.statusBg, borderRadius: 6, padding: "3px 9px" }}>{ex.status}</span>
-                  {ex.reply && <p style={{ fontSize: 12, color: GREEN, margin: 0, fontStyle: "italic" }}>"{ex.reply}"</p>}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <p style={bodyText}>William isn't sending templates. He referenced Alex's LinkedIn post. He mentioned Priya's Product Hunt upvote count. He chose Instagram for Leo because that's where Leo lives. Email would have been the wrong channel. Every message is specific to the person receiving it. William asks for your approval before anything sensitive goes out, and he gets sharper with every correction you make.</p>
-
-          {/* ── 9. COST COMPARISON ── */}
-          <div style={divider} />
-          <h2 style={h2Style}>What you're really paying for sales right now</h2>
-          {isMobile ? (
-            /* Mobile: stacked layout */
-            <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-              {/* SDR card */}
-              <div style={{ background: "#fff", border: `1px solid ${RULE}`, borderTopLeftRadius: 12, borderTopRightRadius: 12, padding: "20px" }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: RED, marginBottom: 4 }}>Junior SDR</div>
-                <div style={{ fontSize: 26, fontWeight: 800, color: RED, marginBottom: 16 }}>$5,200<span style={{ fontSize: 14, fontWeight: 600 }}>+/mo</span></div>
-                {[
-                  ["Base salary", "$3,500/mo"],
-                  ["Benefits", "$600/mo"],
-                  ["Tools & software", "$400/mo"],
-                  ["Management overhead", "$500/mo"],
-                  ["Recruitment cost", "$200/mo"],
-                ].map(([k, v]) => (
-                  <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: `1px solid ${RULE}`, fontSize: 12 }}>
-                    <span style={{ color: INK_SOFT }}>{k}</span>
-                    <span style={{ fontWeight: 600, color: INK }}>{v}</span>
-                  </div>
-                ))}
-              </div>
-              {/* VS divider */}
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "12px 0", background: PAPER_WARM, border: `1px solid ${RULE}`, borderTop: "none", borderBottom: "none" }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: INK_GHOST }}>vs</div>
-              </div>
-              {/* William card */}
-              <div style={{ background: PURPLE, border: `1px solid ${PURPLE}`, borderBottomLeftRadius: 12, borderBottomRightRadius: 12, padding: "20px" }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: "rgba(255,255,255,0.7)", marginBottom: 4 }}>William</div>
-                <div style={{ fontSize: 26, fontWeight: 800, color: "#fff", marginBottom: 6 }}>$299<span style={{ fontSize: 14, fontWeight: 600 }}>/mo</span></div>
-                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", marginBottom: 16 }}>$10/day for a full sales team</div>
-                {[
-                  ["Subscription", "$299/mo"],
-                  ["Setup fee", "$0"],
-                  ["Management overhead", "Minimal"],
-                  ["Ramp time", "48 hours"],
-                  ["Cancel anytime", "Yes"],
-                ].map(([k, v]) => (
-                  <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid rgba(255,255,255,0.15)", fontSize: 12 }}>
-                    <span style={{ color: "rgba(255,255,255,0.65)" }}>{k}</span>
-                    <span style={{ fontWeight: 600, color: "#fff" }}>{v}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            /* Desktop: side-by-side layout */
-            <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 0, alignItems: "stretch" }}>
-              {/* SDR card */}
-              <div style={{ background: "#fff", border: `1px solid ${RULE}`, borderTopLeftRadius: 12, borderBottomLeftRadius: 12, padding: "24px" }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: RED, marginBottom: 4 }}>Junior SDR</div>
-                <div style={{ fontSize: 26, fontWeight: 800, color: RED, marginBottom: 16 }}>$5,200<span style={{ fontSize: 14, fontWeight: 600 }}>+/mo</span></div>
-                {[
-                  ["Base salary", "$3,500/mo"],
-                  ["Benefits", "$600/mo"],
-                  ["Tools & software", "$400/mo"],
-                  ["Management overhead", "$500/mo"],
-                  ["Recruitment cost", "$200/mo"],
-                ].map(([k, v]) => (
-                  <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: `1px solid ${RULE}`, fontSize: 12 }}>
-                    <span style={{ color: INK_SOFT }}>{k}</span>
-                    <span style={{ fontWeight: 600, color: INK }}>{v}</span>
-                  </div>
-                ))}
-              </div>
-              {/* VS divider */}
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 20px" }}>
-                <div style={{ width: 1, height: 40, background: RULE }} />
-                <div style={{ fontSize: 13, fontWeight: 700, color: INK_GHOST, padding: "8px 0" }}>vs</div>
-                <div style={{ width: 1, height: 40, background: RULE }} />
-              </div>
-              {/* William card */}
-              <div style={{ background: PURPLE, border: `1px solid ${PURPLE}`, borderTopRightRadius: 12, borderBottomRightRadius: 12, padding: "24px" }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: "rgba(255,255,255,0.7)", marginBottom: 4 }}>William</div>
-                <div style={{ fontSize: 26, fontWeight: 800, color: "#fff", marginBottom: 6 }}>$299<span style={{ fontSize: 14, fontWeight: 600 }}>/mo</span></div>
-                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", marginBottom: 16 }}>$10/day for a full sales team</div>
-                {[
-                  ["Subscription", "$299/mo"],
-                  ["Setup fee", "$0"],
-                  ["Management overhead", "Minimal"],
-                  ["Ramp time", "48 hours"],
-                  ["Cancel anytime", "Yes"],
-                ].map(([k, v]) => (
-                  <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid rgba(255,255,255,0.15)", fontSize: 12 }}>
-                    <span style={{ color: "rgba(255,255,255,0.65)" }}>{k}</span>
-                    <span style={{ fontWeight: 600, color: "#fff" }}>{v}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* ── 10. PRICING ── */}
-          <div style={divider} />
-          <h2 style={h2Style}>One price. Everything included.</h2>
-          <div style={{ background: PURPLE, borderRadius: 16, padding: isMobile ? "28px 20px" : "36px 40px", textAlign: "center" }}>
-            <div style={{ fontSize: isMobile ? 44 : 52, fontWeight: 800, color: "#fff", lineHeight: 1 }}>$299</div>
-            <div style={{ fontFamily: sans, fontSize: 15, color: "rgba(255,255,255,0.65)", marginTop: 6, marginBottom: 20 }}>/month</div>
-            <div style={{ fontFamily: sans, fontSize: 13, color: "rgba(255,255,255,0.8)", marginBottom: 20 }}>Cancel anytime. No questions asked.</div>
-            <div style={{ textAlign: "left", maxWidth: 480, margin: "0 auto" }}>
-              <p style={{ fontFamily: sans, fontSize: 13, color: "rgba(255,255,255,0.75)", lineHeight: 1.7, margin: "0 0 12px" }}>Unlimited outreach across email, LinkedIn and Instagram. Personalised messages from real prospect research. Reply handling and follow-ups. Meeting booking into your calendar. Full pipeline and analytics. Human-in-the-loop approval controls. William learns your voice over time.</p>
-              <p style={{ fontFamily: sans, fontSize: 13, color: "rgba(255,255,255,0.75)", lineHeight: 1.7, margin: 0 }}>No per-message fees. No setup costs. No annual contracts. No feature gates. No tiers. No upsells.</p>
-            </div>
-          </div>
-
-          {/* ── 11. META PROOF ── */}
-          <div style={divider} />
-          <h2 style={h2Style}>The proof is in how this works</h2>
-          <p style={bodyText}>There's a good chance William found you first. He researched your company, identified you as the right person to reach, and sent a message specific enough that you're now reading this. The outreach you received wasn't written by a marketing team or blasted from a template. It was written for you.</p>
-          <p style={{ ...bodyText, fontWeight: 600, color: INK }}>That's exactly what he'll do for your prospects.</p>
-          <p style={bodyText}>And he's not done. Right now, William has already identified prospects for founders in your industry. Visit hirewilliam.com and he'll find 5 real prospects for your specific business and draft outreach messages you can use today. Free. No signup. No credit card. Just tell him what you sell.</p>
-
-          {/* ── 12. CTA ── */}
-          <div style={divider} />
-          <div style={{ background: INK, borderRadius: 16, padding: isMobile ? "28px 20px" : "40px 44px", textAlign: "center" }}>
-            <h3 style={{ fontFamily: serif, fontSize: isMobile ? 20 : 26, fontWeight: 700, color: "#fff", margin: "0 0 16px" }}>While your competitors' SDR sleeps</h3>
-            <p style={{ fontFamily: sans, fontSize: 13, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, margin: "0 auto 14px", maxWidth: 520 }}>Your competitors' sales rep clocked off at 6pm. William didn't. He sent 23 messages while they were at dinner, followed up at 6am, and booked a call before their SDR had their morning coffee.</p>
-            <p style={{ fontFamily: sans, fontSize: 13, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, margin: "0 auto 14px", maxWidth: 520 }}>No onboarding. No sick days. No slow Mondays. No resignation letter. William is available every hour of every day, gets sharper every week, and costs less than a single day of a junior hire.</p>
-            <p style={{ fontFamily: sans, fontSize: 13, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, margin: "0 auto 24px", maxWidth: 520 }}>He's ready to start right now.</p>
-            <button
-              onClick={() => onNav("chat")}
-              style={{ background: PURPLE, color: "#fff", border: "none", borderRadius: 10, padding: "14px 32px", fontSize: 14, fontWeight: 700, cursor: "pointer", touchAction: "manipulation" }}
-            >hirewilliam.com</button>
-          </div>
-
-          {/* ── 13. FOUNDER FOOTER ── */}
-          <div style={divider} />
-          <h2 style={h2Style}>Built by a founder, for founders</h2>
-          <div style={{ background: "#fff", border: `1px solid ${RULE}`, borderRadius: 14, padding: isMobile ? "20px" : "28px", display: "flex", flexDirection: isMobile ? "column" : "row", gap: 18, alignItems: "flex-start" }}>
-            <div style={{ width: 44, height: 44, borderRadius: 12, background: PURPLE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontWeight: 800, color: "#fff", flexShrink: 0 }}>T</div>
-            <div>
-              <p style={{ fontFamily: sans, fontSize: 13, color: INK, lineHeight: 1.75, margin: "0 0 12px" }}><strong>I'm Terry Lee.</strong> I hated sales. I was spending 3 hours every night writing cold outreach instead of building product, and getting nowhere. Which founder doesn't know that feeling?</p>
-              <p style={{ fontFamily: sans, fontSize: 13, color: INK, lineHeight: 1.75, margin: "0 0 12px" }}>So I built William because I needed him. He was my first sales rep. And once I saw what he could do, I realised every founder needs him too.</p>
-              <p style={{ fontFamily: sans, fontSize: 13, color: INK, lineHeight: 1.75, margin: "0 0 12px" }}>Every number in this document, the reply rates, the pipeline stats, the outreach examples, comes from real results on real campaigns. Not forecasts.</p>
-              <p style={{ fontFamily: sans, fontSize: 13, color: INK, lineHeight: 1.75, margin: 0 }}>If you want to talk before you sign up, email me directly: <strong>terrylee@hirewilliam.com</strong>. I read everything.</p>
-            </div>
-          </div>
-
-          <div style={{ textAlign: "center", marginTop: 32, paddingBottom: 32 }}>
-            <p style={{ fontFamily: sans, fontSize: 12, color: INK_GHOST }}>hirewilliam.com</p>
-          </div>
-
         </div>
-      </div>
+      </main>
     </div>
   );
 }
+
 
 // ── Right Panel (shown on chat view) ──
 function RightPanel({ isMobile = false }) {
