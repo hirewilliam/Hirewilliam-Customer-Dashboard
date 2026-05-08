@@ -156,12 +156,12 @@ function ScoreBar({ score }) {
 function Sidebar({ active, onNav, onClose }) {
   const isMobile = useIsMobile();
   const channels = [
+    { id: "founders", label: "for-founders", lock: true },
     { id: "chat", label: "talk-to-william", dot: true },
     { id: "outreach", label: "outreach-log", badge: "3" },
     { id: "meetings", label: "meetings", badge: "2" },
     { id: "pipeline", label: "pipeline" },
     { id: "analytics", label: "analytics" },
-    { id: "founders", label: "for-founders", lock: true },
   ];
 
   return (
