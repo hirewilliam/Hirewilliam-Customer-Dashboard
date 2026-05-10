@@ -200,10 +200,9 @@ function Sidebar({ active, onNav, onClose }) {
 // ── Chat View ──
 const WILLIAM_INTRO_MESSAGES = [
   { id: "intro-1", sender: "william", content: "So You found me. Good", time: "now" },
-  { id: "intro-2", sender: "william", content: "I'm William and by the time I'm done setting up, I'll know your buyers better than they know themselves. I'll reach them on the right channel, at the right moment, with a message so specific they'll wonder who told me about them.", time: "now" },
-  { id: "intro-3", sender: "william", content: "Click around  this dashboard is yours. This is where you can communicate with me as your new sales hire . The pipeline. The outreach log. The analytics. This is what 10am looks like after you sleep in while I have been still closing deals at 3am.", time: "now" },
+  { id: "intro-2", sender: "william", content: "I'm William. The AI your business runs on. While you were reading this, I was already mapping your workflows, identifying your bottlenecks, and figuring out exactly where AI makes you the most money the fastest.", time: "now" },
   { id: "intro-4", sender: "william", content: "Message Terry Lee the founder at terrylee@hirewilliam.com\nTell her I sent you and you want in.", time: "now" },
-  { id: "intro-5", sender: "william", content: "She built me. But between us  I'm the one who does all  the work she just checks her emails now", time: "now" },
+  { id: "intro-5", sender: "william", content: "Fair warning, she's going to sound very calm and in control. That's because I've already done everything. You'll think she's a genius. She is. I'm just also there. Always.", time: "now" },
 ];
 
 const WILLIAM_FINAL_MSG = `Look, I could sit here and chat all day but that's not what I was built for. I was built to fill your calendar with people who want to buy what you're selling. And I'm almost ready to prove it.
