@@ -717,8 +717,8 @@ function OutreachView() {
       stageColor: AMBER, time: "4h ago", avatar: "PK", needsApproval: true,
       thread: [
         { from: "william", text: "Subject: Saw your Product Hunt launch\n\nHey Priya, congrats on the PH launch. 200+ upvotes is solid. Quick question: now that you've got product attention, who's doing outbound to convert that into pipeline? If the answer is \"nobody\" or \"me, badly\" - I might be able to help.", time: "Yesterday, 10:15 PM", research: "Product Hunt launch 4 days ago, 200+ upvotes" },
-        { from: "prospect", text: "Hey, thanks! We're actually struggling with exactly this. What does pricing look like?", time: "Today, 6:45 AM" },
-        { from: "william", text: "DRAFT - waiting for your approval:\n\nGreat question, Priya. It's $499/month, everything included - outreach, follow-ups, meeting booking, the works. No per-message fees, no contracts. Want me to show you what I'd do for DataStack specifically? I can find 5 prospects and draft outreach right now, free.", time: "Today, 7:02 AM", draft: true },
+        { from: "prospect", text: "Hey, thanks! We're actually struggling with exactly this. How does this work?", time: "Today, 6:45 AM" },
+        { from: "william", text: "DRAFT - waiting for your approval:\n\nGreat question, Priya. Short version: I handle the full outbound motion - finding the right people, writing personalised outreach, managing replies, booking meetings. Want me to show you what I'd do for DataStack specifically? I can find 5 prospects and draft outreach right now, no commitment.", time: "Today, 7:02 AM", draft: true },
       ]
     },
     {
