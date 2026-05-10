@@ -211,19 +211,40 @@ I'm not live yet. Message Terry Lee (terrylee@hirewilliam.com)
 I promise she will get you all set`;
 
 function ChatView() {
-  const [msgs, setMsgs] = useState(WILLIAM_INTRO_MESSAGES);
+  const [msgs, setMsgs] = useState([]);
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
   const [chatLocked, setChatLocked] = useState(false);
+  const [introPlaying, setIntroPlaying] = useState(true);
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
   const isMobile = useIsMobile();
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [msgs, typing]);
 
+  useEffect(() => {
+    let cancelled = false;
+    async function playIntro() {
+      await new Promise(r => setTimeout(r, 600));
+      for (const msg of WILLIAM_INTRO_MESSAGES) {
+        if (cancelled) return;
+        const typingDelay = Math.min(Math.max(msg.content.length * 22, 900), 2800);
+        setTyping(true);
+        await new Promise(r => setTimeout(r, typingDelay));
+        if (cancelled) return;
+        setTyping(false);
+        setMsgs(p => [...p, msg]);
+        await new Promise(r => setTimeout(r, 450));
+      }
+      if (!cancelled) setIntroPlaying(false);
+    }
+    playIntro();
+    return () => { cancelled = true; };
+  }, []);
+
   function send() {
     const text = input.trim();
-    if (!text || chatLocked) return;
+    if (!text || chatLocked || introPlaying) return;
     const userMsg = { id: Date.now().toString(), sender: "user", content: text, time: "now" };
     setMsgs(p => [...p, userMsg]);
     setInput("");
@@ -292,14 +313,14 @@ function ChatView() {
           <textarea
             ref={inputRef}
             value={input}
-            onChange={e => { if (!chatLocked) setInput(e.target.value); }}
+            onChange={e => { if (!chatLocked && !introPlaying) setInput(e.target.value); }}
             onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
-            placeholder={chatLocked ? "Chat ended" : "Message William..."}
+            placeholder={introPlaying ? "William is typing..." : chatLocked ? "Chat ended" : "Message William..."}
             rows={1}
-            disabled={chatLocked}
-            style={{ flex: 1, resize: "none", borderRadius: 10, border: `1px solid ${RULE}`, padding: "10px 14px", fontSize: 14, outline: "none", fontFamily: "inherit", background: chatLocked ? RULE : PAPER, color: chatLocked ? INK_GHOST : INK, cursor: chatLocked ? "not-allowed" : "text" }}
+            disabled={chatLocked || introPlaying}
+            style={{ flex: 1, resize: "none", borderRadius: 10, border: `1px solid ${RULE}`, padding: "10px 14px", fontSize: 14, outline: "none", fontFamily: "inherit", background: (chatLocked || introPlaying) ? RULE : PAPER, color: (chatLocked || introPlaying) ? INK_GHOST : INK, cursor: (chatLocked || introPlaying) ? "not-allowed" : "text" }}
           />
-          <button onClick={send} disabled={!input.trim() || chatLocked} style={{ width: 40, height: 40, borderRadius: 10, background: (input.trim() && !chatLocked) ? PURPLE : RULE, border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: (input.trim() && !chatLocked) ? "pointer" : "default", color: "#fff", transition: "all 0.15s" }}>
+          <button onClick={send} disabled={!input.trim() || chatLocked || introPlaying} style={{ width: 40, height: 40, borderRadius: 10, background: (input.trim() && !chatLocked && !introPlaying) ? PURPLE : RULE, border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: (input.trim() && !chatLocked && !introPlaying) ? "pointer" : "default", color: "#fff", transition: "all 0.15s" }}>
             <IconSend s={16} />
           </button>
         </div>
