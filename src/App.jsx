@@ -225,7 +225,7 @@ function ChatView() {
   useEffect(() => {
     let cancelled = false;
     async function playIntro() {
-      await new Promise(r => setTimeout(r, 600));
+      await new Promise(r => setTimeout(r, 0));
       for (const msg of WILLIAM_INTRO_MESSAGES) {
         if (cancelled) return;
         const typingDelay = Math.min(Math.max(msg.content.length * 22, 900), 2800);
@@ -275,14 +275,6 @@ function ChatView() {
       </div>
 
       <div style={{ flex: 1, minHeight: 0, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: isMobile ? "12px 14px" : "16px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
-        {msgs.length === 0 && (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", textAlign: "center" }}>
-            <Avatar initials="W" size={56} />
-            <h2 style={{ fontSize: 20, fontWeight: 600, marginTop: 12, color: INK }}>Morning. I'm William.</h2>
-            <p style={{ fontSize: 14, color: INK_SOFT, maxWidth: 360, marginTop: 6 }}>Tell me about your product, who your ideal customers are, and I'll get to work.</p>
-          </div>
-        )}
-
         {msgs.map(m => (
           <div key={m.id} style={{ display: "flex", gap: 10, flexDirection: m.sender === "user" ? "row-reverse" : "row" }}>
             {m.sender === "william" ? <Avatar initials="W" size={28} /> : <Avatar initials="Y" bg={PAPER_WARM} size={28} />}
