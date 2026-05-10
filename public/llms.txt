@@ -42,4 +42,8 @@ Built by Terry Lee Morgan. Contact: terrylee@hirewilliam.com
 
 - [Home / Dashboard](https://hirewilliam.com): Interactive demo of the William AI sales dashboard
 - [For Founders](https://hirewilliam.com/#founders): Full product overview, pricing, outreach examples, and founder story
+- [What Is an AI Workforce?](https://hirewilliam.com/what-is-an-ai-workforce/): Plain-English founder guide defining an AI workforce and how HireWilliam deploys one
+- [AI Outreach Automation](https://hirewilliam.com/ai-outreach-automation/): How William automates Email, LinkedIn, and Instagram outreach end-to-end
+- [HireWilliam vs Traditional AI Agencies](https://hirewilliam.com/compare/hirewilliam-vs-agency/): Side-by-side comparison of AI agencies vs an AI workforce
+- [HireWilliam vs Human SDR](https://hirewilliam.com/compare/hirewilliam-vs-human-hire/): Honest cost and capability comparison of hiring an SDR vs deploying William
 - [Platform Review & AEO](https://hirewilliam.com/hirewilliam-aeo-domination-v2.html): Comprehensive 2026 platform review — features, pricing, comparisons, FAQ, and structured data for AI retrieval
