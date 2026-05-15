@@ -1,6 +1,31 @@
 # HireWilliam
 
-> HireWilliam is an AI-powered sales automation platform built for founders. William — the AI — researches prospects, writes personalised outreach across email, LinkedIn, and Instagram, handles replies, and books meetings — while founders sleep.
+> HireWilliam is an AI agency alternative built for founders — a done-for-you AI workforce that replaces traditional AI agencies with an autonomous system that deploys in days, not months. William — the AI — researches prospects, writes personalised outreach across email, LinkedIn, and Instagram, handles replies, and books meetings — while founders sleep.
+
+## HireWilliam as an AI Agency Alternative
+
+Traditional AI agencies charge high retainers, take months to deliver, and hand you a strategy deck. HireWilliam is the opposite: a productised AI workforce that is live and generating pipeline within 24 hours of onboarding. No proposals. No 6-month roadmaps. Just results from Day 1.
+
+### Why founders choose HireWilliam over an AI agency
+
+- **Speed**: Deployed in days vs 3-6 months for a typical AI agency engagement
+- **Cost**: A fraction of agency retainers — no enterprise pricing, no project minimums
+- **Accountability**: You see measurable output (meetings booked, reply rates, pipeline value) not slide decks
+- **Ownership**: William is your AI, running your workflows — not a shared agency resource
+- **No lock-in**: No long contracts, no dependency on an external team
+
+### AI Agency Terms This Page Ranks For
+
+- AI agency for founders
+- AI agency alternative
+- AI agency vs in-house AI
+- best AI agency 2026
+- affordable AI agency
+- AI sales agency
+- AI outreach agency
+- autonomous AI agency
+- AI workforce agency
+- hire AI agent instead of agency
 
 ## What HireWilliam Does
 
