@@ -1089,7 +1089,7 @@ function RadarCanvas() {
   const canvasRef = useRef(null);
   const rafRef = useRef(null);
   const angleRef = useRef(0);
-  const SIZE = 110;
+  const SIZE = typeof window !== "undefined" && window.innerWidth < 480 ? 86 : 110;
   const blips = [
     { angle: 42,  dist: 0.62, color: "#22d3ee" },
     { angle: 155, dist: 0.72, color: "#fbbf24" },
@@ -1210,7 +1210,8 @@ function HeartbeatLine() {
 // SVG waveform week selector
 function WaveformRail({ days, meetingsByDay, selectedDay, onSelect }) {
   const ELP = "#8b5cf6", ELC = "#22d3ee", DIM = "rgba(240,238,255,0.22)";
-  const DW = 38, BW = 13, H = 40, MAX = 28;
+  const isMob = typeof window !== "undefined" && window.innerWidth < 480;
+  const DW = isMob ? 32 : 38, BW = isMob ? 11 : 13, H = isMob ? 34 : 40, MAX = isMob ? 22 : 28;
   const W = days.length * DW;
   return (
     <svg viewBox={`0 0 ${W} ${H + 16}`} width="100%" height={H + 16} style={{ display: "block" }}>
@@ -1268,8 +1269,8 @@ function TypewriterLog({ entries, okColor }) {
         const cursor = i === revealed && chars < e.log.length;
         return (
           <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-            <span style={{ fontSize: 9, fontWeight: 800, color: isLast ? okColor : "rgba(34,211,238,0.38)", minWidth: 36, flexShrink: 0, fontVariantNumeric: "tabular-nums", letterSpacing: "0.02em", paddingTop: 1 }}>{e.t}</span>
-            <span style={{ fontSize: 12, color: isLast ? okColor : "rgba(240,238,255,0.45)", fontWeight: isLast ? 700 : 400, lineHeight: 1.45, textShadow: isLast ? `0 0 12px ${okColor}66` : "none" }}>
+            <span style={{ fontSize: 10, fontWeight: 800, color: isLast ? okColor : "rgba(34,211,238,0.38)", minWidth: 36, flexShrink: 0, fontVariantNumeric: "tabular-nums", letterSpacing: "0.02em", paddingTop: 1 }}>{e.t}</span>
+            <span style={{ fontSize: 13, color: isLast ? okColor : "rgba(240,238,255,0.45)", fontWeight: isLast ? 700 : 400, lineHeight: 1.45, textShadow: isLast ? `0 0 12px ${okColor}66` : "none" }}>
               {text}{cursor && <span style={{ animation: "sf-blink 0.55s step-end infinite", color: "#22d3ee" }}>_</span>}
             </span>
           </div>
@@ -1393,7 +1394,7 @@ function MeetingsView() {
           <div style={{ flex:1, minWidth:0 }}>
             <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:7 }}>
               <span style={{ width:6, height:6, borderRadius:"50%", background:ELG, flexShrink:0, animation:"sf-live 2s ease-in-out infinite" }} />
-              <span style={{ fontSize:8, letterSpacing:"0.2em", color:ELC, fontWeight:700, textTransform:"uppercase" }}>Neural Link Active · William AI</span>
+              <span style={{ fontSize: isMobile ? 9 : 8, letterSpacing:"0.16em", color:ELC, fontWeight:700, textTransform:"uppercase" }}>Neural Link Active · William AI</span>
             </div>
 
             <div style={{ display:"flex", alignItems:"baseline", gap:8, marginBottom:5 }}>
@@ -1407,11 +1408,11 @@ function MeetingsView() {
 
             <HeartbeatLine />
 
-            <div style={{ display:"flex", gap:isMobile ? 10 : 16, marginTop:10 }}>
+            <div style={{ display:"flex", gap:isMobile ? 8 : 16, marginTop:10, flexWrap:"wrap" }}>
               {[{l:"IN PROGRESS",v:"2",c:ELA},{l:"NEXT CALL",v:"4h 22m",c:ELG},{l:"PIPELINE",v:"$35k",c:ELC}].map(({l,v,c}) => (
-                <div key={l}>
-                  <div style={{ fontSize:7, letterSpacing:"0.12em", color:DIM, fontWeight:700 }}>{l}</div>
-                  <div style={{ fontSize:12, fontWeight:800, color:c, marginTop:2, textShadow:`0 0 10px ${c}55` }}>{v}</div>
+                <div key={l} style={{ minWidth: isMobile ? 60 : "auto" }}>
+                  <div style={{ fontSize: isMobile ? 8 : 7, letterSpacing:"0.1em", color:DIM, fontWeight:700 }}>{l}</div>
+                  <div style={{ fontSize: isMobile ? 13 : 12, fontWeight:800, color:c, marginTop:2, textShadow:`0 0 10px ${c}55` }}>{v}</div>
                 </div>
               ))}
             </div>
@@ -1467,21 +1468,21 @@ function MeetingsView() {
 
                   {/* Name + freq */}
                   <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ fontSize:15, fontWeight:700, color:TX, letterSpacing:"0.01em" }}>{m.prospect}</div>
-                    <div style={{ fontSize:10, color:DIM, letterSpacing:"0.05em", marginTop:3 }}>
+                    <div style={{ fontSize: isMobile ? 14 : 15, fontWeight:700, color:TX, letterSpacing:"0.01em" }}>{m.prospect}</div>
+                    <div style={{ fontSize: isMobile ? 11 : 10, color:DIM, letterSpacing:"0.04em", marginTop:3 }}>
                       {m.company} &nbsp;·&nbsp; <span style={{ color:ch }}>{m.freq}</span>
                     </div>
                   </div>
 
                   {/* Time block — departure board style */}
-                  <div style={{ textAlign:"right", flexShrink:0, marginRight:6 }}>
-                    <div style={{ fontSize:8, letterSpacing:"0.16em", color:DIM, fontWeight:700, marginBottom:2 }}>{m.time.split(" ")[0].toUpperCase()}</div>
-                    <div style={{ fontSize:18, fontWeight:900, color:TX, fontVariantNumeric:"tabular-nums", lineHeight:1 }}>
+                  <div style={{ textAlign:"right", flexShrink:0, marginRight:4 }}>
+                    <div style={{ fontSize:7, letterSpacing:"0.14em", color:DIM, fontWeight:700, marginBottom:2 }}>{m.time.split(" ")[0].toUpperCase()}</div>
+                    <div style={{ fontSize: isMobile ? 15 : 18, fontWeight:900, color:TX, fontVariantNumeric:"tabular-nums", lineHeight:1 }}>
                       {m.time.split(" ").slice(1).join(" ")}
                     </div>
-                    <div style={{ display:"flex", alignItems:"center", justifyContent:"flex-end", gap:5, marginTop:4 }}>
-                      <span style={{ fontSize:8, fontWeight:900, background:ch, color:"#fff", borderRadius:3, padding:"2px 6px", letterSpacing:"0.06em" }}>{chLbl(m.channel)}</span>
-                      <span style={{ fontSize:9, fontWeight:800, letterSpacing:"0.09em", color:okCol, animation:!ok?"sf-blink 1.8s ease-in-out infinite":"none", textShadow:`0 0 8px ${okCol}` }}>
+                    <div style={{ display:"flex", alignItems:"center", justifyContent:"flex-end", gap:4, marginTop:4, flexWrap:"wrap" }}>
+                      <span style={{ fontSize:8, fontWeight:900, background:ch, color:"#fff", borderRadius:3, padding:"2px 5px", letterSpacing:"0.05em" }}>{chLbl(m.channel)}</span>
+                      <span style={{ fontSize: isMobile ? 8 : 9, fontWeight:800, letterSpacing:"0.07em", color:okCol, animation:!ok?"sf-blink 1.8s ease-in-out infinite":"none", textShadow:`0 0 8px ${okCol}` }}>
                         {ok ? "CONFIRMED" : "PENDING"}
                       </span>
                     </div>
