@@ -967,37 +967,339 @@ function OutreachView() {
   );
 }
 
+// ── Particle Canvas ──
+function ParticleCanvas() {
+  const canvasRef = useRef(null);
+  const stateRef = useRef({ particles: [], mouse: { x: -999, y: -999 }, raf: null });
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const state = stateRef.current;
+
+    const resize = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resize();
+    const ro = new ResizeObserver(resize);
+    ro.observe(canvas);
+
+    const COUNT = 55;
+    const COLORS = ["#5a3fa0", "#7155b8", "#9b7ee8", "#b0ada4", "#4a3488"];
+
+    state.particles = Array.from({ length: COUNT }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 2.8 + 0.8,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      alpha: Math.random() * 0.5 + 0.2,
+    }));
+
+    const onMove = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const src = e.touches ? e.touches[0] : e;
+      state.mouse.x = src.clientX - rect.left;
+      state.mouse.y = src.clientY - rect.top;
+    };
+    const onLeave = () => { state.mouse.x = -999; state.mouse.y = -999; };
+
+    canvas.addEventListener("mousemove", onMove);
+    canvas.addEventListener("touchmove", onMove, { passive: true });
+    canvas.addEventListener("mouseleave", onLeave);
+    canvas.addEventListener("touchend", onLeave);
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const { particles, mouse } = state;
+
+      particles.forEach(p => {
+        const dx = mouse.x - p.x;
+        const dy = mouse.y - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const REPEL = 90;
+
+        if (dist < REPEL && dist > 0) {
+          const force = (REPEL - dist) / REPEL;
+          p.vx -= (dx / dist) * force * 0.6;
+          p.vy -= (dy / dist) * force * 0.6;
+        }
+
+        p.vx *= 0.97;
+        p.vy *= 0.97;
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0) { p.x = 0; p.vx *= -1; }
+        if (p.x > canvas.width) { p.x = canvas.width; p.vx *= -1; }
+        if (p.y < 0) { p.y = 0; p.vy *= -1; }
+        if (p.y > canvas.height) { p.y = canvas.height; p.vy *= -1; }
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.alpha;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      });
+
+      // draw lines between close particles
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const a = particles[i], b = particles[j];
+          const dx = a.x - b.x, dy = a.y - b.y;
+          const d = Math.sqrt(dx * dx + dy * dy);
+          if (d < 80) {
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.strokeStyle = "#5a3fa0";
+            ctx.globalAlpha = (1 - d / 80) * 0.12;
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+          }
+        }
+      }
+
+      state.raf = requestAnimationFrame(draw);
+    };
+    draw();
+
+    return () => {
+      cancelAnimationFrame(state.raf);
+      ro.disconnect();
+      canvas.removeEventListener("mousemove", onMove);
+      canvas.removeEventListener("touchmove", onMove);
+      canvas.removeEventListener("mouseleave", onLeave);
+      canvas.removeEventListener("touchend", onLeave);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", borderRadius: "inherit" }}
+    />
+  );
+}
+
 // ── Meetings ──
 function MeetingsView() {
   const isMobile = useIsMobile();
+  const [expanded, setExpanded] = useState(null);
+  const [count, setCount] = useState(0);
+  const [selectedDay, setSelectedDay] = useState(null);
+
   const meetings = [
-    { id: "1", prospect: "Alex Morin", company: "Shipyard", time: "Thu 2:00 PM", duration: "30 min", status: "confirmed" },
-    { id: "2", prospect: "Sarah Kim", company: "BuildKit", time: "Thu 4:30 PM", duration: "15 min", status: "pending" },
-    { id: "3", prospect: "Dan Fields", company: "Beacon", time: "Fri 10:00 AM", duration: "30 min", status: "confirmed" },
+    {
+      id: "1", prospect: "Alex Morin", company: "Shipyard", avatar: "AM",
+      time: "Thu 2:00 PM", day: "Thu", duration: "30 min", status: "confirmed",
+      channel: "LinkedIn", value: "$12k", trail: [
+        "Found via LinkedIn — hiring AE post",
+        "Personalised message sent",
+        "Replied in 3h",
+        "Meeting booked",
+      ],
+    },
+    {
+      id: "2", prospect: "Sarah Kim", company: "BuildKit", avatar: "SK",
+      time: "Thu 4:30 PM", day: "Thu", duration: "15 min", status: "pending",
+      channel: "Email", value: "$8k", trail: [
+        "Found via Product Hunt launch",
+        "Cold email sent",
+        "Replied — asked for more info",
+        "Awaiting confirmation",
+      ],
+    },
+    {
+      id: "3", prospect: "Dan Fields", company: "Beacon", avatar: "DF",
+      time: "Fri 10:00 AM", day: "Fri", duration: "30 min", status: "confirmed",
+      channel: "Instagram", value: "$15k",  trail: [
+        "Found via Instagram — build-in-public post",
+        "DM sent referencing their post",
+        "Replied within 1h",
+        "Meeting booked",
+      ],
+    },
   ];
 
+  const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const meetingsByDay = days.reduce((acc, d) => {
+    acc[d] = meetings.filter(m => m.day === d);
+    return acc;
+  }, {});
+
+  const visibleMeetings = selectedDay
+    ? meetings.filter(m => m.day === selectedDay)
+    : meetings;
+
+  // animate meeting count on mount
+  useEffect(() => {
+    let i = 0;
+    const target = meetings.length;
+    const step = () => { i++; setCount(i); if (i < target) setTimeout(step, 180); };
+    setTimeout(step, 400);
+  }, []);
+
+  const channelIcon = (ch) => ({ LinkedIn: "in", Email: "@", Instagram: "ig" }[ch] || "·");
+  const channelColor = (ch) => ({ LinkedIn: "#0a66c2", Email: GREEN, Instagram: "#c13584" }[ch] || PURPLE);
+
   return (
-    <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
-      <div style={{ padding: isMobile ? "14px 16px" : "18px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-        <IconHash s={14} />
-        <span style={{ fontWeight: 600, fontSize: 15 }}>meetings</span>
-      </div>
-      <div style={{ flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: isMobile ? 16 : 20 }}>
-        {meetings.map(m => (
-          <div key={m.id} style={{ display: "flex", alignItems: "center", gap: isMobile ? 10 : 14, padding: isMobile ? "12px 14px" : "14px 16px", background: PAPER_WARM, borderRadius: 10, marginBottom: 8, flexDirection: "row" }}>
-            <div style={{ width: isMobile ? 52 : 48, textAlign: "center", flexShrink: 0 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: PURPLE }}>{m.time.split(" ")[0]}</div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: INK }}>{m.time.split(" ")[1]} {m.time.split(" ")[2]}</div>
-            </div>
-            <div style={{ width: 1, height: 36, background: RULE, flexShrink: 0 }} />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{m.prospect}</div>
-              <div style={{ fontSize: 12, color: INK_SOFT }}>{m.company} · {m.duration}</div>
-            </div>
-            <Badge text={m.status === "confirmed" ? "Confirmed" : "Pending"} color={m.status === "confirmed" ? "won" : "warm"} />
+    <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+
+      {/* Command strip */}
+      <div style={{ position: "relative", overflow: "hidden", background: PURPLE, borderRadius: 0, padding: isMobile ? "20px 18px 18px" : "24px 24px 20px", flexShrink: 0 }}>
+        <ParticleCanvas />
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.55)" }}>William's haul this week</span>
+            <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10, fontWeight: 700, color: "#7effc4", letterSpacing: "0.08em" }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#7effc4", display: "inline-block", animation: "pulse-green 1.8s infinite" }} />
+              LIVE
+            </span>
           </div>
-        ))}
+          <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+            <span style={{ fontSize: isMobile ? 42 : 52, fontWeight: 800, color: "#fff", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{count}</span>
+            <span style={{ fontSize: 16, color: "rgba(255,255,255,0.6)", fontWeight: 500 }}>meetings booked</span>
+          </div>
+          <div style={{ marginTop: 8, fontSize: 12, color: "rgba(255,255,255,0.45)" }}>
+            ● Next call in <strong style={{ color: "rgba(255,255,255,0.8)" }}>4h 22m</strong> · William is working on <strong style={{ color: "rgba(255,255,255,0.8)" }}>2 more</strong>
+          </div>
+        </div>
       </div>
+
+      {/* Week rail */}
+      <div style={{ display: "flex", gap: 6, padding: isMobile ? "12px 14px" : "14px 20px", borderBottom: `1px solid ${RULE}`, overflowX: "auto", flexShrink: 0, WebkitOverflowScrolling: "touch" }}>
+        {days.map(d => {
+          const count = meetingsByDay[d].length;
+          const active = selectedDay === d;
+          const hasM = count > 0;
+          return (
+            <button
+              key={d}
+              onClick={() => setSelectedDay(active ? null : d)}
+              style={{
+                flexShrink: 0, border: "none", borderRadius: 8, cursor: hasM ? "pointer" : "default",
+                padding: "7px 12px", fontFamily: "inherit", fontSize: 12, fontWeight: 600,
+                background: active ? PURPLE : hasM ? PURPLE_PALE : "transparent",
+                color: active ? "#fff" : hasM ? PURPLE : INK_GHOST,
+                transition: "all 0.15s", position: "relative",
+              }}
+            >
+              {d}
+              {hasM && (
+                <span style={{
+                  position: "absolute", top: 2, right: 2, width: 14, height: 14, borderRadius: "50%",
+                  background: active ? "rgba(255,255,255,0.3)" : PURPLE, color: active ? "#fff" : "#fff",
+                  fontSize: 9, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center",
+                }}>{count}</span>
+              )}
+              {!hasM && <span style={{ display: "block", fontSize: 9, color: INK_GHOST, fontWeight: 400, marginTop: 1 }}>—</span>}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Meeting cards */}
+      <div style={{ flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: isMobile ? "14px 14px" : "16px 20px", display: "flex", flexDirection: "column", gap: 10 }}>
+        {visibleMeetings.map((m, i) => {
+          const isOpen = expanded === m.id;
+          const confirmed = m.status === "confirmed";
+          return (
+            <div
+              key={m.id}
+              onClick={() => setExpanded(isOpen ? null : m.id)}
+              style={{
+                borderRadius: 12, background: PAPER_WARM, cursor: "pointer",
+                borderLeft: `3px solid ${confirmed ? PURPLE : AMBER}`,
+                boxShadow: isOpen ? `0 4px 20px rgba(90,63,160,0.12)` : "0 1px 3px rgba(0,0,0,0.04)",
+                transition: "box-shadow 0.2s, transform 0.2s",
+                transform: isOpen ? "translateY(-1px)" : "translateY(0)",
+                animation: `card-drop 0.3s ease both`,
+                animationDelay: `${i * 80}ms`,
+              }}
+            >
+              {/* Collapsed row */}
+              <div style={{ display: "flex", alignItems: "center", gap: 12, padding: isMobile ? "12px 14px" : "14px 16px" }}>
+                {/* Avatar */}
+                <div style={{ width: 36, height: 36, borderRadius: "50%", background: confirmed ? PURPLE : AMBER, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>
+                  {m.avatar}
+                </div>
+                {/* Name + company */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: INK }}>{m.prospect}</div>
+                  <div style={{ fontSize: 12, color: INK_SOFT }}>{m.company} · {m.duration}</div>
+                </div>
+                {/* Time + channel */}
+                <div style={{ textAlign: "right", flexShrink: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: INK }}>{m.time.split(" ").slice(1).join(" ")}</div>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 4, marginTop: 2 }}>
+                    <span style={{ fontSize: 10, fontWeight: 800, background: channelColor(m.channel), color: "#fff", borderRadius: 4, padding: "1px 5px", letterSpacing: "0.04em" }}>
+                      {channelIcon(m.channel)}
+                    </span>
+                    <span style={{ fontSize: 10, color: confirmed ? GREEN : AMBER, fontWeight: 700 }}>{confirmed ? "Confirmed" : "Pending"}</span>
+                  </div>
+                </div>
+                <div style={{ color: INK_GHOST, fontSize: 12, marginLeft: 4 }}>{isOpen ? "▲" : "▼"}</div>
+              </div>
+
+              {/* Expanded trail */}
+              {isOpen && (
+                <div style={{ borderTop: `1px solid ${RULE}`, padding: isMobile ? "12px 14px" : "14px 16px" }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: INK_GHOST, marginBottom: 10 }}>How William earned this call</div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {m.trail.map((step, si) => (
+                      <div key={si} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
+                          <div style={{ width: 18, height: 18, borderRadius: "50%", background: si === m.trail.length - 1 ? (confirmed ? PURPLE : AMBER) : PURPLE_PALE, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <div style={{ width: 6, height: 6, borderRadius: "50%", background: si === m.trail.length - 1 ? "#fff" : PURPLE }} />
+                          </div>
+                          {si < m.trail.length - 1 && <div style={{ width: 1, height: 14, background: RULE, margin: "2px 0" }} />}
+                        </div>
+                        <div style={{ fontSize: 12, color: si === m.trail.length - 1 ? INK : INK_SOFT, fontWeight: si === m.trail.length - 1 ? 600 : 400, paddingTop: 1 }}>{step}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ marginTop: 14, display: "flex", gap: 8 }}>
+                    <button style={{ flex: 1, padding: "8px 0", borderRadius: 8, border: `1px solid ${RULE}`, background: "#fff", fontSize: 12, fontWeight: 600, color: INK, cursor: "pointer", fontFamily: "inherit" }}>
+                      View conversation
+                    </button>
+                    <button style={{ flex: 1, padding: "8px 0", borderRadius: 8, border: "none", background: PURPLE, color: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                      Get prep brief
+                    </button>
+                  </div>
+                  <div style={{ marginTop: 10, fontSize: 11, color: INK_GHOST, textAlign: "right" }}>
+                    Est. deal value <strong style={{ color: GREEN }}>{m.value}</strong>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+
+        {visibleMeetings.length === 0 && (
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: INK_GHOST, fontSize: 13, gap: 6, paddingTop: 40 }}>
+            <div style={{ fontSize: 28 }}>📭</div>
+            <div>No meetings on {selectedDay}</div>
+            <div style={{ fontSize: 11 }}>William is working on it</div>
+          </div>
+        )}
+      </div>
+
+      <style>{`
+        @keyframes pulse-green {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(0.7); }
+        }
+        @keyframes card-drop {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 }
