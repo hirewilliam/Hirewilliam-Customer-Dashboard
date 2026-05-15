@@ -967,7 +967,9 @@ function OutreachView() {
   );
 }
 
-// ── Neural Canvas (full-section sci-fi) ──
+// ── MEETINGS SECTION — YEAR 3030 ──────────────────────────────────────────
+
+// Neural particle field
 function NeuralCanvas() {
   const canvasRef = useRef(null);
   const stateRef = useRef({ particles: [], mouse: { x: -9999, y: -9999 }, raf: null });
@@ -1082,298 +1084,446 @@ function NeuralCanvas() {
   return <canvas ref={canvasRef} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block" }} />;
 }
 
+// Rotating radar with sweep + blips
+function RadarCanvas() {
+  const canvasRef = useRef(null);
+  const rafRef = useRef(null);
+  const angleRef = useRef(0);
+  const SIZE = 110;
+  const blips = [
+    { angle: 42,  dist: 0.62, color: "#22d3ee" },
+    { angle: 155, dist: 0.72, color: "#fbbf24" },
+    { angle: 248, dist: 0.52, color: "#22d3ee" },
+  ];
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const cx = SIZE / 2, cy = SIZE / 2, r = SIZE / 2 - 3;
+
+    const draw = () => {
+      angleRef.current = (angleRef.current + 1.1) % 360;
+      const sweep = (angleRef.current - 90) * Math.PI / 180;
+      ctx.clearRect(0, 0, SIZE, SIZE);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.clip();
+
+      ctx.fillStyle = "#04010d";
+      ctx.fillRect(0, 0, SIZE, SIZE);
+
+      [0.33, 0.66, 1].forEach(s => {
+        ctx.beginPath();
+        ctx.arc(cx, cy, r * s, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(34,211,238,0.07)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      });
+      ctx.beginPath();
+      ctx.moveTo(cx - r, cy); ctx.lineTo(cx + r, cy);
+      ctx.moveTo(cx, cy - r); ctx.lineTo(cx, cy + r);
+      ctx.strokeStyle = "rgba(34,211,238,0.04)";
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+
+      const trail = 70 * Math.PI / 180;
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+      grad.addColorStop(0, "rgba(34,211,238,0.0)");
+      grad.addColorStop(0.5, "rgba(34,211,238,0.05)");
+      grad.addColorStop(1, "rgba(34,211,238,0.14)");
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, r, sweep - trail, sweep);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + r * Math.cos(sweep), cy + r * Math.sin(sweep));
+      ctx.strokeStyle = "#22d3ee";
+      ctx.lineWidth = 1.5;
+      ctx.shadowBlur = 7;
+      ctx.shadowColor = "#22d3ee";
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      blips.forEach(b => {
+        const br = (b.angle - 90) * Math.PI / 180;
+        const bx = cx + b.dist * r * Math.cos(br);
+        const by = cy + b.dist * r * Math.sin(br);
+        const diff = ((angleRef.current - b.angle + 360) % 360);
+        const fade = diff < 55 ? 1 - diff / 55 : 0.28;
+        ctx.beginPath();
+        ctx.arc(bx, by, 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = b.color;
+        ctx.globalAlpha = 0.35 + fade * 0.65;
+        ctx.shadowBlur = 8 + fade * 14;
+        ctx.shadowColor = b.color;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
+        if (fade > 0.45) {
+          ctx.beginPath();
+          ctx.arc(bx, by, 3.5 + 3.5 * fade, 0, Math.PI * 2);
+          ctx.strokeStyle = b.color;
+          ctx.globalAlpha = (fade - 0.45) * 0.5;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+        }
+      });
+
+      ctx.restore();
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(34,211,238,0.18)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      rafRef.current = requestAnimationFrame(draw);
+    };
+    draw();
+    return () => cancelAnimationFrame(rafRef.current);
+  }, []);
+
+  return <canvas ref={canvasRef} width={SIZE} height={SIZE} style={{ display: "block", borderRadius: "50%", flexShrink: 0 }} />;
+}
+
+// Sliding heartbeat line
+function HeartbeatLine() {
+  return (
+    <div style={{ width: "100%", overflow: "hidden", height: 22, position: "relative" }}>
+      <svg width="100%" height="22" viewBox="0 0 260 22" preserveAspectRatio="none" style={{ display: "block" }}>
+        <line x1="0" y1="11" x2="260" y2="11" stroke="rgba(34,211,238,0.1)" strokeWidth="1" />
+      </svg>
+      <svg style={{ position: "absolute", top: 0, left: 0, animation: "hb-slide 3.4s linear infinite", overflow: "visible" }} width="80" height="22" viewBox="0 0 80 22">
+        <polyline points="0,11 18,11 26,3 34,19 42,11 80,11" fill="none" stroke="#22d3ee" strokeWidth="1.5" style={{ filter: "drop-shadow(0 0 4px #22d3ee)" }} />
+      </svg>
+    </div>
+  );
+}
+
+// SVG waveform week selector
+function WaveformRail({ days, meetingsByDay, selectedDay, onSelect }) {
+  const ELP = "#8b5cf6", ELC = "#22d3ee", DIM = "rgba(240,238,255,0.22)";
+  const DW = 38, BW = 13, H = 40, MAX = 28;
+  const W = days.length * DW;
+  return (
+    <svg viewBox={`0 0 ${W} ${H + 16}`} width="100%" height={H + 16} style={{ display: "block" }}>
+      {days.map((d, i) => {
+        const cnt = meetingsByDay[d].length;
+        const bh = cnt > 0 ? Math.max(10, (cnt / 3) * MAX) : 3;
+        const x = i * DW + (DW - BW) / 2;
+        const y = H - bh;
+        const active = selectedDay === d;
+        const hasM = cnt > 0;
+        const col = active ? ELC : hasM ? ELP : "rgba(139,92,246,0.12)";
+        return (
+          <g key={d} onClick={() => hasM && onSelect(active ? null : d)} style={{ cursor: hasM ? "pointer" : "default" }}>
+            <rect x={x} y={H - 3} width={BW} height={3} rx={1.5} fill="rgba(139,92,246,0.08)" />
+            <rect x={x} y={y} width={BW} height={bh} rx={3} fill={col}
+              opacity={active ? 1 : hasM ? 0.6 : 1}
+              style={{ filter: active ? `drop-shadow(0 0 6px ${ELC})` : hasM ? `drop-shadow(0 0 3px ${ELP})` : "none" }}
+            />
+            {active && <line x1={x + BW / 2} y1={0} x2={x + BW / 2} y2={H - 3} stroke={ELC} strokeWidth="1" strokeDasharray="3,3" opacity="0.35" />}
+            {hasM && !active && <circle cx={x + BW / 2} cy={y - 5} r={2} fill={ELP} style={{ animation: `sf-blink 2s ease-in-out infinite`, animationDelay: `${i * 0.28}s` }} />}
+            <text x={x + BW / 2} y={H + 13} textAnchor="middle" fill={active ? ELC : hasM ? "rgba(240,238,255,0.65)" : DIM} fontSize="7" fontWeight="800" letterSpacing="0.07em" style={{ fontFamily: "inherit" }}>
+              {d.toUpperCase()}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+// Typewriter system log — types each entry character by character
+function TypewriterLog({ entries, okColor }) {
+  const [revealed, setRevealed] = useState(0);
+  const [chars, setChars] = useState(0);
+
+  useEffect(() => { setRevealed(0); setChars(0); }, [entries]);
+
+  useEffect(() => {
+    if (revealed >= entries.length) return;
+    const entry = entries[revealed];
+    if (chars < entry.log.length) {
+      const t = setTimeout(() => setChars(c => c + 1), 15);
+      return () => clearTimeout(t);
+    }
+    const t = setTimeout(() => { setRevealed(r => r + 1); setChars(0); }, 150);
+    return () => clearTimeout(t);
+  }, [revealed, chars, entries]);
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      {entries.map((e, i) => {
+        if (i > revealed) return null;
+        const isLast = i === entries.length - 1;
+        const text = i < revealed ? e.log : e.log.slice(0, chars);
+        const cursor = i === revealed && chars < e.log.length;
+        return (
+          <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+            <span style={{ fontSize: 9, fontWeight: 800, color: isLast ? okColor : "rgba(34,211,238,0.38)", minWidth: 36, flexShrink: 0, fontVariantNumeric: "tabular-nums", letterSpacing: "0.02em", paddingTop: 1 }}>{e.t}</span>
+            <span style={{ fontSize: 12, color: isLast ? okColor : "rgba(240,238,255,0.45)", fontWeight: isLast ? 700 : 400, lineHeight: 1.45, textShadow: isLast ? `0 0 12px ${okColor}66` : "none" }}>
+              {text}{cursor && <span style={{ animation: "sf-blink 0.55s step-end infinite", color: "#22d3ee" }}>_</span>}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // ── Meetings ──
 function MeetingsView() {
   const isMobile = useIsMobile();
-  const [expanded, setExpanded] = useState(null);
-  const [count, setCount] = useState(0);
+  const [expanded, setExpanded]   = useState(null);
+  const [count, setCount]         = useState(0);
   const [selectedDay, setSelectedDay] = useState(null);
+  const [hoveredCard, setHoveredCard] = useState(null);
+
+  const SF   = "#04010d";
+  const CARD = "rgba(8,4,20,0.86)";
+  const ELP  = "#8b5cf6";
+  const ELC  = "#22d3ee";
+  const ELG  = "#10b981";
+  const ELA  = "#fbbf24";
+  const TX   = "#f0eeff";
+  const DIM  = "rgba(240,238,255,0.38)";
+  const BR   = "rgba(139,92,246,0.16)";
+
+  const chCol = ch => ({ LinkedIn: "#3b82f6", Email: ELG, Instagram: "#ec4899" }[ch] || ELP);
+  const chLbl = ch => ({ LinkedIn: "LI", Email: "EM", Instagram: "IG" }[ch] || "--");
 
   const meetings = [
     {
       id: "1", prospect: "Alex Morin", company: "Shipyard", avatar: "AM",
-      time: "Thu 2:00 PM", day: "Thu", duration: "30 min", status: "confirmed",
+      time: "Thu 2:00 PM", day: "Thu", status: "confirmed",
       channel: "LinkedIn", freq: "LI-7749", value: "$12k",
       trail: [
-        { t: "06:14:22", log: "Prospect identified via LinkedIn — AE hiring signal detected" },
-        { t: "06:15:01", log: "Personalised message constructed — referenced job post" },
-        { t: "06:15:03", log: "Message dispatched via LinkedIn DM" },
-        { t: "09:33:47", log: "Reply received — positive intent signal" },
-        { t: "09:34:01", log: "Calendar link dispatched" },
-        { t: "09:41:22", log: "SIGNAL LOCKED — Thu 2:00 PM confirmed" },
+        { t: "06:14", log: "Prospect identified — LinkedIn AE hiring signal" },
+        { t: "06:15", log: "Message constructed, referenced job post" },
+        { t: "06:15", log: "Dispatched via LinkedIn DM" },
+        { t: "09:33", log: "Reply received — positive intent" },
+        { t: "09:34", log: "Calendar link dispatched" },
+        { t: "09:41", log: "SIGNAL LOCKED — Thu 2:00 PM" },
       ],
     },
     {
       id: "2", prospect: "Sarah Kim", company: "BuildKit", avatar: "SK",
-      time: "Thu 4:30 PM", day: "Thu", duration: "15 min", status: "pending",
+      time: "Thu 4:30 PM", day: "Thu", status: "pending",
       channel: "Email", freq: "EM-3312", value: "$8k",
       trail: [
-        { t: "05:02:11", log: "Prospect identified via Product Hunt launch" },
-        { t: "05:02:58", log: "Cold email constructed — launch day referenced" },
-        { t: "05:03:00", log: "Message dispatched via email" },
-        { t: "07:55:30", log: "Reply received — info requested" },
-        { t: "07:55:45", log: "Follow-up sent — calendar link included" },
-        { t: "—", log: "AWAITING CONFIRMATION — signal pending" },
+        { t: "05:02", log: "Prospect identified — Product Hunt launch" },
+        { t: "05:03", log: "Cold email constructed, launch day referenced" },
+        { t: "05:03", log: "Dispatched via email" },
+        { t: "07:55", log: "Reply received — info requested" },
+        { t: "07:55", log: "Follow-up sent with calendar link" },
+        { t: "—",     log: "AWAITING CONFIRMATION" },
       ],
     },
     {
       id: "3", prospect: "Dan Fields", company: "Beacon", avatar: "DF",
-      time: "Fri 10:00 AM", day: "Fri", duration: "30 min", status: "confirmed",
+      time: "Fri 10:00 AM", day: "Fri", status: "confirmed",
       channel: "Instagram", freq: "IG-5501", value: "$15k",
       trail: [
-        { t: "04:11:09", log: "Prospect identified via Instagram build-in-public post" },
-        { t: "04:11:55", log: "DM constructed — post content referenced directly" },
-        { t: "04:12:00", log: "Message dispatched via Instagram DM" },
-        { t: "05:08:33", log: "Reply received in 57 min — strong interest signal" },
-        { t: "05:09:01", log: "Calendar link dispatched" },
-        { t: "05:22:14", log: "SIGNAL LOCKED — Fri 10:00 AM confirmed" },
+        { t: "04:11", log: "Prospect identified — Instagram build post" },
+        { t: "04:12", log: "DM constructed, post content referenced" },
+        { t: "04:12", log: "Dispatched via Instagram DM" },
+        { t: "05:08", log: "Reply received in 57 min — strong interest" },
+        { t: "05:09", log: "Calendar link dispatched" },
+        { t: "05:22", log: "SIGNAL LOCKED — Fri 10:00 AM" },
       ],
     },
   ];
 
-  const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const meetingsByDay = days.reduce((acc, d) => { acc[d] = meetings.filter(m => m.day === d); return acc; }, {});
-  const visibleMeetings = selectedDay ? meetings.filter(m => m.day === selectedDay) : meetings;
+  const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  const meetingsByDay = days.reduce((a, d) => { a[d] = meetings.filter(m => m.day === d); return a; }, {});
+  const visible = selectedDay ? meetings.filter(m => m.day === selectedDay) : meetings;
 
   useEffect(() => {
     let i = 0;
-    const step = () => { i++; setCount(i); if (i < meetings.length) setTimeout(step, 260); };
-    setTimeout(step, 700);
+    const go = () => { i++; setCount(i); if (i < meetings.length) setTimeout(go, 300); };
+    setTimeout(go, 900);
   }, []);
 
-  const SF_BG = "#07040f";
-  const CARD_BG = "rgba(13,8,30,0.82)";
-  const EL_P = "#8b5cf6";
-  const EL_C = "#22d3ee";
-  const EL_G = "#4ade80";
-  const EL_A = "#fbbf24";
-  const TX = "#f0eeff";
-  const DIM = "rgba(240,238,255,0.42)";
-  const BR = "rgba(139,92,246,0.22)";
-
-  const chColor = (ch) => ({ LinkedIn: "#0a66c2", Email: EL_G, Instagram: "#e1306c" }[ch] || EL_P);
-  const chLabel = (ch) => ({ LinkedIn: "LI", Email: "EM", Instagram: "IG" }[ch] || "XX");
+  const tilts = isMobile ? [0,0,0] : [-1.4, 0, 1.4];
 
   return (
-    <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", background: SF_BG, overflow: "hidden", position: "relative" }}>
+    <div style={{ flex:1, minHeight:0, display:"flex", flexDirection:"column", background:SF, overflow:"hidden", position:"relative" }}>
       <style>{`
-        @keyframes sf-scan {
-          0% { top: -2px; opacity: 0; }
-          4% { opacity: 1; }
-          96% { opacity: 0.5; }
-          100% { top: 100%; opacity: 0; }
-        }
-        @keyframes sf-glitch {
-          0%,87%,100% { transform: none; filter: none; }
-          88% { transform: skew(-1.2deg) translateX(3px); filter: hue-rotate(25deg) brightness(1.3); }
-          89% { transform: skew(0.6deg) translateX(-2px); filter: none; }
-          90% { transform: none; }
-          91% { transform: translateX(2px); filter: brightness(1.5); }
-          92% { transform: none; filter: none; }
-        }
-        @keyframes sf-orbit-cw  { from { transform: rotate(0deg); }   to { transform: rotate(360deg); } }
-        @keyframes sf-orbit-ccw { from { transform: rotate(0deg); }   to { transform: rotate(-360deg); } }
-        @keyframes sf-hud   { 0%,100% { opacity: 0.45; } 50% { opacity: 1; } }
-        @keyframes sf-live  { 0%,100% { opacity:1; transform:scale(1); box-shadow:0 0 0 0 rgba(74,222,128,0.8); } 60% { opacity:0.7; transform:scale(0.8); box-shadow:0 0 0 6px rgba(74,222,128,0); } }
-        @keyframes sf-blink { 0%,49%,100% { opacity:1; } 50%,99% { opacity:0.25; } }
-        @keyframes sf-confirmed { 0%,100% { box-shadow:0 0 0 1px rgba(139,92,246,0.35),0 0 20px rgba(139,92,246,0.1); } 50% { box-shadow:0 0 0 1px rgba(139,92,246,0.65),0 0 35px rgba(139,92,246,0.22); } }
-        @keyframes sf-pending   { 0%,100% { box-shadow:0 0 0 1px rgba(251,191,36,0.3),0 0 18px rgba(251,191,36,0.07); }  50% { box-shadow:0 0 0 1px rgba(251,191,36,0.6),0 0 28px rgba(251,191,36,0.16); } }
-        @keyframes sf-expanded  { 0%,100% { box-shadow:0 0 0 1px rgba(34,211,238,0.6),0 0 40px rgba(34,211,238,0.18),0 0 80px rgba(139,92,246,0.1); } 50% { box-shadow:0 0 0 1px rgba(34,211,238,0.95),0 0 60px rgba(34,211,238,0.3),0 0 100px rgba(139,92,246,0.15); } }
-        @keyframes sf-card  { from { opacity:0; transform:translateY(18px) scale(0.97); } to { opacity:1; transform:translateY(0) scale(1); } }
-        @keyframes sf-log   { from { opacity:0; transform:translateX(-10px); } to { opacity:1; transform:translateX(0); } }
-        @keyframes sf-bar   { 0% { left:-45%; } 100% { left:110%; } }
+        @keyframes sf-scan    { 0%{top:-1px;opacity:0} 5%{opacity:.8} 95%{opacity:.35} 100%{top:100%;opacity:0} }
+        @keyframes sf-live    { 0%,100%{opacity:1;transform:scale(1);box-shadow:0 0 0 0 rgba(16,185,129,.8)} 60%{opacity:.6;transform:scale(.75);box-shadow:0 0 0 7px rgba(16,185,129,0)} }
+        @keyframes sf-blink   { 0%,49%,100%{opacity:1} 50%,99%{opacity:.18} }
+        @keyframes sf-conf    { 0%,100%{box-shadow:0 0 0 1px rgba(139,92,246,.28),0 4px 22px rgba(139,92,246,.07)} 50%{box-shadow:0 0 0 1px rgba(139,92,246,.58),0 4px 32px rgba(139,92,246,.18)} }
+        @keyframes sf-pend    { 0%,100%{box-shadow:0 0 0 1px rgba(251,191,36,.22),0 4px 18px rgba(251,191,36,.06)} 50%{box-shadow:0 0 0 1px rgba(251,191,36,.52),0 4px 26px rgba(251,191,36,.14)} }
+        @keyframes sf-open    { 0%,100%{box-shadow:0 0 0 1px rgba(34,211,238,.55),0 8px 40px rgba(34,211,238,.16),0 0 70px rgba(139,92,246,.09)} 50%{box-shadow:0 0 0 1px rgba(34,211,238,.9),0 8px 55px rgba(34,211,238,.28),0 0 90px rgba(139,92,246,.13)} }
+        @keyframes sf-enter   { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes sf-bar     { 0%{left:-45%} 100%{left:110%} }
+        @keyframes hb-slide   { from{transform:translateX(-90px)} to{transform:translateX(calc(100vw + 90px))} }
+        @keyframes count-glow { 0%,100%{text-shadow:0 0 22px rgba(139,92,246,.55),0 0 44px rgba(139,92,246,.28)} 50%{text-shadow:0 0 32px rgba(139,92,246,.9),0 0 64px rgba(139,92,246,.45),0 0 90px rgba(34,211,238,.18)} }
+        @keyframes sf-orbit-cw  { from{transform:rotate(0deg)}   to{transform:rotate(360deg)} }
+        @keyframes sf-orbit-ccw { from{transform:rotate(0deg)}   to{transform:rotate(-360deg)} }
       `}</style>
 
-      {/* Full canvas fills entire section */}
+      {/* Full-section particle field */}
       <NeuralCanvas />
 
-      {/* Horizontal scan line sweeping top → bottom */}
-      <div style={{
-        position: "absolute", left: 0, right: 0, height: "1px", zIndex: 2, pointerEvents: "none",
-        background: `linear-gradient(90deg, transparent 0%, ${EL_P} 30%, ${EL_C} 60%, transparent 100%)`,
-        animation: "sf-scan 9s linear infinite",
-      }} />
+      {/* Single clean scan line */}
+      <div style={{ position:"absolute", left:0, right:0, height:"1px", zIndex:2, pointerEvents:"none", background:`linear-gradient(90deg,transparent,${ELP},${ELC},transparent)`, animation:"sf-scan 12s linear infinite" }} />
 
-      {/* HUD corner brackets */}
-      {[
-        { top: 10, left: 10, borderTop: `1.5px solid ${EL_P}`, borderLeft: `1.5px solid ${EL_P}`, animationDelay: "0s" },
-        { top: 10, right: 10, borderTop: `1.5px solid ${EL_C}`, borderRight: `1.5px solid ${EL_C}`, animationDelay: "0.4s" },
-        { bottom: 10, left: 10, borderBottom: `1.5px solid ${EL_C}`, borderLeft: `1.5px solid ${EL_C}`, animationDelay: "0.8s" },
-        { bottom: 10, right: 10, borderBottom: `1.5px solid ${EL_P}`, borderRight: `1.5px solid ${EL_P}`, animationDelay: "1.2s" },
-      ].map((s, i) => (
-        <div key={i} style={{ position: "absolute", width: 18, height: 18, zIndex: 3, pointerEvents: "none", animation: `sf-hud 2.8s ease-in-out infinite`, ...s }} />
-      ))}
+      {/* ── The Bridge ── */}
+      <div style={{ position:"relative", zIndex:4, flexShrink:0, padding: isMobile ? "18px 16px 14px" : "22px 24px 16px", borderBottom:`1px solid ${BR}`, backdropFilter:"blur(18px)", background:"rgba(4,1,13,0.62)" }}>
+        <div style={{ display:"flex", alignItems:"center", gap: isMobile ? 16 : 22 }}>
 
-      {/* ── Command Header ── */}
-      <div style={{ position: "relative", zIndex: 4, flexShrink: 0, padding: isMobile ? "20px 18px 16px" : "24px 26px 18px", borderBottom: `1px solid ${BR}`, backdropFilter: "blur(14px)", background: "rgba(7,4,15,0.55)" }}>
-        {/* Eyebrow */}
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-          <span style={{ width: 7, height: 7, borderRadius: "50%", background: EL_G, display: "inline-block", animation: "sf-live 1.8s ease-in-out infinite" }} />
-          <span style={{ fontSize: 9, letterSpacing: "0.26em", color: EL_C, fontWeight: 700, textTransform: "uppercase" }}>Neural Link Active · William AI</span>
-        </div>
-
-        {/* Title with glitch */}
-        <div style={{ fontSize: isMobile ? 16 : 19, fontWeight: 900, color: TX, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 18, animation: "sf-glitch 9s ease-in-out infinite", textShadow: `0 0 24px rgba(139,92,246,0.5)` }}>
-          Meetings Command Center
-        </div>
-
-        {/* Orbit ring + count + stats */}
-        <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 18 : 28 }}>
-          {/* Orbit rig */}
-          <div style={{ position: "relative", width: isMobile ? 82 : 96, height: isMobile ? 82 : 96, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <div style={{ position: "absolute", inset: 0,    borderRadius: "50%", border: `1px solid rgba(34,211,238,0.18)`, borderTopColor: EL_C,  animation: "sf-orbit-cw  14s linear infinite" }} />
-            <div style={{ position: "absolute", inset: 9,    borderRadius: "50%", border: `1px dashed rgba(139,92,246,0.25)`, borderRightColor: EL_P, animation: "sf-orbit-ccw  7s linear infinite" }} />
-            <div style={{ position: "absolute", inset: 18,   borderRadius: "50%", border: `1px solid rgba(74,222,128,0.18)`, borderBottomColor: EL_G, animation: "sf-orbit-cw   3s linear infinite" }} />
-            <div style={{ position: "relative", zIndex: 1, textAlign: "center" }}>
-              <div style={{ fontSize: isMobile ? 32 : 40, fontWeight: 900, color: "#fff", lineHeight: 1, textShadow: `0 0 28px ${EL_P}, 0 0 50px rgba(139,92,246,0.3)`, fontVariantNumeric: "tabular-nums" }}>{count}</div>
-              <div style={{ fontSize: 7, color: DIM, letterSpacing: "0.14em", marginTop: 2 }}>BOOKED</div>
+          {/* Radar */}
+          <div style={{ position:"relative", flexShrink:0 }}>
+            <RadarCanvas />
+            <div style={{ position:"absolute", bottom:-3, right:-3, width:20, height:20, borderRadius:"50%", background:ELP, border:`2px solid ${SF}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, fontWeight:900, color:"#fff" }}>
+              {meetings.filter(m => m.status === "confirmed").length}
             </div>
           </div>
 
-          {/* Stats column */}
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
-            {[
-              { label: "THIS WEEK",   val: "3 meetings", color: EL_P },
-              { label: "IN PROGRESS", val: "2 signals",  color: EL_A },
-              { label: "NEXT CALL",   val: "4h 22m",     color: EL_G },
-            ].map(({ label, val, color }) => (
-              <div key={label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: `1px solid rgba(139,92,246,0.1)`, paddingBottom: 5 }}>
-                <span style={{ fontSize: 8, letterSpacing: "0.15em", color: DIM, fontWeight: 700 }}>{label}</span>
-                <span style={{ fontSize: 11, fontWeight: 800, color, textShadow: `0 0 10px ${color}55`, fontVariantNumeric: "tabular-nums" }}>{val}</span>
-              </div>
-            ))}
+          {/* Info panel */}
+          <div style={{ flex:1, minWidth:0 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:7 }}>
+              <span style={{ width:6, height:6, borderRadius:"50%", background:ELG, flexShrink:0, animation:"sf-live 2s ease-in-out infinite" }} />
+              <span style={{ fontSize:8, letterSpacing:"0.2em", color:ELC, fontWeight:700, textTransform:"uppercase" }}>Neural Link Active · William AI</span>
+            </div>
+
+            <div style={{ display:"flex", alignItems:"baseline", gap:8, marginBottom:5 }}>
+              <span style={{ fontSize: isMobile ? 40 : 50, fontWeight:900, color:"#fff", lineHeight:1, fontVariantNumeric:"tabular-nums", animation:"count-glow 3.2s ease-in-out infinite" }}>{count}</span>
+              <span style={{ fontSize:11, color:DIM, lineHeight:1.4 }}>signals<br/>locked</span>
+            </div>
+
+            <div style={{ fontSize:12, color:"rgba(240,238,255,0.5)", marginBottom:10, fontWeight:400 }}>
+              William locked {meetings.length} signals this week.
+            </div>
+
+            <HeartbeatLine />
+
+            <div style={{ display:"flex", gap:isMobile ? 10 : 16, marginTop:10 }}>
+              {[{l:"IN PROGRESS",v:"2",c:ELA},{l:"NEXT CALL",v:"4h 22m",c:ELG},{l:"PIPELINE",v:"$35k",c:ELC}].map(({l,v,c}) => (
+                <div key={l}>
+                  <div style={{ fontSize:7, letterSpacing:"0.12em", color:DIM, fontWeight:700 }}>{l}</div>
+                  <div style={{ fontSize:12, fontWeight:800, color:c, marginTop:2, textShadow:`0 0 10px ${c}55` }}>{v}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* ── Week Rail ── */}
-      <div style={{ position: "relative", zIndex: 4, display: "flex", gap: 5, padding: isMobile ? "10px 14px" : "11px 20px", borderBottom: `1px solid ${BR}`, overflowX: "auto", flexShrink: 0, WebkitOverflowScrolling: "touch", backdropFilter: "blur(12px)", background: "rgba(7,4,15,0.5)" }}>
-        {days.map(d => {
-          const cnt = meetingsByDay[d].length;
-          const active = selectedDay === d;
-          const hasM = cnt > 0;
-          return (
-            <button key={d} onClick={() => setSelectedDay(active ? null : d)} style={{
-              flexShrink: 0, fontFamily: "inherit", fontSize: 9, fontWeight: 800, letterSpacing: "0.12em",
-              textTransform: "uppercase", padding: "7px 11px", borderRadius: 6, cursor: hasM ? "pointer" : "default",
-              border: `1px solid ${active ? EL_C : hasM ? "rgba(139,92,246,0.45)" : "rgba(139,92,246,0.1)"}`,
-              background: active ? "rgba(34,211,238,0.12)" : hasM ? "rgba(139,92,246,0.08)" : "transparent",
-              color: active ? EL_C : hasM ? EL_P : "rgba(139,92,246,0.28)",
-              boxShadow: active ? `0 0 16px rgba(34,211,238,0.25)` : "none",
-              transition: "all 0.2s",
-            }}>
-              {d}
-              {hasM && <span style={{ display: "block", fontSize: 8, color: active ? EL_C : EL_A, marginTop: 2, animation: "sf-blink 2.2s ease-in-out infinite" }}>●</span>}
-              {!hasM && <span style={{ display: "block", fontSize: 8, color: "rgba(139,92,246,0.2)", marginTop: 2 }}>–</span>}
-            </button>
-          );
-        })}
+      {/* ── Waveform Week Rail ── */}
+      <div style={{ position:"relative", zIndex:4, padding: isMobile ? "10px 16px 2px" : "10px 24px 2px", borderBottom:`1px solid ${BR}`, flexShrink:0, backdropFilter:"blur(12px)", background:"rgba(4,1,13,0.52)" }}>
+        <WaveformRail days={days} meetingsByDay={meetingsByDay} selectedDay={selectedDay} onSelect={setSelectedDay} />
       </div>
 
-      {/* ── Cards ── */}
-      <div style={{ position: "relative", zIndex: 4, flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: isMobile ? "12px" : "14px 18px", display: "flex", flexDirection: "column", gap: 10 }}>
-        {visibleMeetings.map((m, i) => {
+      {/* ── Signal File Cards ── */}
+      <div style={{ position:"relative", zIndex:4, flex:1, overflowY:"auto", WebkitOverflowScrolling:"touch", padding: isMobile ? "12px" : "16px 20px", display:"flex", flexDirection:"column", gap:11 }}>
+        {visible.map((m, i) => {
           const isOpen = expanded === m.id;
-          const ok = m.status === "confirmed";
+          const ok     = m.status === "confirmed";
+          const ch     = chCol(m.channel);
+          const hov    = hoveredCard === m.id && !isMobile;
+          const tilt   = (!isMobile && !isOpen) ? (tilts[i] ?? 0) : 0;
+          const okCol  = ok ? ELG : ELA;
+
           return (
-            <div key={m.id} onClick={() => setExpanded(isOpen ? null : m.id)} style={{
-              borderRadius: 12, cursor: "pointer",
-              background: CARD_BG,
-              backdropFilter: "blur(22px)",
-              border: `1px solid ${isOpen ? "rgba(34,211,238,0.55)" : ok ? "rgba(139,92,246,0.32)" : "rgba(251,191,36,0.28)"}`,
-              animation: `sf-card 0.38s ease ${i * 90}ms both, ${isOpen ? "sf-expanded 2.8s ease-in-out infinite" : ok ? "sf-confirmed 3.5s ease-in-out infinite" : "sf-pending 3.5s ease-in-out infinite"}`,
-              transition: "border-color 0.3s",
-            }}>
-
-              {/* Row */}
-              <div style={{ display: "flex", alignItems: "center", gap: 12, padding: isMobile ? "12px 14px" : "14px 18px" }}>
-                {/* Avatar */}
-                <div style={{
-                  width: 40, height: 40, borderRadius: "50%", flexShrink: 0,
-                  background: ok ? `linear-gradient(135deg, ${EL_P}, #3b0764)` : `linear-gradient(135deg, ${EL_A}, #78350f)`,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 11, fontWeight: 900, color: "#fff", letterSpacing: "0.05em",
-                  boxShadow: ok ? `0 0 16px rgba(139,92,246,0.5)` : `0 0 16px rgba(251,191,36,0.45)`,
-                }}>
-                  {m.avatar}
-                </div>
-
-                {/* Name */}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: TX }}>{m.prospect}</div>
-                  <div style={{ fontSize: 9, color: DIM, letterSpacing: "0.06em", marginTop: 2 }}>
-                    {m.company} &nbsp;·&nbsp; FREQ: <span style={{ color: chColor(m.channel) }}>{m.freq}</span>
-                  </div>
-                </div>
-
-                {/* Time + badge */}
-                <div style={{ textAlign: "right", flexShrink: 0 }}>
-                  <div style={{ fontSize: 14, fontWeight: 900, color: TX, fontVariantNumeric: "tabular-nums", letterSpacing: "0.02em", textShadow: `0 0 12px rgba(240,238,255,0.3)` }}>
-                    {m.time.split(" ").slice(1).join(" ")}
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 5, marginTop: 4 }}>
-                    <span style={{ fontSize: 8, fontWeight: 900, background: chColor(m.channel), color: "#fff", borderRadius: 3, padding: "2px 5px", letterSpacing: "0.06em" }}>{chLabel(m.channel)}</span>
-                    <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: "0.08em", color: ok ? EL_G : EL_A, animation: !ok ? "sf-blink 1.6s ease-in-out infinite" : "none", textShadow: `0 0 8px ${ok ? EL_G : EL_A}` }}>
-                      {ok ? "CONFIRMED" : "PENDING"}
-                    </span>
-                  </div>
-                </div>
-
-                <span style={{ fontSize: 9, color: DIM, marginLeft: 2 }}>{isOpen ? "▲" : "▼"}</span>
-              </div>
-
-              {/* Expanded system log */}
-              {isOpen && (
-                <div style={{ borderTop: `1px solid rgba(34,211,238,0.18)`, padding: isMobile ? "12px 14px 14px" : "14px 18px 16px" }}>
-                  {/* Running scan bar */}
-                  <div style={{ position: "relative", height: 1, background: "rgba(34,211,238,0.08)", overflow: "hidden", marginBottom: 12, borderRadius: 1 }}>
-                    <div style={{ position: "absolute", top: 0, bottom: 0, width: "40%", background: `linear-gradient(90deg, transparent, ${EL_C}, transparent)`, animation: "sf-bar 1.8s linear infinite" }} />
-                  </div>
-
-                  <div style={{ fontSize: 8, letterSpacing: "0.22em", color: EL_C, fontWeight: 700, marginBottom: 10, textTransform: "uppercase" }}>
-                    ▸ SYSTEM LOG — {m.prospect.toUpperCase()} / {m.company.toUpperCase()}
-                  </div>
-
-                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                    {m.trail.map((step, si) => {
-                      const isLast = si === m.trail.length - 1;
-                      return (
-                        <div key={si} style={{ display: "flex", alignItems: "flex-start", gap: 10, animation: `sf-log 0.28s ease ${si * 70}ms both` }}>
-                          <span style={{ fontSize: 8, fontWeight: 800, color: isLast ? (ok ? EL_G : EL_A) : "rgba(34,211,238,0.4)", fontVariantNumeric: "tabular-nums", flexShrink: 0, minWidth: 46, letterSpacing: "0.02em" }}>
-                            {step.t}
-                          </span>
-                          <span style={{ fontSize: 10, color: isLast ? (ok ? EL_G : EL_A) : DIM, fontWeight: isLast ? 700 : 400, lineHeight: 1.45, letterSpacing: "0.02em", textShadow: isLast ? `0 0 10px ${ok ? EL_G : EL_A}` : "none" }}>
-                            {step.log}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  <div style={{ marginTop: 14, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <span style={{ fontSize: 9, color: DIM, letterSpacing: "0.1em" }}>EST. DEAL VALUE</span>
-                    <span style={{ fontSize: 13, fontWeight: 900, color: EL_G, textShadow: `0 0 14px ${EL_G}` }}>{m.value}</span>
-                  </div>
-
-                  <div style={{ marginTop: 10, display: "flex", gap: 8 }}>
-                    <button style={{ flex: 1, padding: "9px 0", borderRadius: 8, cursor: "pointer", border: `1px solid rgba(139,92,246,0.45)`, background: "rgba(139,92,246,0.1)", fontSize: 9, fontWeight: 800, color: EL_P, fontFamily: "inherit", letterSpacing: "0.1em", textTransform: "uppercase", transition: "all 0.15s" }}>
-                      View Convo
-                    </button>
-                    <button style={{ flex: 1, padding: "9px 0", borderRadius: 8, cursor: "pointer", border: `1px solid ${EL_C}`, background: "rgba(34,211,238,0.1)", fontSize: 9, fontWeight: 800, color: EL_C, fontFamily: "inherit", letterSpacing: "0.1em", textTransform: "uppercase", boxShadow: `0 0 14px rgba(34,211,238,0.22)`, transition: "all 0.15s" }}>
-                      Prep Brief
-                    </button>
-                  </div>
-                </div>
+            <div key={m.id} style={{ position:"relative", animation:`sf-enter 0.36s ease ${i * 95}ms both` }}>
+              {/* Hover ghost reflection */}
+              {hov && !isOpen && (
+                <div style={{ position:"absolute", inset:0, borderRadius:14, background:ch, opacity:0.06, transform:"translateY(9px) scale(0.96)", filter:"blur(18px)", zIndex:-1, pointerEvents:"none" }} />
               )}
+              <div
+                onClick={() => setExpanded(isOpen ? null : m.id)}
+                onMouseEnter={() => setHoveredCard(m.id)}
+                onMouseLeave={() => setHoveredCard(null)}
+                style={{
+                  borderRadius:12, cursor:"pointer",
+                  background:CARD, backdropFilter:"blur(26px)",
+                  borderLeft:`3px solid ${ch}`,
+                  boxShadow: `inset 4px 0 18px ${ch}18`,
+                  transition:"transform 0.22s ease, box-shadow 0.22s ease",
+                  transform: isOpen ? "translateY(-2px)" : hov ? `rotate(${tilt}deg) translateY(-7px)` : `rotate(${tilt}deg)`,
+                  animation: isOpen ? "sf-open 2.6s ease-in-out infinite" : ok ? "sf-conf 3.8s ease-in-out infinite" : "sf-pend 3.8s ease-in-out infinite",
+                }}
+              >
+                {/* Card face */}
+                <div style={{ display:"flex", alignItems:"center", gap:13, padding: isMobile ? "14px 14px" : "16px 18px" }}>
+                  {/* Spinning ring avatar */}
+                  <div style={{ position:"relative", width:44, height:44, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                    <div style={{ position:"absolute", inset:0, borderRadius:"50%", border:`1.5px dashed ${ch}`, opacity:0.45, animation:"sf-orbit-cw 9s linear infinite" }} />
+                    <div style={{ position:"absolute", inset:5, borderRadius:"50%", border:`1px solid ${ch}22`, animation:"sf-orbit-ccw 14s linear infinite" }} />
+                    <div style={{ width:32, height:32, borderRadius:"50%", background:`linear-gradient(135deg,${ch}28,${ch}0c)`, border:`1px solid ${ch}44`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:900, color:ch, letterSpacing:"0.04em" }}>
+                      {m.avatar}
+                    </div>
+                  </div>
+
+                  {/* Name + freq */}
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontSize:15, fontWeight:700, color:TX, letterSpacing:"0.01em" }}>{m.prospect}</div>
+                    <div style={{ fontSize:10, color:DIM, letterSpacing:"0.05em", marginTop:3 }}>
+                      {m.company} &nbsp;·&nbsp; <span style={{ color:ch }}>{m.freq}</span>
+                    </div>
+                  </div>
+
+                  {/* Time block — departure board style */}
+                  <div style={{ textAlign:"right", flexShrink:0, marginRight:6 }}>
+                    <div style={{ fontSize:8, letterSpacing:"0.16em", color:DIM, fontWeight:700, marginBottom:2 }}>{m.time.split(" ")[0].toUpperCase()}</div>
+                    <div style={{ fontSize:18, fontWeight:900, color:TX, fontVariantNumeric:"tabular-nums", lineHeight:1 }}>
+                      {m.time.split(" ").slice(1).join(" ")}
+                    </div>
+                    <div style={{ display:"flex", alignItems:"center", justifyContent:"flex-end", gap:5, marginTop:4 }}>
+                      <span style={{ fontSize:8, fontWeight:900, background:ch, color:"#fff", borderRadius:3, padding:"2px 6px", letterSpacing:"0.06em" }}>{chLbl(m.channel)}</span>
+                      <span style={{ fontSize:9, fontWeight:800, letterSpacing:"0.09em", color:okCol, animation:!ok?"sf-blink 1.8s ease-in-out infinite":"none", textShadow:`0 0 8px ${okCol}` }}>
+                        {ok ? "CONFIRMED" : "PENDING"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <span style={{ fontSize:10, color:DIM }}>{isOpen ? "▲" : "▼"}</span>
+                </div>
+
+                {/* Expanded typewriter log */}
+                {isOpen && (
+                  <div style={{ borderTop:`1px solid rgba(34,211,238,0.14)`, padding: isMobile ? "12px 14px 16px" : "14px 18px 18px" }}>
+                    <div style={{ position:"relative", height:1, background:"rgba(34,211,238,0.07)", overflow:"hidden", marginBottom:13, borderRadius:1 }}>
+                      <div style={{ position:"absolute", top:0, bottom:0, width:"40%", background:`linear-gradient(90deg,transparent,${ELC},transparent)`, animation:"sf-bar 2s linear infinite" }} />
+                    </div>
+                    <div style={{ fontSize:8, letterSpacing:"0.2em", color:ELC, fontWeight:700, marginBottom:12, textTransform:"uppercase" }}>
+                      ▸ System Log — {m.prospect} / {m.company}
+                    </div>
+                    <TypewriterLog key={m.id} entries={m.trail} okColor={okCol} />
+                    <div style={{ marginTop:16, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                      <span style={{ fontSize:9, letterSpacing:"0.12em", color:DIM }}>EST. DEAL VALUE</span>
+                      <span style={{ fontSize:16, fontWeight:900, color:ELG, textShadow:`0 0 18px ${ELG}` }}>{m.value}</span>
+                    </div>
+                    <div style={{ marginTop:11, display:"flex", gap:8 }}>
+                      <button style={{ flex:1, padding:"10px 0", borderRadius:8, cursor:"pointer", border:`1px solid ${ELP}55`, background:`${ELP}12`, fontSize:10, fontWeight:800, color:ELP, fontFamily:"inherit", letterSpacing:"0.1em", textTransform:"uppercase" }}>
+                        View Convo
+                      </button>
+                      <button style={{ flex:1, padding:"10px 0", borderRadius:8, cursor:"pointer", border:`1px solid ${ELC}66`, background:`${ELC}10`, fontSize:10, fontWeight:800, color:ELC, fontFamily:"inherit", letterSpacing:"0.1em", textTransform:"uppercase", boxShadow:`0 0 14px ${ELC}25` }}>
+                        Prep Brief
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           );
         })}
 
-        {visibleMeetings.length === 0 && (
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, paddingTop: 60 }}>
-            <div style={{ fontSize: 9, letterSpacing: "0.24em", color: "rgba(139,92,246,0.4)", animation: "sf-blink 1.6s ease-in-out infinite" }}>NO SIGNAL DETECTED</div>
-            <div style={{ fontSize: 12, color: DIM }}>No meetings on {selectedDay}</div>
-            <div style={{ fontSize: 9, color: "rgba(34,211,238,0.35)", letterSpacing: "0.1em" }}>William is scanning...</div>
+        {visible.length === 0 && (
+          <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:9, paddingTop:60 }}>
+            <div style={{ fontSize:8, letterSpacing:"0.22em", color:`${ELP}55`, animation:"sf-blink 1.8s ease-in-out infinite" }}>NO SIGNAL DETECTED</div>
+            <div style={{ fontSize:13, color:DIM }}>No meetings on {selectedDay}</div>
+            <div style={{ fontSize:9, color:`${ELC}44`, letterSpacing:"0.1em" }}>William is scanning...</div>
           </div>
         )}
       </div>
