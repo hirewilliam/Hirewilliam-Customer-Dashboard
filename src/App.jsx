@@ -1016,7 +1016,7 @@ function NeuralCanvas() {
 
       particles.forEach(p => {
         p.phase += p.phaseSpeed;
-        p.r = p.baseR + Math.sin(p.phase) * 0.7;
+        p.r = Math.max(0.1, p.baseR + Math.sin(p.phase) * 0.7);
         const dx = mouse.x - p.x, dy = mouse.y - p.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist < 140 && dist > 0) {
