@@ -1209,7 +1209,7 @@ function HeartbeatLine() {
 
 // SVG waveform week selector
 function WaveformRail({ days, meetingsByDay, selectedDay, onSelect }) {
-  const ELP = "#8b5cf6", ELC = "#22d3ee", DIM = "rgba(240,238,255,0.22)";
+  const ELP = "#8b5cf6", ELC = "#22d3ee", DIM = "#b0ada4";
   const isMob = typeof window !== "undefined" && window.innerWidth < 480;
   const DW = isMob ? 32 : 38, BW = isMob ? 11 : 13, H = isMob ? 34 : 40, MAX = isMob ? 22 : 28;
   const W = days.length * DW;
@@ -1232,7 +1232,7 @@ function WaveformRail({ days, meetingsByDay, selectedDay, onSelect }) {
             />
             {active && <line x1={x + BW / 2} y1={0} x2={x + BW / 2} y2={H - 3} stroke={ELC} strokeWidth="1" strokeDasharray="3,3" opacity="0.35" />}
             {hasM && !active && <circle cx={x + BW / 2} cy={y - 5} r={2} fill={ELP} style={{ animation: `sf-blink 2s ease-in-out infinite`, animationDelay: `${i * 0.28}s` }} />}
-            <text x={x + BW / 2} y={H + 13} textAnchor="middle" fill={active ? ELC : hasM ? "rgba(240,238,255,0.65)" : DIM} fontSize="7" fontWeight="800" letterSpacing="0.07em" style={{ fontFamily: "inherit" }}>
+            <text x={x + BW / 2} y={H + 13} textAnchor="middle" fill={active ? ELC : hasM ? "#3d3b35" : DIM} fontSize="7" fontWeight="800" letterSpacing="0.07em" style={{ fontFamily: "inherit" }}>
               {d.toUpperCase()}
             </text>
           </g>
@@ -1269,8 +1269,8 @@ function TypewriterLog({ entries, okColor }) {
         const cursor = i === revealed && chars < e.log.length;
         return (
           <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-            <span style={{ fontSize: 10, fontWeight: 800, color: isLast ? okColor : "rgba(34,211,238,0.38)", minWidth: 36, flexShrink: 0, fontVariantNumeric: "tabular-nums", letterSpacing: "0.02em", paddingTop: 1 }}>{e.t}</span>
-            <span style={{ fontSize: 13, color: isLast ? okColor : "rgba(240,238,255,0.45)", fontWeight: isLast ? 700 : 400, lineHeight: 1.45, textShadow: isLast ? `0 0 12px ${okColor}66` : "none" }}>
+            <span style={{ fontSize: 10, fontWeight: 800, color: isLast ? okColor : "#72706a", minWidth: 36, flexShrink: 0, fontVariantNumeric: "tabular-nums", letterSpacing: "0.02em", paddingTop: 1 }}>{e.t}</span>
+            <span style={{ fontSize: 13, color: isLast ? okColor : "#3d3b35", fontWeight: isLast ? 700 : 400, lineHeight: 1.45, textShadow: isLast ? `0 0 12px ${okColor}66` : "none" }}>
               {text}{cursor && <span style={{ animation: "sf-blink 0.55s step-end infinite", color: "#22d3ee" }}>_</span>}
             </span>
           </div>
@@ -1288,15 +1288,15 @@ function MeetingsView() {
   const [selectedDay, setSelectedDay] = useState(null);
   const [hoveredCard, setHoveredCard] = useState(null);
 
-  const SF   = "#04010d";
-  const CARD = "rgba(8,4,20,0.86)";
+  const SF   = "#faf9f6";
+  const CARD = "#ffffff";
   const ELP  = "#8b5cf6";
   const ELC  = "#22d3ee";
   const ELG  = "#10b981";
   const ELA  = "#fbbf24";
-  const TX   = "#f0eeff";
-  const DIM  = "rgba(240,238,255,0.38)";
-  const BR   = "rgba(139,92,246,0.16)";
+  const TX   = "#0f0e0c";
+  const DIM  = "#72706a";
+  const BR   = "#ddd9d0";
 
   const chCol = ch => ({ LinkedIn: "#3b82f6", Email: ELG, Instagram: "#ec4899" }[ch] || ELP);
   const chLbl = ch => ({ LinkedIn: "LI", Email: "EM", Instagram: "IG" }[ch] || "--");
@@ -1353,7 +1353,7 @@ function MeetingsView() {
     setTimeout(go, 900);
   }, []);
 
-  const tilts = isMobile ? [0,0,0] : [-1.4, 0, 1.4];
+  const tilts = [0, 0, 0];
 
   return (
     <div style={{ flex:1, minHeight:0, display:"flex", flexDirection:"column", background:SF, overflow:"hidden", position:"relative" }}>
@@ -1379,7 +1379,7 @@ function MeetingsView() {
       <div style={{ position:"absolute", left:0, right:0, height:"1px", zIndex:2, pointerEvents:"none", background:`linear-gradient(90deg,transparent,${ELP},${ELC},transparent)`, animation:"sf-scan 12s linear infinite" }} />
 
       {/* ── The Bridge ── */}
-      <div style={{ position:"relative", zIndex:4, flexShrink:0, padding: isMobile ? "18px 16px 14px" : "22px 24px 16px", borderBottom:`1px solid ${BR}`, backdropFilter:"blur(18px)", background:"rgba(4,1,13,0.62)" }}>
+      <div style={{ position:"relative", zIndex:4, flexShrink:0, padding: isMobile ? "18px 16px 14px" : "22px 24px 16px", borderBottom:`1px solid ${BR}`, backdropFilter:"blur(18px)", background:"rgba(250,249,246,0.97)" }}>
         <div style={{ display:"flex", alignItems:"center", gap: isMobile ? 16 : 22 }}>
 
           {/* Radar */}
@@ -1398,11 +1398,11 @@ function MeetingsView() {
             </div>
 
             <div style={{ display:"flex", alignItems:"baseline", gap:8, marginBottom:5 }}>
-              <span style={{ fontSize: isMobile ? 40 : 50, fontWeight:900, color:"#fff", lineHeight:1, fontVariantNumeric:"tabular-nums", animation:"count-glow 3.2s ease-in-out infinite" }}>{count}</span>
+              <span style={{ fontSize: isMobile ? 40 : 50, fontWeight:900, color:TX, lineHeight:1, fontVariantNumeric:"tabular-nums", animation:"count-glow 3.2s ease-in-out infinite" }}>{count}</span>
               <span style={{ fontSize:11, color:DIM, lineHeight:1.4 }}>signals<br/>locked</span>
             </div>
 
-            <div style={{ fontSize:12, color:"rgba(240,238,255,0.5)", marginBottom:10, fontWeight:400 }}>
+            <div style={{ fontSize:12, color:DIM, marginBottom:10, fontWeight:400 }}>
               William locked {meetings.length} signals this week.
             </div>
 
@@ -1421,7 +1421,7 @@ function MeetingsView() {
       </div>
 
       {/* ── Waveform Week Rail ── */}
-      <div style={{ position:"relative", zIndex:4, padding: isMobile ? "10px 16px 2px" : "10px 24px 2px", borderBottom:`1px solid ${BR}`, flexShrink:0, backdropFilter:"blur(12px)", background:"rgba(4,1,13,0.52)" }}>
+      <div style={{ position:"relative", zIndex:4, padding: isMobile ? "10px 16px 2px" : "10px 24px 2px", borderBottom:`1px solid ${BR}`, flexShrink:0, backdropFilter:"blur(12px)", background:"rgba(250,249,246,0.97)" }}>
         <WaveformRail days={days} meetingsByDay={meetingsByDay} selectedDay={selectedDay} onSelect={setSelectedDay} />
       </div>
 
@@ -1451,7 +1451,7 @@ function MeetingsView() {
                   borderLeft:`3px solid ${ch}`,
                   boxShadow: `inset 4px 0 18px ${ch}18`,
                   transition:"transform 0.22s ease, box-shadow 0.22s ease",
-                  transform: isOpen ? "translateY(-2px)" : hov ? `rotate(${tilt}deg) translateY(-7px)` : `rotate(${tilt}deg)`,
+                  transform: isOpen ? "translateY(-2px)" : hov ? "translateY(-4px)" : "none",
                   animation: isOpen ? "sf-open 2.6s ease-in-out infinite" : ok ? "sf-conf 3.8s ease-in-out infinite" : "sf-pend 3.8s ease-in-out infinite",
                 }}
               >
@@ -1493,7 +1493,7 @@ function MeetingsView() {
 
                 {/* Expanded typewriter log */}
                 {isOpen && (
-                  <div style={{ borderTop:`1px solid rgba(34,211,238,0.14)`, padding: isMobile ? "12px 14px 16px" : "14px 18px 18px" }}>
+                  <div style={{ borderTop:`1px solid #ddd9d0`, padding: isMobile ? "12px 14px 16px" : "14px 18px 18px" }}>
                     <div style={{ position:"relative", height:1, background:"rgba(34,211,238,0.07)", overflow:"hidden", marginBottom:13, borderRadius:1 }}>
                       <div style={{ position:"absolute", top:0, bottom:0, width:"40%", background:`linear-gradient(90deg,transparent,${ELC},transparent)`, animation:"sf-bar 2s linear infinite" }} />
                     </div>
