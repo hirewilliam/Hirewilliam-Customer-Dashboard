@@ -967,10 +967,10 @@ function OutreachView() {
   );
 }
 
-// ── Particle Canvas ──
-function ParticleCanvas() {
+// ── Neural Canvas (full-section sci-fi) ──
+function NeuralCanvas() {
   const canvasRef = useRef(null);
-  const stateRef = useRef({ particles: [], mouse: { x: -999, y: -999 }, raf: null });
+  const stateRef = useRef({ particles: [], mouse: { x: -9999, y: -9999 }, raf: null });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -978,35 +978,33 @@ function ParticleCanvas() {
     const ctx = canvas.getContext("2d");
     const state = stateRef.current;
 
-    const resize = () => {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-    };
+    const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
     resize();
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);
 
-    const COUNT = 55;
-    const COLORS = ["#5a3fa0", "#7155b8", "#9b7ee8", "#b0ada4", "#4a3488"];
-
-    state.particles = Array.from({ length: COUNT }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4,
-      r: Math.random() * 2.8 + 0.8,
-      color: COLORS[Math.floor(Math.random() * COLORS.length)],
-      alpha: Math.random() * 0.5 + 0.2,
-    }));
+    const COLORS = ["#8b5cf6", "#22d3ee", "#a78bfa", "#06b6d4", "#c4b5fd", "#67e8f9", "#ffffff"];
+    state.particles = Array.from({ length: 95 }, () => {
+      const r = Math.random() * 2.0 + 0.4;
+      return {
+        x: Math.random() * (canvas.width || 500),
+        y: Math.random() * (canvas.height || 700),
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        r, baseR: r,
+        phase: Math.random() * Math.PI * 2,
+        phaseSpeed: 0.012 + Math.random() * 0.022,
+        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+        alpha: Math.random() * 0.65 + 0.2,
+      };
+    });
 
     const onMove = (e) => {
       const rect = canvas.getBoundingClientRect();
       const src = e.touches ? e.touches[0] : e;
-      state.mouse.x = src.clientX - rect.left;
-      state.mouse.y = src.clientY - rect.top;
+      state.mouse = { x: src.clientX - rect.left, y: src.clientY - rect.top };
     };
-    const onLeave = () => { state.mouse.x = -999; state.mouse.y = -999; };
-
+    const onLeave = () => { state.mouse = { x: -9999, y: -9999 }; };
     canvas.addEventListener("mousemove", onMove);
     canvas.addEventListener("touchmove", onMove, { passive: true });
     canvas.addEventListener("mouseleave", onLeave);
@@ -1017,54 +1015,56 @@ function ParticleCanvas() {
       const { particles, mouse } = state;
 
       particles.forEach(p => {
-        const dx = mouse.x - p.x;
-        const dy = mouse.y - p.y;
+        p.phase += p.phaseSpeed;
+        p.r = p.baseR + Math.sin(p.phase) * 0.7;
+        const dx = mouse.x - p.x, dy = mouse.y - p.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        const REPEL = 90;
-
-        if (dist < REPEL && dist > 0) {
-          const force = (REPEL - dist) / REPEL;
-          p.vx -= (dx / dist) * force * 0.6;
-          p.vy -= (dy / dist) * force * 0.6;
+        if (dist < 140 && dist > 0) {
+          const f = (140 - dist) / 140;
+          p.vx -= (dx / dist) * f * 1.8;
+          p.vy -= (dy / dist) * f * 1.8;
         }
-
-        p.vx *= 0.97;
-        p.vy *= 0.97;
-        p.x += p.vx;
-        p.y += p.vy;
-
+        p.vx *= 0.963; p.vy *= 0.963;
+        p.x += p.vx; p.y += p.vy;
         if (p.x < 0) { p.x = 0; p.vx *= -1; }
         if (p.x > canvas.width) { p.x = canvas.width; p.vx *= -1; }
         if (p.y < 0) { p.y = 0; p.vy *= -1; }
         if (p.y > canvas.height) { p.y = canvas.height; p.vy *= -1; }
 
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = p.color;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = p.color;
         ctx.globalAlpha = p.alpha;
         ctx.fill();
+        ctx.shadowBlur = 0;
         ctx.globalAlpha = 1;
       });
 
-      // draw lines between close particles
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const a = particles[i], b = particles[j];
           const dx = a.x - b.x, dy = a.y - b.y;
           const d = Math.sqrt(dx * dx + dy * dy);
-          if (d < 80) {
+          if (d < 105) {
+            const grad = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
+            grad.addColorStop(0, a.color);
+            grad.addColorStop(1, b.color);
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(b.x, b.y);
-            ctx.strokeStyle = "#5a3fa0";
-            ctx.globalAlpha = (1 - d / 80) * 0.12;
-            ctx.lineWidth = 0.8;
+            ctx.strokeStyle = grad;
+            ctx.globalAlpha = (1 - d / 105) * 0.22;
+            ctx.lineWidth = 0.7;
+            ctx.shadowBlur = 4;
+            ctx.shadowColor = "#8b5cf6";
             ctx.stroke();
+            ctx.shadowBlur = 0;
             ctx.globalAlpha = 1;
           }
         }
       }
-
       state.raf = requestAnimationFrame(draw);
     };
     draw();
@@ -1079,12 +1079,7 @@ function ParticleCanvas() {
     };
   }, []);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", borderRadius: "inherit" }}
-    />
-  );
+  return <canvas ref={canvasRef} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block" }} />;
 }
 
 // ── Meetings ──
@@ -1098,182 +1093,275 @@ function MeetingsView() {
     {
       id: "1", prospect: "Alex Morin", company: "Shipyard", avatar: "AM",
       time: "Thu 2:00 PM", day: "Thu", duration: "30 min", status: "confirmed",
-      channel: "LinkedIn", value: "$12k", trail: [
-        "Found via LinkedIn — hiring AE post",
-        "Personalised message sent",
-        "Replied in 3h",
-        "Meeting booked",
+      channel: "LinkedIn", freq: "LI-7749", value: "$12k",
+      trail: [
+        { t: "06:14:22", log: "Prospect identified via LinkedIn — AE hiring signal detected" },
+        { t: "06:15:01", log: "Personalised message constructed — referenced job post" },
+        { t: "06:15:03", log: "Message dispatched via LinkedIn DM" },
+        { t: "09:33:47", log: "Reply received — positive intent signal" },
+        { t: "09:34:01", log: "Calendar link dispatched" },
+        { t: "09:41:22", log: "SIGNAL LOCKED — Thu 2:00 PM confirmed" },
       ],
     },
     {
       id: "2", prospect: "Sarah Kim", company: "BuildKit", avatar: "SK",
       time: "Thu 4:30 PM", day: "Thu", duration: "15 min", status: "pending",
-      channel: "Email", value: "$8k", trail: [
-        "Found via Product Hunt launch",
-        "Cold email sent",
-        "Replied — asked for more info",
-        "Awaiting confirmation",
+      channel: "Email", freq: "EM-3312", value: "$8k",
+      trail: [
+        { t: "05:02:11", log: "Prospect identified via Product Hunt launch" },
+        { t: "05:02:58", log: "Cold email constructed — launch day referenced" },
+        { t: "05:03:00", log: "Message dispatched via email" },
+        { t: "07:55:30", log: "Reply received — info requested" },
+        { t: "07:55:45", log: "Follow-up sent — calendar link included" },
+        { t: "—", log: "AWAITING CONFIRMATION — signal pending" },
       ],
     },
     {
       id: "3", prospect: "Dan Fields", company: "Beacon", avatar: "DF",
       time: "Fri 10:00 AM", day: "Fri", duration: "30 min", status: "confirmed",
-      channel: "Instagram", value: "$15k",  trail: [
-        "Found via Instagram — build-in-public post",
-        "DM sent referencing their post",
-        "Replied within 1h",
-        "Meeting booked",
+      channel: "Instagram", freq: "IG-5501", value: "$15k",
+      trail: [
+        { t: "04:11:09", log: "Prospect identified via Instagram build-in-public post" },
+        { t: "04:11:55", log: "DM constructed — post content referenced directly" },
+        { t: "04:12:00", log: "Message dispatched via Instagram DM" },
+        { t: "05:08:33", log: "Reply received in 57 min — strong interest signal" },
+        { t: "05:09:01", log: "Calendar link dispatched" },
+        { t: "05:22:14", log: "SIGNAL LOCKED — Fri 10:00 AM confirmed" },
       ],
     },
   ];
 
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const meetingsByDay = days.reduce((acc, d) => {
-    acc[d] = meetings.filter(m => m.day === d);
-    return acc;
-  }, {});
+  const meetingsByDay = days.reduce((acc, d) => { acc[d] = meetings.filter(m => m.day === d); return acc; }, {});
+  const visibleMeetings = selectedDay ? meetings.filter(m => m.day === selectedDay) : meetings;
 
-  const visibleMeetings = selectedDay
-    ? meetings.filter(m => m.day === selectedDay)
-    : meetings;
-
-  // animate meeting count on mount
   useEffect(() => {
     let i = 0;
-    const target = meetings.length;
-    const step = () => { i++; setCount(i); if (i < target) setTimeout(step, 180); };
-    setTimeout(step, 400);
+    const step = () => { i++; setCount(i); if (i < meetings.length) setTimeout(step, 260); };
+    setTimeout(step, 700);
   }, []);
 
-  const channelIcon = (ch) => ({ LinkedIn: "in", Email: "@", Instagram: "ig" }[ch] || "·");
-  const channelColor = (ch) => ({ LinkedIn: "#0a66c2", Email: GREEN, Instagram: "#c13584" }[ch] || PURPLE);
+  const SF_BG = "#07040f";
+  const CARD_BG = "rgba(13,8,30,0.82)";
+  const EL_P = "#8b5cf6";
+  const EL_C = "#22d3ee";
+  const EL_G = "#4ade80";
+  const EL_A = "#fbbf24";
+  const TX = "#f0eeff";
+  const DIM = "rgba(240,238,255,0.42)";
+  const BR = "rgba(139,92,246,0.22)";
+
+  const chColor = (ch) => ({ LinkedIn: "#0a66c2", Email: EL_G, Instagram: "#e1306c" }[ch] || EL_P);
+  const chLabel = (ch) => ({ LinkedIn: "LI", Email: "EM", Instagram: "IG" }[ch] || "XX");
 
   return (
-    <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+    <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", background: SF_BG, overflow: "hidden", position: "relative" }}>
+      <style>{`
+        @keyframes sf-scan {
+          0% { top: -2px; opacity: 0; }
+          4% { opacity: 1; }
+          96% { opacity: 0.5; }
+          100% { top: 100%; opacity: 0; }
+        }
+        @keyframes sf-glitch {
+          0%,87%,100% { transform: none; filter: none; }
+          88% { transform: skew(-1.2deg) translateX(3px); filter: hue-rotate(25deg) brightness(1.3); }
+          89% { transform: skew(0.6deg) translateX(-2px); filter: none; }
+          90% { transform: none; }
+          91% { transform: translateX(2px); filter: brightness(1.5); }
+          92% { transform: none; filter: none; }
+        }
+        @keyframes sf-orbit-cw  { from { transform: rotate(0deg); }   to { transform: rotate(360deg); } }
+        @keyframes sf-orbit-ccw { from { transform: rotate(0deg); }   to { transform: rotate(-360deg); } }
+        @keyframes sf-hud   { 0%,100% { opacity: 0.45; } 50% { opacity: 1; } }
+        @keyframes sf-live  { 0%,100% { opacity:1; transform:scale(1); box-shadow:0 0 0 0 rgba(74,222,128,0.8); } 60% { opacity:0.7; transform:scale(0.8); box-shadow:0 0 0 6px rgba(74,222,128,0); } }
+        @keyframes sf-blink { 0%,49%,100% { opacity:1; } 50%,99% { opacity:0.25; } }
+        @keyframes sf-confirmed { 0%,100% { box-shadow:0 0 0 1px rgba(139,92,246,0.35),0 0 20px rgba(139,92,246,0.1); } 50% { box-shadow:0 0 0 1px rgba(139,92,246,0.65),0 0 35px rgba(139,92,246,0.22); } }
+        @keyframes sf-pending   { 0%,100% { box-shadow:0 0 0 1px rgba(251,191,36,0.3),0 0 18px rgba(251,191,36,0.07); }  50% { box-shadow:0 0 0 1px rgba(251,191,36,0.6),0 0 28px rgba(251,191,36,0.16); } }
+        @keyframes sf-expanded  { 0%,100% { box-shadow:0 0 0 1px rgba(34,211,238,0.6),0 0 40px rgba(34,211,238,0.18),0 0 80px rgba(139,92,246,0.1); } 50% { box-shadow:0 0 0 1px rgba(34,211,238,0.95),0 0 60px rgba(34,211,238,0.3),0 0 100px rgba(139,92,246,0.15); } }
+        @keyframes sf-card  { from { opacity:0; transform:translateY(18px) scale(0.97); } to { opacity:1; transform:translateY(0) scale(1); } }
+        @keyframes sf-log   { from { opacity:0; transform:translateX(-10px); } to { opacity:1; transform:translateX(0); } }
+        @keyframes sf-bar   { 0% { left:-45%; } 100% { left:110%; } }
+      `}</style>
 
-      {/* Command strip */}
-      <div style={{ position: "relative", overflow: "hidden", background: PURPLE, borderRadius: 0, padding: isMobile ? "20px 18px 18px" : "24px 24px 20px", flexShrink: 0 }}>
-        <ParticleCanvas />
-        <div style={{ position: "relative", zIndex: 1 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.55)" }}>William's haul this week</span>
-            <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10, fontWeight: 700, color: "#7effc4", letterSpacing: "0.08em" }}>
-              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#7effc4", display: "inline-block", animation: "pulse-green 1.8s infinite" }} />
-              LIVE
-            </span>
+      {/* Full canvas fills entire section */}
+      <NeuralCanvas />
+
+      {/* Horizontal scan line sweeping top → bottom */}
+      <div style={{
+        position: "absolute", left: 0, right: 0, height: "1px", zIndex: 2, pointerEvents: "none",
+        background: `linear-gradient(90deg, transparent 0%, ${EL_P} 30%, ${EL_C} 60%, transparent 100%)`,
+        animation: "sf-scan 9s linear infinite",
+      }} />
+
+      {/* HUD corner brackets */}
+      {[
+        { top: 10, left: 10, borderTop: `1.5px solid ${EL_P}`, borderLeft: `1.5px solid ${EL_P}`, animationDelay: "0s" },
+        { top: 10, right: 10, borderTop: `1.5px solid ${EL_C}`, borderRight: `1.5px solid ${EL_C}`, animationDelay: "0.4s" },
+        { bottom: 10, left: 10, borderBottom: `1.5px solid ${EL_C}`, borderLeft: `1.5px solid ${EL_C}`, animationDelay: "0.8s" },
+        { bottom: 10, right: 10, borderBottom: `1.5px solid ${EL_P}`, borderRight: `1.5px solid ${EL_P}`, animationDelay: "1.2s" },
+      ].map((s, i) => (
+        <div key={i} style={{ position: "absolute", width: 18, height: 18, zIndex: 3, pointerEvents: "none", animation: `sf-hud 2.8s ease-in-out infinite`, ...s }} />
+      ))}
+
+      {/* ── Command Header ── */}
+      <div style={{ position: "relative", zIndex: 4, flexShrink: 0, padding: isMobile ? "20px 18px 16px" : "24px 26px 18px", borderBottom: `1px solid ${BR}`, backdropFilter: "blur(14px)", background: "rgba(7,4,15,0.55)" }}>
+        {/* Eyebrow */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+          <span style={{ width: 7, height: 7, borderRadius: "50%", background: EL_G, display: "inline-block", animation: "sf-live 1.8s ease-in-out infinite" }} />
+          <span style={{ fontSize: 9, letterSpacing: "0.26em", color: EL_C, fontWeight: 700, textTransform: "uppercase" }}>Neural Link Active · William AI</span>
+        </div>
+
+        {/* Title with glitch */}
+        <div style={{ fontSize: isMobile ? 16 : 19, fontWeight: 900, color: TX, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 18, animation: "sf-glitch 9s ease-in-out infinite", textShadow: `0 0 24px rgba(139,92,246,0.5)` }}>
+          Meetings Command Center
+        </div>
+
+        {/* Orbit ring + count + stats */}
+        <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 18 : 28 }}>
+          {/* Orbit rig */}
+          <div style={{ position: "relative", width: isMobile ? 82 : 96, height: isMobile ? 82 : 96, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ position: "absolute", inset: 0,    borderRadius: "50%", border: `1px solid rgba(34,211,238,0.18)`, borderTopColor: EL_C,  animation: "sf-orbit-cw  14s linear infinite" }} />
+            <div style={{ position: "absolute", inset: 9,    borderRadius: "50%", border: `1px dashed rgba(139,92,246,0.25)`, borderRightColor: EL_P, animation: "sf-orbit-ccw  7s linear infinite" }} />
+            <div style={{ position: "absolute", inset: 18,   borderRadius: "50%", border: `1px solid rgba(74,222,128,0.18)`, borderBottomColor: EL_G, animation: "sf-orbit-cw   3s linear infinite" }} />
+            <div style={{ position: "relative", zIndex: 1, textAlign: "center" }}>
+              <div style={{ fontSize: isMobile ? 32 : 40, fontWeight: 900, color: "#fff", lineHeight: 1, textShadow: `0 0 28px ${EL_P}, 0 0 50px rgba(139,92,246,0.3)`, fontVariantNumeric: "tabular-nums" }}>{count}</div>
+              <div style={{ fontSize: 7, color: DIM, letterSpacing: "0.14em", marginTop: 2 }}>BOOKED</div>
+            </div>
           </div>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-            <span style={{ fontSize: isMobile ? 42 : 52, fontWeight: 800, color: "#fff", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{count}</span>
-            <span style={{ fontSize: 16, color: "rgba(255,255,255,0.6)", fontWeight: 500 }}>meetings booked</span>
-          </div>
-          <div style={{ marginTop: 8, fontSize: 12, color: "rgba(255,255,255,0.45)" }}>
-            ● Next call in <strong style={{ color: "rgba(255,255,255,0.8)" }}>4h 22m</strong> · William is working on <strong style={{ color: "rgba(255,255,255,0.8)" }}>2 more</strong>
+
+          {/* Stats column */}
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
+            {[
+              { label: "THIS WEEK",   val: "3 meetings", color: EL_P },
+              { label: "IN PROGRESS", val: "2 signals",  color: EL_A },
+              { label: "NEXT CALL",   val: "4h 22m",     color: EL_G },
+            ].map(({ label, val, color }) => (
+              <div key={label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: `1px solid rgba(139,92,246,0.1)`, paddingBottom: 5 }}>
+                <span style={{ fontSize: 8, letterSpacing: "0.15em", color: DIM, fontWeight: 700 }}>{label}</span>
+                <span style={{ fontSize: 11, fontWeight: 800, color, textShadow: `0 0 10px ${color}55`, fontVariantNumeric: "tabular-nums" }}>{val}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Week rail */}
-      <div style={{ display: "flex", gap: 6, padding: isMobile ? "12px 14px" : "14px 20px", borderBottom: `1px solid ${RULE}`, overflowX: "auto", flexShrink: 0, WebkitOverflowScrolling: "touch" }}>
+      {/* ── Week Rail ── */}
+      <div style={{ position: "relative", zIndex: 4, display: "flex", gap: 5, padding: isMobile ? "10px 14px" : "11px 20px", borderBottom: `1px solid ${BR}`, overflowX: "auto", flexShrink: 0, WebkitOverflowScrolling: "touch", backdropFilter: "blur(12px)", background: "rgba(7,4,15,0.5)" }}>
         {days.map(d => {
-          const count = meetingsByDay[d].length;
+          const cnt = meetingsByDay[d].length;
           const active = selectedDay === d;
-          const hasM = count > 0;
+          const hasM = cnt > 0;
           return (
-            <button
-              key={d}
-              onClick={() => setSelectedDay(active ? null : d)}
-              style={{
-                flexShrink: 0, border: "none", borderRadius: 8, cursor: hasM ? "pointer" : "default",
-                padding: "7px 12px", fontFamily: "inherit", fontSize: 12, fontWeight: 600,
-                background: active ? PURPLE : hasM ? PURPLE_PALE : "transparent",
-                color: active ? "#fff" : hasM ? PURPLE : INK_GHOST,
-                transition: "all 0.15s", position: "relative",
-              }}
-            >
+            <button key={d} onClick={() => setSelectedDay(active ? null : d)} style={{
+              flexShrink: 0, fontFamily: "inherit", fontSize: 9, fontWeight: 800, letterSpacing: "0.12em",
+              textTransform: "uppercase", padding: "7px 11px", borderRadius: 6, cursor: hasM ? "pointer" : "default",
+              border: `1px solid ${active ? EL_C : hasM ? "rgba(139,92,246,0.45)" : "rgba(139,92,246,0.1)"}`,
+              background: active ? "rgba(34,211,238,0.12)" : hasM ? "rgba(139,92,246,0.08)" : "transparent",
+              color: active ? EL_C : hasM ? EL_P : "rgba(139,92,246,0.28)",
+              boxShadow: active ? `0 0 16px rgba(34,211,238,0.25)` : "none",
+              transition: "all 0.2s",
+            }}>
               {d}
-              {hasM && (
-                <span style={{
-                  position: "absolute", top: 2, right: 2, width: 14, height: 14, borderRadius: "50%",
-                  background: active ? "rgba(255,255,255,0.3)" : PURPLE, color: active ? "#fff" : "#fff",
-                  fontSize: 9, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center",
-                }}>{count}</span>
-              )}
-              {!hasM && <span style={{ display: "block", fontSize: 9, color: INK_GHOST, fontWeight: 400, marginTop: 1 }}>—</span>}
+              {hasM && <span style={{ display: "block", fontSize: 8, color: active ? EL_C : EL_A, marginTop: 2, animation: "sf-blink 2.2s ease-in-out infinite" }}>●</span>}
+              {!hasM && <span style={{ display: "block", fontSize: 8, color: "rgba(139,92,246,0.2)", marginTop: 2 }}>–</span>}
             </button>
           );
         })}
       </div>
 
-      {/* Meeting cards */}
-      <div style={{ flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: isMobile ? "14px 14px" : "16px 20px", display: "flex", flexDirection: "column", gap: 10 }}>
+      {/* ── Cards ── */}
+      <div style={{ position: "relative", zIndex: 4, flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: isMobile ? "12px" : "14px 18px", display: "flex", flexDirection: "column", gap: 10 }}>
         {visibleMeetings.map((m, i) => {
           const isOpen = expanded === m.id;
-          const confirmed = m.status === "confirmed";
+          const ok = m.status === "confirmed";
           return (
-            <div
-              key={m.id}
-              onClick={() => setExpanded(isOpen ? null : m.id)}
-              style={{
-                borderRadius: 12, background: PAPER_WARM, cursor: "pointer",
-                borderLeft: `3px solid ${confirmed ? PURPLE : AMBER}`,
-                boxShadow: isOpen ? `0 4px 20px rgba(90,63,160,0.12)` : "0 1px 3px rgba(0,0,0,0.04)",
-                transition: "box-shadow 0.2s, transform 0.2s",
-                transform: isOpen ? "translateY(-1px)" : "translateY(0)",
-                animation: `card-drop 0.3s ease both`,
-                animationDelay: `${i * 80}ms`,
-              }}
-            >
-              {/* Collapsed row */}
-              <div style={{ display: "flex", alignItems: "center", gap: 12, padding: isMobile ? "12px 14px" : "14px 16px" }}>
+            <div key={m.id} onClick={() => setExpanded(isOpen ? null : m.id)} style={{
+              borderRadius: 12, cursor: "pointer",
+              background: CARD_BG,
+              backdropFilter: "blur(22px)",
+              border: `1px solid ${isOpen ? "rgba(34,211,238,0.55)" : ok ? "rgba(139,92,246,0.32)" : "rgba(251,191,36,0.28)"}`,
+              animation: `sf-card 0.38s ease ${i * 90}ms both, ${isOpen ? "sf-expanded 2.8s ease-in-out infinite" : ok ? "sf-confirmed 3.5s ease-in-out infinite" : "sf-pending 3.5s ease-in-out infinite"}`,
+              transition: "border-color 0.3s",
+            }}>
+
+              {/* Row */}
+              <div style={{ display: "flex", alignItems: "center", gap: 12, padding: isMobile ? "12px 14px" : "14px 18px" }}>
                 {/* Avatar */}
-                <div style={{ width: 36, height: 36, borderRadius: "50%", background: confirmed ? PURPLE : AMBER, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>
+                <div style={{
+                  width: 40, height: 40, borderRadius: "50%", flexShrink: 0,
+                  background: ok ? `linear-gradient(135deg, ${EL_P}, #3b0764)` : `linear-gradient(135deg, ${EL_A}, #78350f)`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 11, fontWeight: 900, color: "#fff", letterSpacing: "0.05em",
+                  boxShadow: ok ? `0 0 16px rgba(139,92,246,0.5)` : `0 0 16px rgba(251,191,36,0.45)`,
+                }}>
                   {m.avatar}
                 </div>
-                {/* Name + company */}
+
+                {/* Name */}
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: INK }}>{m.prospect}</div>
-                  <div style={{ fontSize: 12, color: INK_SOFT }}>{m.company} · {m.duration}</div>
-                </div>
-                {/* Time + channel */}
-                <div style={{ textAlign: "right", flexShrink: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: INK }}>{m.time.split(" ").slice(1).join(" ")}</div>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 4, marginTop: 2 }}>
-                    <span style={{ fontSize: 10, fontWeight: 800, background: channelColor(m.channel), color: "#fff", borderRadius: 4, padding: "1px 5px", letterSpacing: "0.04em" }}>
-                      {channelIcon(m.channel)}
-                    </span>
-                    <span style={{ fontSize: 10, color: confirmed ? GREEN : AMBER, fontWeight: 700 }}>{confirmed ? "Confirmed" : "Pending"}</span>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: TX }}>{m.prospect}</div>
+                  <div style={{ fontSize: 9, color: DIM, letterSpacing: "0.06em", marginTop: 2 }}>
+                    {m.company} &nbsp;·&nbsp; FREQ: <span style={{ color: chColor(m.channel) }}>{m.freq}</span>
                   </div>
                 </div>
-                <div style={{ color: INK_GHOST, fontSize: 12, marginLeft: 4 }}>{isOpen ? "▲" : "▼"}</div>
+
+                {/* Time + badge */}
+                <div style={{ textAlign: "right", flexShrink: 0 }}>
+                  <div style={{ fontSize: 14, fontWeight: 900, color: TX, fontVariantNumeric: "tabular-nums", letterSpacing: "0.02em", textShadow: `0 0 12px rgba(240,238,255,0.3)` }}>
+                    {m.time.split(" ").slice(1).join(" ")}
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 5, marginTop: 4 }}>
+                    <span style={{ fontSize: 8, fontWeight: 900, background: chColor(m.channel), color: "#fff", borderRadius: 3, padding: "2px 5px", letterSpacing: "0.06em" }}>{chLabel(m.channel)}</span>
+                    <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: "0.08em", color: ok ? EL_G : EL_A, animation: !ok ? "sf-blink 1.6s ease-in-out infinite" : "none", textShadow: `0 0 8px ${ok ? EL_G : EL_A}` }}>
+                      {ok ? "CONFIRMED" : "PENDING"}
+                    </span>
+                  </div>
+                </div>
+
+                <span style={{ fontSize: 9, color: DIM, marginLeft: 2 }}>{isOpen ? "▲" : "▼"}</span>
               </div>
 
-              {/* Expanded trail */}
+              {/* Expanded system log */}
               {isOpen && (
-                <div style={{ borderTop: `1px solid ${RULE}`, padding: isMobile ? "12px 14px" : "14px 16px" }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: INK_GHOST, marginBottom: 10 }}>How William earned this call</div>
+                <div style={{ borderTop: `1px solid rgba(34,211,238,0.18)`, padding: isMobile ? "12px 14px 14px" : "14px 18px 16px" }}>
+                  {/* Running scan bar */}
+                  <div style={{ position: "relative", height: 1, background: "rgba(34,211,238,0.08)", overflow: "hidden", marginBottom: 12, borderRadius: 1 }}>
+                    <div style={{ position: "absolute", top: 0, bottom: 0, width: "40%", background: `linear-gradient(90deg, transparent, ${EL_C}, transparent)`, animation: "sf-bar 1.8s linear infinite" }} />
+                  </div>
+
+                  <div style={{ fontSize: 8, letterSpacing: "0.22em", color: EL_C, fontWeight: 700, marginBottom: 10, textTransform: "uppercase" }}>
+                    ▸ SYSTEM LOG — {m.prospect.toUpperCase()} / {m.company.toUpperCase()}
+                  </div>
+
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                    {m.trail.map((step, si) => (
-                      <div key={si} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
-                          <div style={{ width: 18, height: 18, borderRadius: "50%", background: si === m.trail.length - 1 ? (confirmed ? PURPLE : AMBER) : PURPLE_PALE, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <div style={{ width: 6, height: 6, borderRadius: "50%", background: si === m.trail.length - 1 ? "#fff" : PURPLE }} />
-                          </div>
-                          {si < m.trail.length - 1 && <div style={{ width: 1, height: 14, background: RULE, margin: "2px 0" }} />}
+                    {m.trail.map((step, si) => {
+                      const isLast = si === m.trail.length - 1;
+                      return (
+                        <div key={si} style={{ display: "flex", alignItems: "flex-start", gap: 10, animation: `sf-log 0.28s ease ${si * 70}ms both` }}>
+                          <span style={{ fontSize: 8, fontWeight: 800, color: isLast ? (ok ? EL_G : EL_A) : "rgba(34,211,238,0.4)", fontVariantNumeric: "tabular-nums", flexShrink: 0, minWidth: 46, letterSpacing: "0.02em" }}>
+                            {step.t}
+                          </span>
+                          <span style={{ fontSize: 10, color: isLast ? (ok ? EL_G : EL_A) : DIM, fontWeight: isLast ? 700 : 400, lineHeight: 1.45, letterSpacing: "0.02em", textShadow: isLast ? `0 0 10px ${ok ? EL_G : EL_A}` : "none" }}>
+                            {step.log}
+                          </span>
                         </div>
-                        <div style={{ fontSize: 12, color: si === m.trail.length - 1 ? INK : INK_SOFT, fontWeight: si === m.trail.length - 1 ? 600 : 400, paddingTop: 1 }}>{step}</div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
-                  <div style={{ marginTop: 14, display: "flex", gap: 8 }}>
-                    <button style={{ flex: 1, padding: "8px 0", borderRadius: 8, border: `1px solid ${RULE}`, background: "#fff", fontSize: 12, fontWeight: 600, color: INK, cursor: "pointer", fontFamily: "inherit" }}>
-                      View conversation
-                    </button>
-                    <button style={{ flex: 1, padding: "8px 0", borderRadius: 8, border: "none", background: PURPLE, color: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
-                      Get prep brief
-                    </button>
+
+                  <div style={{ marginTop: 14, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: 9, color: DIM, letterSpacing: "0.1em" }}>EST. DEAL VALUE</span>
+                    <span style={{ fontSize: 13, fontWeight: 900, color: EL_G, textShadow: `0 0 14px ${EL_G}` }}>{m.value}</span>
                   </div>
-                  <div style={{ marginTop: 10, fontSize: 11, color: INK_GHOST, textAlign: "right" }}>
-                    Est. deal value <strong style={{ color: GREEN }}>{m.value}</strong>
+
+                  <div style={{ marginTop: 10, display: "flex", gap: 8 }}>
+                    <button style={{ flex: 1, padding: "9px 0", borderRadius: 8, cursor: "pointer", border: `1px solid rgba(139,92,246,0.45)`, background: "rgba(139,92,246,0.1)", fontSize: 9, fontWeight: 800, color: EL_P, fontFamily: "inherit", letterSpacing: "0.1em", textTransform: "uppercase", transition: "all 0.15s" }}>
+                      View Convo
+                    </button>
+                    <button style={{ flex: 1, padding: "9px 0", borderRadius: 8, cursor: "pointer", border: `1px solid ${EL_C}`, background: "rgba(34,211,238,0.1)", fontSize: 9, fontWeight: 800, color: EL_C, fontFamily: "inherit", letterSpacing: "0.1em", textTransform: "uppercase", boxShadow: `0 0 14px rgba(34,211,238,0.22)`, transition: "all 0.15s" }}>
+                      Prep Brief
+                    </button>
                   </div>
                 </div>
               )}
@@ -1282,24 +1370,13 @@ function MeetingsView() {
         })}
 
         {visibleMeetings.length === 0 && (
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: INK_GHOST, fontSize: 13, gap: 6, paddingTop: 40 }}>
-            <div style={{ fontSize: 28 }}>📭</div>
-            <div>No meetings on {selectedDay}</div>
-            <div style={{ fontSize: 11 }}>William is working on it</div>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, paddingTop: 60 }}>
+            <div style={{ fontSize: 9, letterSpacing: "0.24em", color: "rgba(139,92,246,0.4)", animation: "sf-blink 1.6s ease-in-out infinite" }}>NO SIGNAL DETECTED</div>
+            <div style={{ fontSize: 12, color: DIM }}>No meetings on {selectedDay}</div>
+            <div style={{ fontSize: 9, color: "rgba(34,211,238,0.35)", letterSpacing: "0.1em" }}>William is scanning...</div>
           </div>
         )}
       </div>
-
-      <style>{`
-        @keyframes pulse-green {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.5; transform: scale(0.7); }
-        }
-        @keyframes card-drop {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </div>
   );
 }
