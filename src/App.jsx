@@ -2162,7 +2162,6 @@ function RightPanel({ isMobile = false }) {
     <div style={{ width: 210, borderLeft: `1px solid ${RULE}`, padding: "22px 14px 14px", fontSize: 12, background: PAPER, flexShrink: 0, overflowY: "auto" }}>
       <div className="founders-kit">
         <p className="founders-kit-heading">Founders Survival Kit</p>
-        <a href="/ai-systems.html" className="founders-kit-link" target="_blank" rel="noopener noreferrer">AI Systems</a>
       </div>
     </div>
   );
