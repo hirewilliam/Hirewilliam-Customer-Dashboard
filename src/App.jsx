@@ -1948,7 +1948,11 @@ function ForFoundersView({ onNav }) {
         .ff-root .ff-psc { padding-top: 2px; }
         .ff-root .ff-pst { font-size: 14px; font-weight: 700; color: #1d1c1d; margin-bottom: 2px; }
         .ff-root .ff-psd { font-size: 13px; color: #616061; line-height: 1.5; }
-        .ff-root .ff-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+        .ff-root .ff-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+        .ff-root .ff-logo-tag { display: inline-flex; flex-direction: column; align-items: center; gap: 4px; background: #ffffff; border: 1px solid #dddddd; border-radius: 6px; padding: 8px 10px; min-width: 60px; transition: all .12s; cursor: default; }
+        .ff-root .ff-logo-tag:hover { border-color: #b3b3b3; box-shadow: 0 1px 5px rgba(0,0,0,.1); background: #fafafa; }
+        .ff-root .ff-logo-tag img { width: 24px; height: 24px; object-fit: contain; display: block; }
+        .ff-root .ff-logo-tag .ff-lname { font-size: 9px; color: #616061; font-family: 'IBM Plex Mono', monospace; text-align: center; line-height: 1.2; white-space: nowrap; }
         .ff-root .ff-tag { background: #f2f2f2; border: 1px solid #dddddd; border-radius: 3px; padding: 3px 9px; font-size: 12px; font-family: 'IBM Plex Mono', monospace; color: #616061; letter-spacing: .02em; transition: all .12s; cursor: default; }
         .ff-root .ff-tag:hover { border-color: #4a154b; color: #4a154b; background: #f3e8f3; }
         .ff-root .ff-izone { padding: 12px 20px 20px; background: #ffffff; flex-shrink: 0; }
@@ -2109,13 +2113,37 @@ function ForFoundersView({ onNav }) {
               <div className="ff-body">
                 Already using tools you love? Good. I work with all of them.
                 <div className="ff-tags">
-                  <span className="ff-tag">HubSpot</span><span className="ff-tag">Salesforce</span><span className="ff-tag">Pipedrive</span>
-                  <span className="ff-tag">LinkedIn</span><span className="ff-tag">Gmail</span><span className="ff-tag">Outlook</span>
-                  <span className="ff-tag">Slack</span><span className="ff-tag">Notion</span><span className="ff-tag">Airtable</span>
-                  <span className="ff-tag">Zapier</span><span className="ff-tag">Make</span><span className="ff-tag">n8n</span>
-                  <span className="ff-tag">Shopify</span><span className="ff-tag">Stripe</span><span className="ff-tag">WhatsApp</span>
-                  <span className="ff-tag">Instagram</span><span className="ff-tag">Google Ads</span><span className="ff-tag">Meta Ads</span>
-                  <span className="ff-tag">Intercom</span><span className="ff-tag">Zendesk</span><span className="ff-tag">Any API</span>
+                  {[
+                    { name: "HubSpot",    slug: "hubspot" },
+                    { name: "Salesforce", slug: "salesforce" },
+                    { name: "Pipedrive",  slug: "pipedrive" },
+                    { name: "LinkedIn",   slug: "linkedin" },
+                    { name: "Gmail",      slug: "gmail" },
+                    { name: "Outlook",    slug: "microsoftoutlook" },
+                    { name: "Slack",      slug: "slack" },
+                    { name: "Notion",     slug: "notion" },
+                    { name: "Airtable",   slug: "airtable" },
+                    { name: "Zapier",     slug: "zapier" },
+                    { name: "Make",       slug: "make" },
+                    { name: "n8n",        slug: "n8n" },
+                    { name: "Shopify",    slug: "shopify" },
+                    { name: "Stripe",     slug: "stripe" },
+                    { name: "WhatsApp",   slug: "whatsapp" },
+                    { name: "Instagram",  slug: "instagram" },
+                    { name: "Google Ads", slug: "googleads" },
+                    { name: "Meta Ads",   slug: "meta" },
+                    { name: "Intercom",   slug: "intercom" },
+                    { name: "Zendesk",    slug: "zendesk" },
+                  ].map(({ name, slug }) => (
+                    <span key={slug} className="ff-logo-tag" title={name}>
+                      <img src={`https://cdn.simpleicons.org/${slug}`} alt={name} width="24" height="24" />
+                      <span className="ff-lname">{name}</span>
+                    </span>
+                  ))}
+                  <span className="ff-logo-tag" title="Any API">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#616061" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                    <span className="ff-lname">Any API</span>
+                  </span>
                 </div>
               </div>
             </div>
