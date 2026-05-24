@@ -2114,29 +2114,29 @@ function ForFoundersView({ onNav }) {
                 Already using tools you love? Good. I work with all of them.
                 <div className="ff-tags">
                   {[
-                    { name: "HubSpot",    slug: "hubspot" },
-                    { name: "Salesforce", slug: "salesforce" },
-                    { name: "Pipedrive",  slug: "pipedrive" },
-                    { name: "LinkedIn",   slug: "linkedin" },
-                    { name: "Gmail",      slug: "gmail" },
-                    { name: "Outlook",    slug: "microsoftoutlook" },
-                    { name: "Slack",      slug: "slack" },
-                    { name: "Notion",     slug: "notion" },
-                    { name: "Airtable",   slug: "airtable" },
-                    { name: "Zapier",     slug: "zapier" },
-                    { name: "Make",       slug: "make" },
-                    { name: "n8n",        slug: "n8n" },
-                    { name: "Shopify",    slug: "shopify" },
-                    { name: "Stripe",     slug: "stripe" },
-                    { name: "WhatsApp",   slug: "whatsapp" },
-                    { name: "Instagram",  slug: "instagram" },
-                    { name: "Google Ads", slug: "googleads" },
-                    { name: "Meta Ads",   slug: "meta" },
-                    { name: "Intercom",   slug: "intercom" },
-                    { name: "Zendesk",    slug: "zendesk" },
-                  ].map(({ name, slug }) => (
-                    <span key={slug} className="ff-logo-tag" title={name}>
-                      <img src={`https://cdn.simpleicons.org/${slug}`} alt={name} width="24" height="24" />
+                    { name: "HubSpot",    domain: "hubspot.com" },
+                    { name: "Salesforce", domain: "salesforce.com" },
+                    { name: "Pipedrive",  domain: "pipedrive.com" },
+                    { name: "LinkedIn",   domain: "linkedin.com" },
+                    { name: "Gmail",      domain: "gmail.com" },
+                    { name: "Outlook",    domain: "outlook.com" },
+                    { name: "Slack",      domain: "slack.com" },
+                    { name: "Notion",     domain: "notion.so" },
+                    { name: "Airtable",   domain: "airtable.com" },
+                    { name: "Zapier",     domain: "zapier.com" },
+                    { name: "Make",       domain: "make.com" },
+                    { name: "n8n",        domain: "n8n.io" },
+                    { name: "Shopify",    domain: "shopify.com" },
+                    { name: "Stripe",     domain: "stripe.com" },
+                    { name: "WhatsApp",   domain: "web.whatsapp.com" },
+                    { name: "Instagram",  domain: "instagram.com" },
+                    { name: "Google Ads", domain: "ads.google.com" },
+                    { name: "Meta Ads",   domain: "meta.com" },
+                    { name: "Intercom",   domain: "intercom.com" },
+                    { name: "Zendesk",    domain: "zendesk.com" },
+                  ].map(({ name, domain }) => (
+                    <span key={domain} className="ff-logo-tag" title={name}>
+                      <img src={`https://www.google.com/s2/favicons?sz=64&domain=${domain}`} alt={name} width="24" height="24" />
                       <span className="ff-lname">{name}</span>
                     </span>
                   ))}
