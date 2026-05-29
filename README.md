@@ -69,9 +69,7 @@ Explore HireWilliam's guides and resources:
 - **[AI Automation ROI: What to Expect and How to Measure It](https://hirewilliam.com/blog/ai-automation-roi/)** - Real numbers, timelines, and ROI framework
 - **[AI Agents vs Workflow Automation: What's the Difference?](https://hirewilliam.com/blog/ai-agents-vs-workflow-automation/)** - Clear differences and when to use each
 
-## About
 
-HireWilliam was founded by Terry Lee Morgan with 15 years of cross-functional engineering experience. The agency has completed 245+ client implementations across startups and SMBs globally.
 
 ## License
 
