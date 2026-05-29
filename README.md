@@ -1,6 +1,6 @@
 # HireWilliam - Customer Dashboard
 
-A modern AI-powered sales pipeline and customer engagement dashboard built with React. This dashboard showcases real-time customer data, outreach logs, meetings, and analytics for sales teams using HireWilliam.
+A modern AI-powered sales pipeline and customer engagement dashboard built with React. This dashboard showcases real-time customer data, outreach logs, meetings, and analytics for sales teams using[...]
 
 ## Features
 
@@ -103,6 +103,16 @@ The dashboard uses a carefully crafted color palette:
 - **Alert**: Red (#c93535)
 - **Attention**: Amber (#b86a0a)
 - **Typography**: DM Sans font family
+
+## Blog
+
+Explore HireWilliam's guides and resources:
+
+- **[Blog Home](https://hirewilliam.com/blog/)** - All blog posts and guides
+- **[AI Automation for Small Business — The Complete 2026 Guide](https://hirewilliam.com/blog/what-is-ai-automation-for-small-business/)** - What AI automation is, what to automate first, and how to get started
+- **[How to Replace Your SDR with AI in 2026 (Without Losing Pipeline)](https://hirewilliam.com/blog/how-to-replace-sdr-with-ai/)** - A clear breakdown of SDR functions and how AI handles them
+- **[AI Automation ROI: What to Expect and How to Measure It](https://hirewilliam.com/blog/ai-automation-roi/)** - Real numbers, timelines, and ROI framework
+- **[AI Agents vs Workflow Automation: What's the Difference?](https://hirewilliam.com/blog/ai-agents-vs-workflow-automation/)** - Clear differences and when to use each
 
 ## License
 
