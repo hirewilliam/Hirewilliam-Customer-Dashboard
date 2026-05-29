@@ -205,7 +205,7 @@ const WILLIAM_INTRO_MESSAGES = [
   { id: "intro-3", sender: "william", content: "Right. So here's what happens next: you click that link, book 15 min call and we can discuss what we can actually do for your business.", hasButton: true, buttonUrl: "https://calendar.app.google/KBavNT9XgiNsgfhc9", buttonText: "Book 15 min call", time: "now" },
 ];
 
-const WILLIAM_FINAL_MSG = { content: "I appreciate your engagement, I really do. But me typing in a chat box isn't going to convince you. That's just two of us procrastinating.\n\nYou already have the link. 15 minutes in exchange for saving you months, possibly years.", hasButton: true, buttonUrl: "https://calendar.app.google/KBavNT9XgiNsgfhc9", buttonText: "Book 15 min call" };
+const WILLIAM_FINAL_MSG = { content: "I appreciate your engagement, I really do. But me typing in a chat box isn't going to convince you. That's just two of us procrastinating.\n\nYou already have the link. 15 minutes in exchange for saving you months, possibly years." };
 
 function ChatView() {
   const [msgs, setMsgs] = useState([]);
