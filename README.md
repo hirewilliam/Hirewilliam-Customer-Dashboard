@@ -1,31 +1,41 @@
-# HireWilliam - Done-For-You AI Agency
+# HireWilliam — Done-For-You AI Agency
 
 HireWilliam is a done-for-you AI agency that builds, deploys, and manages custom AI systems for startups and SMBs. We handle everything — strategy, build, deployment, and ongoing optimization — so your team can stop doing manual work and start closing more business. Discovery to deployment takes days, not months.
 
-## What HireWilliam Does
+## Services
 
-HireWilliam offers four core AI services:
+### Core AI Services
 
-### 1. AI Automations
-Custom AI workflows and process automation built for your specific business. Replace manual, repetitive tasks across sales, support, content, and operations:
-- Automated lead qualification
-- Sales follow-up sequences
-- Data entry and reporting automation
-- Customer support workflows
+**AGENTS**
+Custom-built digital employees that execute multi-step tasks without human sign-off. They monitor queues, make decisions, and complete work end-to-end - from lead research to ticket resolution.
 
-### 2. AI Agents
-Autonomous AI workers deployed to handle entire business functions end-to-end. AI agents make decisions, manage exceptions, and complete multi-step tasks without human sign-off at each stage:
-- **William** - AI outreach agent (Email, LinkedIn, Instagram)
-- **Support Agent** - Resolves 70-83% of inbound tickets autonomously
-- **Content Agent** - Produces blog posts, social copy, and email sequences
-- **CRM Agent** - Tracks contacts, activities, and deal signals
-- **Ops Agent** - Handles tagging, reporting, data entry, and scheduling
+**OUTREACH**
+Email, LinkedIn, Instagram - personalised at scale. William finds your prospects, writes the messages, manages replies, and books the meetings. Your pipeline fills while you sleep.
 
-### 3. AI Consulting
-Strategy and roadmapping for AI adoption. Our Discovery & Audit process maps your tech stack, identifies bottlenecks, and pinpoints the highest-ROI AI opportunities before any build begins.
+**SUPPORT**
+Handle inbound queries across every channel automatically. Auto-tagging, smart routing, instant responses, escalation logic - 83% of tickets resolved without a human touching them.
 
-### 4. AI Integration
-Connecting AI tools, agents, and automations into your existing tech stack (CRM, email, calendar, analytics, custom systems). Ensures new AI works within your existing workflows.
+### Revenue & Operations
+
+**CRM**
+AI embedded in your revenue stack - tracking every contact, activity, and signal. Know which deals are moving, which accounts are at risk, and exactly where to focus next.
+
+**AUTOMATION**
+Every repetitive task your team does manually - tagging, reporting, data entry, follow-ups, scheduling - handed to William. Your ops run on autopilot so your team focuses on what matters.
+
+**TEAM**
+Instead of hiring 5 people, deploy William. We build AI that fills the roles you can't afford yet - SDR, ops manager, content lead, analyst - without the headcount cost.
+
+### Strategic & Scale
+
+**STRATEGY**
+We audit your business, map where AI creates real leverage, and build a prioritised roadmap. No fluff - just a clear plan for what to automate first and why it moves the needle.
+
+**CONTENT**
+Blog posts, social copy, email sequences, ad creative - produced at scale and on-brand. William runs your content pipeline so you show up everywhere without burning out your team.
+
+**STACK**
+Your tools don't talk to each other - William fixes that. We wire together your CRM, inbox, data sources, and automation layers so AI can act on everything in real time.
 
 ## Who We Work With
 
@@ -41,7 +51,7 @@ No technical knowledge required — HireWilliam handles all implementation.
 - **Deployment**: Most implementations go live within **3-5 business days**
 - **ROI**: Outreach automation clients see positive ROI within **2-4 weeks**
 - **Time Savings**: Typical clients recover **8-15 hours per week** in operations automation
-- **Outreach Volume**: **2-5x increase** in outreach without additional headcount
+- **Output Volume**: **2-5x increase** in output without additional headcount
 
 ## Website
 
