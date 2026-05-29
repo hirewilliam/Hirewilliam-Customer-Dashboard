@@ -26,7 +26,7 @@ const INITIAL_PROSPECTS = [
   { id: "5", name: "Nina Patel", company: "FormFlow", role: "Founder", industry: "Forms", score: 35, stage: "contacted", channel: "linkedin", lastAction: "LinkedIn accepted", avatar: "NP", lastActivityTime: Date.now() - 86400000, activities: [{ time: Date.now() - 86400000, action: "Accepted connection" }] },
   { id: "6", name: "Sara Chen", company: "Metrify", role: "CEO", industry: "Analytics", score: 20, stage: "new", channel: "linkedin", lastAction: "LinkedIn sent", avatar: "SC", lastActivityTime: Date.now() - 259200000, activities: [{ time: Date.now() - 259200000, action: "Initial message sent" }] },
   { id: "7", name: "Tom Okoro", company: "Stackbase", role: "Founder", industry: "Dev Tools", score: 15, stage: "new", channel: "email", lastAction: "Email sent 2h ago", avatar: "TO", lastActivityTime: Date.now() - 7200000, activities: [{ time: Date.now() - 7200000, action: "Initial email sent" }] },
-  { id: "8", name: "Dan Fields", company: "Beacon", role: "CEO", industry: "CRM", score: 100, stage: "won", channel: "email", lastAction: "Signed up", avatar: "DF", lastActivityTime: Date.now() - 604800000, activities: [{ time: Date.now() - 604800000, action: "Became customer" }] },
+  { id: "8", name: "Dan Fields", company: "Beacon", role: "CEO", industry: "CRM", score: 100, stage: "won", channel: "email", lastAction: "Build in progress", avatar: "DF", lastActivityTime: Date.now() - 604800000, activities: [{ time: Date.now() - 604800000, action: "Became customer" }] },
   { id: "9", name: "Rachel Green", company: "TechFlow", role: "Founder", industry: "Analytics", score: 28, stage: "new", channel: "linkedin", lastAction: "Researching", avatar: "RG", lastActivityTime: Date.now() - 432000000, activities: [{ time: Date.now() - 432000000, action: "Profile researched" }] },
   { id: "10", name: "Marcus Chen", company: "BuildFlow", role: "CRO", industry: "Dev Tools", score: 55, stage: "contacted", channel: "email", lastAction: "No response yet", avatar: "MC", lastActivityTime: Date.now() - 172800000, activities: [{ time: Date.now() - 172800000, action: "Initial email sent" }] },
   { id: "11", name: "Sofia Rodriguez", company: "PayFlow", role: "CEO", industry: "Fintech", score: 78, stage: "interested", channel: "linkedin", lastAction: "Asked for demo", avatar: "SR", lastActivityTime: Date.now() - 3600000, activities: [{ time: Date.now() - 3600000, action: "Requested demo" }] },
@@ -159,7 +159,7 @@ function Sidebar({ active, onNav, onClose }) {
   const channels = [
     { id: "founders", label: "for-founders", lock: true },
     { id: "chat", label: "talk-to-william", dot: true },
-    { id: "outreach", label: "outreach-log", badge: "3" },
+    { id: "outreach", label: "activity-log", badge: "3" },
     { id: "meetings", label: "meetings", badge: "2" },
     { id: "pipeline", label: "pipeline" },
     { id: "analytics", label: "analytics" },
@@ -720,65 +720,67 @@ function OutreachView() {
       id: "1", name: "Alex Morin", company: "Shipyard", channel: "linkedin", status: "replied", stage: "Meeting booked",
       stageColor: GREEN, time: "2h ago", avatar: "AM",
       thread: [
-        { from: "william", text: "Hey Alex, saw your post about the SDR hire. Before you commit to headcount - we build AI that does the same job at a fraction of the cost and is live in days. Worth 15 mins to see what that looks like for Shipyard?", time: "Yesterday, 11:32 PM", research: "Alex's LinkedIn post from 3 days ago about hiring challenges" },
-        { from: "prospect", text: "This looks great, let's chat. Thursday work?", time: "Today, 8:14 AM" },
-        { from: "william", text: "Thursday's perfect. I've sent you a calendar link for 2pm - does that work? Looking forward to it.", time: "Today, 8:22 AM" },
-        { from: "prospect", text: "Confirmed. See you then.", time: "Today, 8:30 AM" },
+        { from: "prospect", text: "I keep saying I'll do outbound. I never do.", time: "Yesterday, 8:10 AM" },
+        { from: "william", text: "340 messages sent last week on your behalf. 28 replies. 3 meetings booked. One needs your eyes - Priya is asking about the enterprise tier. Draft is ready when you are.", time: "Yesterday, 8:14 AM", research: "Reviewed Alex's ICP, active channels, and past outreach history before building the sequence" },
+        { from: "prospect", text: "Wait, the meetings are already in the calendar?", time: "Today, 8:20 AM" },
+        { from: "william", text: "Thursday 2pm, Friday 10am, and Monday 9am. Calendar invites sent. You just need to show up.", time: "Today, 8:22 AM" },
+        { from: "prospect", text: "Confirmed. This is exactly what I needed.", time: "Today, 8:30 AM" },
       ]
     },
     {
       id: "2", name: "Priya Kumar", company: "DataStack", channel: "email", status: "pending approval", stage: "Awaiting your review",
       stageColor: AMBER, time: "4h ago", avatar: "PK", needsApproval: true,
       thread: [
-        { from: "william", text: "Subject: Saw your Product Hunt launch\n\nHey Priya, congrats on the PH launch. 200+ upvotes is solid. Quick question: now that you've got product attention, who's doing outbound to convert that into pipeline? If the answer is \"nobody\" or \"me, badly\" - I might be able to help.", time: "Yesterday, 10:15 PM", research: "Product Hunt launch 4 days ago, 200+ upvotes" },
-        { from: "prospect", text: "Hey, thanks! We're actually struggling with exactly this. How does this work?", time: "Today, 6:45 AM" },
-        { from: "william", text: "DRAFT - waiting for your approval:\n\nGreat question, Priya. Short version: HireWilliam builds the AI systems that run your sales motion end-to-end - prospecting, outreach, replies, meetings. Custom-built for DataStack, not a generic tool. Want to see what that looks like for your specific ICP?", time: "Today, 7:02 AM", draft: true },
+        { from: "prospect", text: "I spent all of Friday on the investor report. Again. 5 hours I will never get back.", time: "Today, 6:45 AM" },
+        { from: "william", text: "DRAFT - waiting for your approval:\n\nPriya, your investor report goes out automatically from now on. I have connected Stripe, the CRM, and Linear. First one is ready for your review now. CAC is up 22% this month. I have drafted the explanation so you are not caught off guard on the call.", time: "Today, 7:02 AM", draft: true },
       ]
     },
     {
       id: "3", name: "Leo Tanaka", company: "Kitemaker", channel: "instagram", status: "replied", stage: "Interested",
       stageColor: AMBER, time: "6h ago", avatar: "LT",
       thread: [
-        { from: "william", text: "Hey Leo, been following the Kitemaker journey. Building in public is hard when you're also trying to sell. What if the selling part ran itself?", time: "Yesterday, 9:45 PM", research: "Leo actively posts build-in-public content on Instagram" },
-        { from: "prospect", text: "Intrigued. How does this work?", time: "Today, 5:30 AM" },
-        { from: "william", text: "Short version: HireWilliam is an AI agency. We build custom outreach systems that handle your entire sales motion - prospecting, personalised messages, replies, meetings - all automated. You focus on the product. The pipeline runs itself. Want to see what that looks like for Kitemaker?", time: "Today, 5:48 AM" },
+        { from: "prospect", text: "We haven't posted anything in 3 weeks. Every time I sit down to write something I end up doing something else.", time: "Yesterday, 9:40 PM" },
+        { from: "william", text: "This week is covered. 4 LinkedIn posts scheduled, newsletter out, article published. The post about your pricing change is at 847 impressions. I spotted a trending topic in your space and drafted a response post. Want to see it?", time: "Yesterday, 9:45 PM", research: "Reviewed Kitemaker brand voice, past content, and competitor activity before drafting" },
+        { from: "prospect", text: "Honestly didn't expect that. Yes send it over.", time: "Today, 5:30 AM" },
+        { from: "william", text: "Sent. It ties into the product management conversation happening on LinkedIn right now. Good timing to publish today.", time: "Today, 5:48 AM" },
       ]
     },
     {
-      id: "4", name: "Jake Rivera", company: "Launchpad", channel: "email", status: "opened", stage: "Engaged - no reply yet",
+      id: "4", name: "Jake Rivera", company: "Launchpad", channel: "email", status: "opened", stage: "Reviewing",
       stageColor: "#378add", time: "12h ago", avatar: "JR",
       thread: [
-        { from: "william", text: "Subject: AI for Launchpad\n\nHey Jake, no-code space is getting crowded fast. The teams pulling ahead right now have AI running their ops and sales while their competitors are still doing it manually. HireWilliam builds those systems. Worth 15 mins to see what that would look like for Launchpad?", time: "2 days ago, 10:00 PM", research: "Recent funding announcement, growing team, no visible outbound" },
-        { from: "system", text: "Opened 3 times. Last opened 4 hours ago. No reply yet.", time: "Today" },
-        { from: "william", text: "QUEUED - follow-up in 24h:\n\nHey Jake, just bumping this up. I know you're busy shipping - that's exactly why I exist. Happy to show you what personalised outreach to your ICP looks like. Takes 5 minutes to see it.", time: "Scheduled: Tomorrow, 9:00 AM", queued: true },
+        { from: "prospect", text: "Honestly I have no idea what is happening in our pipeline right now. It is embarrassing.", time: "2 days ago, 9:50 PM" },
+        { from: "william", text: "Here is your pipeline right now. 4 deals need a touchpoint this week. 2 have gone cold. Sofia asked for a proposal 6 days ago and nobody followed up. I have drafted the proposal. Want me to send it?", time: "2 days ago, 10:00 PM", research: "Pulled live CRM data, activity logs, and deal history across all open opportunities" },
+        { from: "system", text: "Email opened 3 times. Last opened 4 hours ago.", time: "Today" },
+        { from: "william", text: "QUEUED - follow-up tomorrow 9am:\n\nJake, Sofia's proposal is ready. One click and it goes. Do not let that one slip.", time: "Scheduled: Tomorrow, 9:00 AM", queued: true },
       ]
     },
     {
       id: "5", name: "Nina Patel", company: "FormFlow", channel: "linkedin", status: "sent", stage: "Contacted",
       stageColor: "#378add", time: "8h ago", avatar: "NP",
       thread: [
-        { from: "william", text: "Hi Nina - FormFlow just crossed 1K users. That's the point where ops and support start eating founder time. HireWilliam builds AI that handles that scale without adding headcount. Want to see what that looks like for FormFlow?", time: "Yesterday, 11:00 PM", research: "FormFlow changelog update showing 1K users milestone" },
+        { from: "prospect", text: "I am answering the same 12 support questions every single day. I cannot keep doing this.", time: "Yesterday, 10:45 PM" },
+        { from: "william", text: "34 tickets resolved overnight. 2 escalated, both flagged for your team. Your inbox has 2 emails in it. Those 12 questions are handled automatically from now on.", time: "Yesterday, 11:00 PM", research: "Reviewed FormFlow support history, FAQ patterns, and common escalation triggers" },
         { from: "system", text: "Connection request accepted. Message delivered.", time: "Today, 3:15 AM" },
       ]
     },
     {
-      id: "6", name: "Sara Chen", company: "Metrify", channel: "linkedin", status: "sent", stage: "New - first contact",
+      id: "6", name: "Sara Chen", company: "Metrify", channel: "email", status: "sent", stage: "Proactive update",
       stageColor: INK_SOFT, time: "1d ago", avatar: "SC",
       thread: [
-        { from: "william", text: "Hey Sara, Metrify's positioning around real-time dashboards is strong. The analytics space is moving fast though - the teams winning right now have AI running their content, outreach, and ops. HireWilliam builds that. Want to see what we'd deploy for Metrify?", time: "2 days ago, 11:30 PM", research: "Metrify website review, LinkedIn profile, recent analytics industry posts" },
-        { from: "system", text: "Connection request pending.", time: "Yesterday" },
+        { from: "william", text: "Sara, investor report goes out Friday at 4pm from now on. I have connected Stripe, the CRM, and Linear. First one is ready for your review. CAC is up 22% this month. I have drafted the explanation so you are not caught off guard.", time: "Yesterday, 9:00 AM" },
       ]
     },
     {
-      id: "7", name: "Dan Fields", company: "Beacon", channel: "email", status: "won", stage: "Signed up",
+      id: "7", name: "Dan Fields", company: "Beacon", channel: "email", status: "won", stage: "Build in progress",
       stageColor: GREEN, time: "3d ago", avatar: "DF",
       thread: [
-        { from: "william", text: "Subject: Beacon + AI\n\nHey Dan, noticed Beacon is scaling the team. Before you add headcount across ops, support, and sales - worth seeing what HireWilliam builds for companies at your stage. Custom AI that fills those roles without the hiring cost. 15 mins?", time: "2 weeks ago", research: "Job posting for AE on Beacon careers page" },
+        { from: "prospect", text: "Everyone keeps telling me we should be using AI more. I do not even know where to begin.", time: "2 weeks ago" },
+        { from: "william", text: "Audit done. You are losing 34 hours a week to work AI can own. Top 5 opportunities ranked by time saved: onboarding (11 hrs), support triage (8 hrs), outreach (6 hrs), reporting (5 hrs), content (4 hrs). I have built the roadmap. Want Terry to walk you through it?", time: "2 weeks ago", research: "Full operations audit across Beacon's tools, workflows, team size, and current manual processes" },
         { from: "prospect", text: "This is exactly what we need. Can we talk this week?", time: "12 days ago" },
-        { from: "william", text: "Absolutely. I've sent a calendar link - pick any slot that works. Looking forward to showing you what I can do for Beacon.", time: "12 days ago" },
-        { from: "system", text: "Meeting held. Dan engaged HireWilliam. Build kicked off.", time: "1 week ago" },
+        { from: "system", text: "Meeting held. Engagement confirmed. Build kicked off.", time: "1 week ago" },
         { from: "prospect", text: "Contract signed. Let's get started.", time: "1 week ago" },
-        { from: "william", text: "Welcome to HireWilliam, Dan. Audit's already running. You'll have the full AI roadmap for Beacon by end of week.", time: "1 week ago" },
+        { from: "william", text: "Welcome to HireWilliam, Dan. Audit is already running. You will have the full AI roadmap for Beacon by end of week.", time: "1 week ago" },
       ]
     },
   ];
@@ -937,8 +939,8 @@ function OutreachView() {
       <div style={{ padding: "18px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={INK_GHOST} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="9" x2="20" y2="9" /><line x1="4" y1="15" x2="20" y2="15" /><line x1="10" y1="3" x2="8" y2="21" /><line x1="16" y1="3" x2="14" y2="21" /></svg>
-          <span style={{ fontWeight: 600, fontSize: 15 }}>outreach-log</span>
-          <span style={{ fontSize: 12, color: INK_GHOST, marginLeft: 4 }}>{CONVOS.length} conversations</span>
+          <span style={{ fontWeight: 600, fontSize: 15 }}>activity-log</span>
+          <span style={{ fontSize: 12, color: INK_GHOST, marginLeft: 4 }}>{CONVOS.length} active threads</span>
         </div>
       </div>
 
@@ -2254,7 +2256,7 @@ function RightPanel({ isMobile = false }) {
 function MobileBottomNav({ active, onNav }) {
   const navItems = [
     { id: "chat",      label: "William",   Icon: IconChat,     badge: null },
-    { id: "outreach",  label: "Outreach",  Icon: IconMail,     badge: "3" },
+    { id: "outreach",  label: "Activity",  Icon: IconMail,     badge: "3" },
     { id: "meetings",  label: "Meetings",  Icon: IconCalendar, badge: "2" },
     { id: "pipeline",  label: "Pipeline",  Icon: IconPipeline, badge: null },
     { id: "analytics", label: "Analytics", Icon: IconChart,    badge: null },
@@ -2383,7 +2385,7 @@ export default function App() {
             <div>
               <span style={{ color: "#fff", fontSize: 15, fontWeight: 700 }}>HireWilliam</span>
               <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", lineHeight: 1.2 }}>
-                {{ chat: "talk-to-william", pipeline: "pipeline", outreach: "outreach-log", meetings: "meetings", analytics: "analytics", founders: "for-founders" }[page]}
+                {{ chat: "talk-to-william", pipeline: "pipeline", outreach: "activity-log", meetings: "meetings", analytics: "analytics", founders: "for-founders" }[page]}
               </div>
             </div>
           </div>
