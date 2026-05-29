@@ -1532,362 +1532,407 @@ function MeetingsView() {
   );
 }
 
-// ── Analytics ──
+// ── Analytics (AI Readiness Quiz) ──
+const QUIZ_QUESTIONS = [
+  {
+    id: "outreach", icon: "📡", tag: "Sales & outreach",
+    text: "How are you doing outbound right now?",
+    options: [
+      { k: "A", t: "I'm still doing it all myself - finding leads, writing every message, praying something lands", s: 5 },
+      { k: "B", t: "I have a tool, but I still spend hours every week babysitting it", s: 3 },
+      { k: "C", t: "It's mostly automated, but if I stop watching it, I'm scared it'll stall", s: 1 },
+      { k: "D", t: "I'm not really doing outbound yet - I just hope referrals keep coming", s: 4 },
+    ]
+  },
+  {
+    id: "support", icon: "💬", tag: "Customer support",
+    text: "When customers have questions, what happens?",
+    options: [
+      { k: "A", t: "They usually end up in my inbox and I play \"human help desk\"", s: 5 },
+      { k: "B", t: "A team member answers, but it's slow and a bit of a lottery", s: 4 },
+      { k: "C", t: "We use templates, but a human still sends everything by hand", s: 3 },
+      { k: "D", t: "Most common questions are answered automatically… and I still get pulled in when things get messy", s: 1 },
+    ]
+  },
+  {
+    id: "ops", icon: "⚡", tag: "Operations & admin",
+    text: "How much manual admin is happening day‑to‑day?",
+    options: [
+      { k: "A", t: "A lot - copy‑pasting between tools, updating sheets, pulling reports, all the glamorous founder work", s: 5 },
+      { k: "B", t: "Some things are automated, but there's still way too much busywork", s: 3 },
+      { k: "C", t: "Most repetitive stuff runs on autopilot… as long as volume doesn't spike", s: 1 },
+      { k: "D", t: "I do almost everything myself and pretend it's fine", s: 5 },
+    ]
+  },
+  {
+    id: "content", icon: "✍️", tag: "Content & marketing",
+    text: "How consistently are you publishing content?",
+    options: [
+      { k: "A", t: "Randomly - whenever I remember or feel guilty", s: 5 },
+      { k: "B", t: "A couple times a month, on a good month", s: 4 },
+      { k: "C", t: "A few times a week, as long as nothing explodes", s: 3 },
+      { k: "D", t: "We show up almost every day, but it still eats more time than I'd like", s: 1 },
+    ]
+  },
+  {
+    id: "crm", icon: "📊", tag: "CRM & pipeline",
+    text: "How true is this: \"I trust my pipeline data\"?",
+    options: [
+      { k: "A", t: "Not at all - it's mostly in my head, Slack, and random notes", s: 5 },
+      { k: "B", t: "Sort of - the CRM exists, but it's usually lying to me", s: 4 },
+      { k: "C", t: "Mostly - we try to keep it clean, but it drifts fast", s: 3 },
+      { k: "D", t: "It mostly stays updated automatically, but I still double‑check before big decisions", s: 1 },
+    ]
+  },
+  {
+    id: "capacity", icon: "👥", tag: "Team & capacity",
+    text: "If you needed to double output next month, what's your move?",
+    options: [
+      { k: "A", t: "Hire someone full‑time and hope we onboard fast enough", s: 4 },
+      { k: "B", t: "Bring in a freelancer or VA and pray they \"just get it\"", s: 3 },
+      { k: "C", t: "Add another software tool to the pile", s: 2 },
+      { k: "D", t: "Spin up an AI agent to handle the extra load - but I'd still watch it closely", s: 1 },
+    ]
+  },
+  {
+    id: "fire", icon: "🚨", tag: "Founders on fire",
+    text: "How close do you feel to something important slipping through the cracks?",
+    options: [
+      { k: "A", t: "It already has - I just put out fires and apologize", s: 5 },
+      { k: "B", t: "Very close - I'm juggling too much and dropping things", s: 4 },
+      { k: "C", t: "Sometimes, but I usually catch most things at the last second", s: 3 },
+      { k: "D", t: "I feel mostly on top of things, but only because I'm constantly watching for dropped balls", s: 2 },
+    ]
+  },
+  {
+    id: "stack", icon: "🔗", tag: "Tools & integrations",
+    text: "How well do your tools talk to each other?",
+    options: [
+      { k: "A", t: "They don't - I move data between them manually like it's 1998", s: 5 },
+      { k: "B", t: "Some connect, some don't - I'm the human API in the middle", s: 3 },
+      { k: "C", t: "Most are connected, but not fully automated, so I still nudge things along", s: 2 },
+      { k: "D", t: "Most tools are integrated and data flows on its own… until something changes or breaks", s: 1 },
+    ]
+  },
+];
+
 function AnalyticsView() {
-  const [animatedStats, setAnimatedStats] = useState([0, 0, 0, 0]);
-  const [hoveredCard, setHoveredCard] = useState(null);
-  const [selectedTimeframe, setSelectedTimeframe] = useState("7d");
+  const [screen, setScreen] = useState("start"); // "start" | "quiz" | "results"
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [animatedScore, setAnimatedScore] = useState(0);
+  const [ringOffset, setRingOffset] = useState(201);
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
   const isMobile = useIsMobile();
 
-  const stats = [
-    { label: "Messages sent", value: 312, change: "+47 today", icon: "📤", color: PURPLE },
-    { label: "Replies", value: 38, change: "12.2% rate", icon: "💬", color: GREEN },
-    { label: "Meetings booked", value: 11, change: "+2 today", icon: "📅", color: AMBER },
-    { label: "Pipeline value", value: 24, change: "Active prospects", icon: "🚀", color: "#378add" },
-  ];
+  const AUBERGINE = "#3f0f40";
+  const DANGER = "#b3261e";
+  const GOLD = "#ecb22e";
+  const Q_GREEN = "#2bac76";
 
-  const timeframes = [
-    { id: "7d", label: "7 days", data: [
-      { day: "Mon", sent: 42, replies: 5 }, { day: "Tue", sent: 47, replies: 6 },
-      { day: "Wed", sent: 38, replies: 4 }, { day: "Thu", sent: 51, replies: 7 },
-      { day: "Fri", sent: 45, replies: 6 }, { day: "Sat", sent: 44, replies: 5 },
-      { day: "Sun", sent: 45, replies: 5 },
-    ]},
-    { id: "30d", label: "30 days", data: [
-      { day: "Week 1", sent: 180, replies: 22 }, { day: "Week 2", sent: 210, replies: 28 },
-      { day: "Week 3", sent: 195, replies: 25 }, { day: "Week 4", sent: 235, replies: 32 },
-    ]},
-    { id: "90d", label: "90 days", data: [
-      { day: "Month 1", sent: 780, replies: 95 }, { day: "Month 2", sent: 920, replies: 118 },
-      { day: "Month 3", sent: 1050, replies: 142 },
-    ]},
-  ];
+  const scrollRef = useRef(null);
 
-  const currentData = timeframes.find(t => t.id === selectedTimeframe)?.data || timeframes[0].data;
-  const maxSent = Math.max(...currentData.map(d => d.sent));
+  const scrollTop = () => {
+    if (scrollRef.current) scrollRef.current.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
-  // Animate counters on mount
+  const startQuiz = () => {
+    setCurrentIndex(0);
+    setAnswers({});
+    setScreen("quiz");
+    scrollTop();
+  };
+
+  const selectOption = (idx) => {
+    const q = QUIZ_QUESTIONS[currentIndex];
+    setAnswers(prev => ({ ...prev, [q.id]: idx }));
+  };
+
+  const goBack = () => {
+    if (currentIndex === 0) return;
+    setCurrentIndex(i => i - 1);
+    scrollTop();
+  };
+
+  const goNext = () => {
+    const q = QUIZ_QUESTIONS[currentIndex];
+    if (answers[q.id] === undefined) return;
+    if (currentIndex < QUIZ_QUESTIONS.length - 1) {
+      setCurrentIndex(i => i + 1);
+      scrollTop();
+    } else {
+      setScreen("results");
+      scrollTop();
+    }
+  };
+
+  // Animate score ring when results appear
   useEffect(() => {
-    const timer = setTimeout(() => {
-      stats.forEach((stat, index) => {
-        let current = 0;
-        const increment = stat.value / 50;
-        const interval = setInterval(() => {
-          current += increment;
-          if (current >= stat.value) {
-            current = stat.value;
-            clearInterval(interval);
-          }
-          setAnimatedStats(prev => {
-            const newStats = [...prev];
-            newStats[index] = Math.floor(current);
-            return newStats;
-          });
-        }, 20);
-      });
-    }, 300);
-    return () => clearTimeout(timer);
-  }, []);
+    if (screen !== "results") return;
+    const total = QUIZ_QUESTIONS.reduce((sum, q) => {
+      const idx = answers[q.id];
+      return sum + (idx !== undefined ? q.options[idx].s : 3);
+    }, 0);
+    const maxScore = 40;
+    const circumference = 201;
+    const targetOffset = circumference - (total / maxScore) * circumference;
+    let n = 0;
+    const iv = setInterval(() => {
+      n = Math.min(n + 1, total);
+      setAnimatedScore(n);
+      if (n >= total) clearInterval(iv);
+    }, 40);
+    setTimeout(() => setRingOffset(targetOffset), 80);
+    return () => clearInterval(iv);
+  }, [screen]);
+
+  const getResults = () => {
+    const total = QUIZ_QUESTIONS.reduce((sum, q) => {
+      const idx = answers[q.id];
+      return sum + (idx !== undefined ? q.options[idx].s : 3);
+    }, 0);
+    let intro, headline, desc;
+    if (total <= 15) {
+      intro = "Right now, you're holding your business together with sheer effort. 🔥 If you keep running like this, something important will eventually slip.";
+      headline = "You are the bottleneck.";
+      desc = "Your business is bleeding 20+ hours a week on work an AI agent could own. That's deals delayed, projects stalled, and burnout creeping in - not months from now, but already.";
+    } else if (total <= 24) {
+      intro = "Things work - but there are cracks. ⚠️ You're getting results, but only by sacrificing evenings and weekends.";
+      headline = "Cracks in the system.";
+      desc = "The areas flagged above are where small issues can quietly turn into dropped balls and missed opportunities. Fixing them now with the right AI agent keeps you ahead of that curve.";
+    } else {
+      intro = "You're still one spike away from overload.";
+      headline = "You're one spike away from breaking.";
+      desc = "These \"small\" gaps turn into lost deals and late nights the moment volume jumps — install an agent before you feel it.";
+    }
+    return { total, intro, headline, desc };
+  };
+
+  const handleSubmit = () => {
+    if (!email) return;
+    const body = encodeURIComponent("Quiz responses:" + JSON.stringify(answers));
+    window.location.href = `mailto:info@hirewilliam.com?subject=quiz&body=From: ${encodeURIComponent(email)}%0D%0A%0D%0A${body}`;
+    setSubmitted(true);
+  };
+
+  const resetQuiz = () => {
+    setCurrentIndex(0);
+    setAnswers({});
+    setAnimatedScore(0);
+    setRingOffset(201);
+    setEmail("");
+    setSubmitted(false);
+    setScreen("start");
+    scrollTop();
+  };
+
+  const pct = Math.round((currentIndex / QUIZ_QUESTIONS.length) * 100);
+  const q = QUIZ_QUESTIONS[currentIndex];
+  const selected = answers[q?.id];
+  const { total, intro, headline, desc } = screen === "results" ? getResults() : {};
+
+  // Shared container style
+  const wrap = {
+    flex: 1, minHeight: 0, display: "flex", flexDirection: "column",
+    fontFamily: "'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  };
+  const scroll = {
+    flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch",
+    padding: isMobile ? 16 : 24,
+    background: "radial-gradient(circle at top, #faf5ff 0, #f7f6f2 55%)",
+  };
+  const card = {
+    background: "#fff", borderRadius: 12, border: "1px solid #e3e1dc",
+    boxShadow: "0 4px 16px rgba(15,14,13,0.06)", padding: isMobile ? "18px 16px" : 24,
+    marginBottom: 16,
+  };
 
   return (
-    <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
-      <div style={{ padding: isMobile ? "12px 16px" : "18px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6, flexShrink: 0, flexWrap: "wrap" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, flex: 1 }}>
-          <IconHash s={14} />
-          <span style={{ fontWeight: 600, fontSize: 15 }}>analytics</span>
-        </div>
-        <div style={{ display: "flex", gap: 4 }}>
-          {timeframes.map(tf => (
-            <button
-              key={tf.id}
-              onClick={() => setSelectedTimeframe(tf.id)}
-              style={{
-                padding: isMobile ? "3px 7px" : "4px 8px",
-                borderRadius: 12,
-                border: `1px solid ${selectedTimeframe === tf.id ? PURPLE : RULE}`,
-                background: selectedTimeframe === tf.id ? PURPLE_PALE : "transparent",
-                color: selectedTimeframe === tf.id ? PURPLE : INK_SOFT,
-                fontSize: isMobile ? 10 : 11,
-                fontWeight: 500,
-                cursor: "pointer",
-                transition: "all 0.2s"
-              }}
-            >
-              {tf.label}
-            </button>
-          ))}
-        </div>
+    <div style={wrap}>
+      {/* Header bar */}
+      <div style={{ padding: isMobile ? "12px 16px" : "18px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+        <IconHash s={14} />
+        <span style={{ fontWeight: 600, fontSize: 15 }}>analytics</span>
       </div>
 
-      <div style={{ flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: isMobile ? 16 : 20 }}>
-        {/* Hero Stats Grid */}
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(auto-fit, minmax(130px, 1fr))" : "repeat(auto-fit, minmax(200px, 1fr))", gap: isMobile ? 10 : 16, marginBottom: isMobile ? 20 : 32 }}>
-          {stats.map((s, index) => (
-            <div
-              key={s.label}
-              onMouseEnter={() => setHoveredCard(index)}
-              onMouseLeave={() => setHoveredCard(null)}
-              style={{
-                background: hoveredCard === index ? `linear-gradient(135deg, ${PAPER_WARM} 0%, #fff 100%)` : PAPER_WARM,
-                borderRadius: 16,
-                padding: isMobile ? "14px 10px" : "20px",
-                textAlign: "center",
-                cursor: "pointer",
-                transform: hoveredCard === index ? "translateY(-4px)" : "translateY(0)",
-                boxShadow: hoveredCard === index ? `0 8px 25px rgba(90, 99, 160, 0.15)` : "none",
-                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                border: hoveredCard === index ? `1px solid ${s.color}40` : `1px solid ${RULE}`,
-                position: "relative",
-                overflow: "hidden"
-              }}
-            >
-              {/* Animated background pulse */}
-              <div style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background: `radial-gradient(circle at 50% 50%, ${s.color}15 0%, transparent 70%)`,
-                opacity: hoveredCard === index ? 1 : 0,
-                transition: "opacity 0.3s"
-              }} />
+      <div ref={scrollRef} style={scroll}>
+        <div style={{ width: "100%", maxWidth: 640, margin: "0 auto" }}>
 
-              <div style={{ fontSize: isMobile ? 20 : 26, marginBottom: isMobile ? 4 : 8 }}>{s.icon}</div>
-              <div style={{ fontSize: isMobile ? 10 : 12, color: INK_GHOST, marginBottom: isMobile ? 4 : 8, fontWeight: 500 }}>{s.label}</div>
-              <div style={{
-                fontSize: isMobile ? 26 : 34,
-                fontWeight: 800,
-                color: s.color,
-                marginBottom: 6,
-                fontVariantNumeric: "tabular-nums"
-              }}>
-                {animatedStats[index].toLocaleString()}
-              </div>
-              <div style={{
-                fontSize: isMobile ? 10 : 12,
-                color: GREEN,
-                fontWeight: 600,
-                background: "#e4f5ed",
-                padding: isMobile ? "3px 6px" : "4px 8px",
-                borderRadius: 12,
-                display: "inline-block"
-              }}>
-                {s.change}
-              </div>
-
-              {/* Sparkle effect on hover */}
-              {hoveredCard === index && (
-                <div style={{
-                  position: "absolute",
-                  top: 10,
-                  right: 10,
-                  fontSize: 17,
-                  animation: "sparkle 1.5s ease-in-out infinite"
-                }}>
-                  ✨
+          {/* ── START ── */}
+          {screen === "start" && (
+            <>
+              <div style={{ marginBottom: 24 }}>
+                <h1 style={{ fontSize: isMobile ? "1.4rem" : "1.6rem", fontWeight: 800, lineHeight: 1.25, marginBottom: 12, color: "#1d1c1d" }}>STRESS TEST</h1>
+                <p style={{ fontSize: "0.98rem", color: "#616061", lineHeight: 1.6 }}>
+                  Answer a few honest questions about how you run things. I'll show you where you're closest to breaking - and send your free AI agent to your inbox.
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 12 }}>
+                  {["⏱ 1 minute", "🎯 8 questions", "🎁 Free AI agent"].map(chip => (
+                    <span key={chip} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "3px 10px", borderRadius: 9999, background: "#fff", border: "1px solid #ececec", fontSize: "0.82rem", color: "#616061" }}>{chip}</span>
+                  ))}
                 </div>
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Interactive Chart Section */}
-        <div style={{
-          background: PAPER_WARM,
-          borderRadius: 16,
-          padding: isMobile ? 16 : 24,
-          marginBottom: isMobile ? 16 : 24,
-          boxShadow: "0 4px 20px rgba(0,0,0,0.05)"
-        }}>
-          <div style={{ display: "flex", alignItems: isMobile ? "flex-start" : "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 8 }}>
-            <div>
-              <h3 style={{ fontSize: isMobile ? 14 : 17, fontWeight: 700, color: INK, margin: 0 }}>Activity Overview</h3>
-              <p style={{ fontSize: isMobile ? 11 : 13, color: INK_SOFT, margin: 4 }}>Messages sent vs replies over time</p>
-            </div>
-            <div style={{ display: "flex", gap: 12 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <div style={{ width: 12, height: 12, borderRadius: 3, background: PURPLE }} />
-                <span style={{ fontSize: isMobile ? 10 : 12, color: INK_SOFT }}>Sent</span>
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <div style={{ width: 12, height: 12, borderRadius: 3, background: GREEN }} />
-                <span style={{ fontSize: isMobile ? 10 : 12, color: INK_SOFT }}>Replies</span>
+              <div style={card}>
+                <p style={{ fontSize: "0.95rem", color: "#616061", lineHeight: 1.6, marginBottom: 12 }}>
+                  I'm William, the AI inside HireWilliam. In about a minute, this quiz will show you what's really on fire behind the scenes.
+                </p>
+                <ul style={{ margin: "0 0 16px 1.1rem", fontSize: "0.9rem", color: "#616061", lineHeight: 1.6 }}>
+                  <li style={{ marginBottom: 4 }}>Where you're quietly leaking hours every week</li>
+                  <li style={{ marginBottom: 4 }}>What's most likely to slip through the cracks next</li>
+                  <li style={{ marginBottom: 4 }}>How to claim your free AI agent at the end</li>
+                </ul>
+                <p style={{ fontSize: "0.9rem", color: "#616061", marginBottom: 20 }}>
+                  8 questions. No fluff. At the end, you'll see your risk map and a simple way to get your <strong>free AI agent</strong> sent to your inbox.
+                </p>
+                <button onClick={startQuiz} style={{ display: "inline-flex", alignItems: "center", gap: 8, background: AUBERGINE, color: "#fff", fontWeight: 700, padding: "12px 24px", borderRadius: 6, fontSize: "0.95rem", border: "none", cursor: "pointer" }}>
+                  START
+                </button>
               </div>
-            </div>
-          </div>
+            </>
+          )}
 
-          <div style={{ display: "flex", alignItems: "flex-end", gap: isMobile ? 4 : 12, height: isMobile ? 140 : 200, padding: isMobile ? "0 4px" : "0 16px" }}>
-            {currentData.map((d, index) => (
-              <div
-                key={d.day}
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 8,
-                  cursor: "pointer",
-                  transition: "transform 0.2s"
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-                onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-              >
-                <div style={{
-                  position: "relative",
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 2,
-                  alignItems: "center"
-                }}>
-                  {/* Reply bar */}
-                  <div style={{
-                    height: Math.max((d.replies / maxSent) * (isMobile ? 100 : 160), 4),
-                    width: isMobile ? 14 : 24,
-                    background: GREEN,
-                    borderRadius: "4px 4px 0 0",
-                    transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
-                    animation: `slideUp 0.8s ease-out ${index * 0.1}s both`
-                  }} />
-                  {/* Sent bar */}
-                  <div style={{
-                    height: Math.max((d.sent / maxSent) * (isMobile ? 100 : 160), 4),
-                    width: isMobile ? 18 : 32,
-                    background: PURPLE,
-                    borderRadius: "4px 4px 0 0",
-                    transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
-                    animation: `slideUp 0.8s ease-out ${index * 0.1 + 0.2}s both`,
-                    position: "relative"
-                  }}>
-                    {/* Tooltip */}
-                    <div style={{
-                      position: "absolute",
-                      top: -35,
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      background: INK,
-                      color: "#fff",
-                      padding: "6px 10px",
-                      borderRadius: 6,
-                      fontSize: 11,
-                      whiteSpace: "nowrap",
-                      opacity: 0,
-                      pointerEvents: "none",
-                      transition: "opacity 0.2s",
-                      zIndex: 10
-                    }}>
-                      {d.sent} sent, {d.replies} replies
-                    </div>
+          {/* ── QUIZ ── */}
+          {screen === "quiz" && (
+            <>
+              {/* Progress */}
+              <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e8e8e8", padding: "12px 20px", marginBottom: 16, display: "flex", flexDirection: "column", gap: 8 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", color: "#616061" }}>
+                  <span>Question {currentIndex + 1} of {QUIZ_QUESTIONS.length}</span>
+                  <span>{pct}%</span>
+                </div>
+                <div style={{ height: 4, background: "#eee9e0", borderRadius: 9999, overflow: "hidden" }}>
+                  <div style={{ height: "100%", width: `${pct}%`, background: DANGER, borderRadius: 9999, transition: "width 0.4s cubic-bezier(0.16,1,0.3,1)" }} />
+                </div>
+              </div>
+
+              {/* Question card */}
+              <div style={{ ...card, animation: "fadeUp 0.3s cubic-bezier(0.16,1,0.3,1) both" }}>
+                <div style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: "0.75rem", fontWeight: 700, color: AUBERGINE, background: "#f3e8fb", padding: "2px 10px", borderRadius: 9999, marginBottom: 12 }}>
+                  {q.icon} {q.tag}
+                </div>
+                <div style={{ fontSize: isMobile ? "0.98rem" : "1rem", fontWeight: 700, marginBottom: 16, color: "#1d1c1d" }}>{q.text}</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {q.options.map((opt, i) => (
+                    <button
+                      key={opt.k}
+                      onClick={() => selectOption(i)}
+                      style={{
+                        display: "flex", alignItems: "flex-start", gap: 12, padding: "10px 14px",
+                        borderRadius: 10, border: selected === i ? `2px solid ${AUBERGINE}` : "1px solid #e8e8e8",
+                        background: selected === i ? "#f1e6f7" : "#fff",
+                        boxShadow: selected === i ? `0 0 0 1px ${AUBERGINE} inset` : "none",
+                        fontSize: "0.92rem", lineHeight: 1.5, color: "#1d1c1d",
+                        cursor: "pointer", textAlign: "left", transition: "all 0.1s",
+                      }}
+                    >
+                      <span style={{
+                        flexShrink: 0, width: 22, height: 22, borderRadius: 9999,
+                        border: selected === i ? `none` : "1px solid #e8e8e8",
+                        background: selected === i ? AUBERGINE : "#f5f5f5",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: "0.72rem", fontWeight: 700,
+                        color: selected === i ? "#fff" : "#616061", marginTop: 2,
+                      }}>{opt.k}</span>
+                      <span>{opt.t}</span>
+                    </button>
+                  ))}
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 20, paddingTop: 16, borderTop: "1px solid #e8e8e8" }}>
+                  <button onClick={goBack} disabled={currentIndex === 0} style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: "0.85rem", color: "#616061", padding: "6px 12px", borderRadius: 6, border: "none", background: "transparent", cursor: currentIndex === 0 ? "not-allowed" : "pointer", opacity: currentIndex === 0 ? 0.4 : 1 }}>← Back</button>
+                  <button onClick={goNext} disabled={selected === undefined} style={{ display: "inline-flex", alignItems: "center", gap: 8, background: selected === undefined ? "#ccc" : AUBERGINE, color: "#fff", fontWeight: 700, padding: "6px 16px", borderRadius: 6, fontSize: "0.85rem", border: "none", cursor: selected === undefined ? "not-allowed" : "pointer" }}>
+                    {currentIndex === QUIZ_QUESTIONS.length - 1 ? "See my results →" : "Next →"}
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* ── RESULTS ── */}
+          {screen === "results" && (
+            <div style={card}>
+              <p style={{ fontSize: "0.95rem", color: "#616061", lineHeight: 1.6, marginBottom: 16 }}>{intro}</p>
+
+              {/* Score ring */}
+              <div style={{ display: "flex", gap: 20, alignItems: "center", borderRadius: 12, border: "1px solid #e8e8e8", background: "#fff", padding: isMobile ? "18px 16px" : "20px 24px", marginBottom: 16, flexWrap: isMobile ? "wrap" : "nowrap" }}>
+                <div style={{ position: "relative", width: 80, height: 80, flexShrink: 0 }}>
+                  <svg viewBox="0 0 80 80" style={{ position: "absolute", inset: 0, transform: "rotate(-90deg)" }}>
+                    <circle cx="40" cy="40" r="32" fill="none" stroke="#e8e8e8" strokeWidth="7" />
+                    <circle cx="40" cy="40" r="32" fill="none" stroke={DANGER} strokeWidth="7" strokeLinecap="round" strokeDasharray="201" strokeDashoffset={ringOffset} style={{ transition: "stroke-dashoffset 1.1s cubic-bezier(0.16,1,0.3,1)" }} />
+                  </svg>
+                  <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                    <div style={{ fontSize: "1.2rem", fontWeight: 900 }}>{animatedScore}</div>
+                    <div style={{ fontSize: "0.7rem", color: "#616061" }}>/ 40</div>
                   </div>
                 </div>
-                <div style={{ fontSize: isMobile ? 9 : 12, color: INK_SOFT, fontWeight: 500 }}>{d.day}</div>
+                <div>
+                  <h2 style={{ fontSize: "1rem", fontWeight: 900, marginBottom: 4, color: "#1d1c1d" }}>{headline}</h2>
+                  <p style={{ fontSize: "0.9rem", color: "#616061", lineHeight: 1.6 }}>{desc}</p>
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
 
-        {/* Conversion Funnel */}
-        <div style={{
-          background: `linear-gradient(135deg, ${PAPER_WARM} 0%, #fff 100%)`,
-          borderRadius: 16,
-          padding: isMobile ? 16 : 24,
-          boxShadow: "0 4px 20px rgba(0,0,0,0.05)"
-        }}>
-          <h3 style={{ fontSize: isMobile ? 14 : 17, fontWeight: 700, color: INK, margin: "0 0 16px 0" }}>Conversion Funnel</h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? 8 : 12 }}>
-            {[
-              { stage: "Messages Sent", count: 312, rate: "100%", color: PURPLE },
-              { stage: "Replies", count: 38, rate: "12.2%", color: "#378add" },
-              { stage: "Interested", count: 15, rate: "39.5%", color: AMBER },
-              { stage: "Meetings Booked", count: 11, rate: "73.3%", color: GREEN },
-            ].map((stage, index) => (
-              <div key={stage.stage} style={{
-                display: "flex",
-                alignItems: "center",
-                gap: isMobile ? 10 : 16,
-                padding: isMobile ? 10 : 12,
-                background: "#fff",
-                borderRadius: 8,
-                border: `1px solid ${RULE}`,
-                animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`
-              }}>
-                <div style={{
-                  width: isMobile ? 34 : 40,
-                  height: isMobile ? 34 : 40,
-                  borderRadius: 8,
-                  background: stage.color,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: isMobile ? 12 : 15,
-                  fontWeight: 700,
-                  color: "#fff",
-                  flexShrink: 0
-                }}>
-                  {stage.count}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: isMobile ? 12 : 14, fontWeight: 600, color: INK }}>{stage.stage}</div>
-                  <div style={{ fontSize: isMobile ? 10 : 12, color: INK_SOFT }}>{stage.rate} conversion rate</div>
-                </div>
-                {!isMobile ? (
-                  <div style={{
-                    width: 80,
-                    height: 6,
-                    background: RULE,
-                    borderRadius: 3,
-                    overflow: "hidden",
-                    flexShrink: 0
-                  }}>
-                    <div style={{
-                      width: `${stage.rate.replace('%', '')}%`,
-                      height: "100%",
-                      background: stage.color,
-                      borderRadius: 3,
-                      transition: "width 1s ease-out",
-                      animation: `growWidth 1s ease-out ${index * 0.2}s both`
-                    }} />
+              {/* Breakdown */}
+              <div style={{ borderRadius: 12, border: "1px solid #e8e8e8", background: "#fff", padding: isMobile ? "18px 16px" : "20px 24px", marginBottom: 16 }}>
+                <div style={{ fontSize: "0.78rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#616061", marginBottom: 16, paddingBottom: 12, borderBottom: "1px solid #e8e8e8" }}>Your results by area</div>
+                {QUIZ_QUESTIONS.map((q) => {
+                  const idx = answers[q.id];
+                  const s = idx !== undefined ? q.options[idx].s : 3;
+                  const isHot = s >= 3;
+                  return (
+                    <div key={q.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "8px 0", borderBottom: "1px solid #e8e8e8", fontSize: "0.9rem" }}>
+                      <span style={{ width: 22, textAlign: "center" }}>{q.icon}</span>
+                      <span style={{ flex: 1, color: "#616061" }}>{q.tag}</span>
+                      <span style={{
+                        padding: "2px 10px", borderRadius: 9999, fontSize: "0.75rem", fontWeight: 700,
+                        background: isHot ? "#ffe3e0" : "#fff4ce",
+                        color: isHot ? DANGER : "#8f5c00",
+                      }}>
+                        {isHot ? "🔥 System at breaking point" : "⚠️ Escalating failure risk"}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* CTA */}
+              <div style={{ borderRadius: 12, background: AUBERGINE, padding: isMobile ? "18px 16px" : "20px 24px", marginBottom: 16, color: "#fff" }}>
+                <h3 style={{ fontSize: "1.02rem", fontWeight: 900, marginBottom: 8, display: "flex", alignItems: "center", gap: 8 }}>🎁 Get your free AI agent</h3>
+                <p style={{ fontSize: "0.9rem", lineHeight: 1.6, marginBottom: 16, color: "rgba(255,255,255,0.82)" }}>
+                  Based on your answers, I'll send you a free AI agent built around where your system is under the most strain. Just drop your best email and it will be sent to you.
+                </p>
+                {!submitted ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <span>📧</span>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                        placeholder="you@example.com"
+                        style={{ flex: 1, padding: "10px 12px", borderRadius: 9999, border: "none", minWidth: 0, fontSize: "0.92rem" }}
+                      />
+                    </div>
+                    <button onClick={handleSubmit} style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#fff", color: AUBERGINE, fontWeight: 900, padding: "10px 20px", borderRadius: 9999, fontSize: "0.95rem", border: "none", cursor: "pointer", alignSelf: "flex-start" }}>
+                      Get my free AI agent →
+                    </button>
                   </div>
                 ) : (
-                  <div style={{
-                    flex: 1,
-                    height: 6,
-                    background: RULE,
-                    borderRadius: 3,
-                    overflow: "hidden",
-                  }}>
-                    <div style={{
-                      width: `${stage.rate.replace('%', '')}%`,
-                      height: "100%",
-                      background: stage.color,
-                      borderRadius: 3,
-                      transition: "width 1s ease-out",
-                    }} />
-                  </div>
+                  <p style={{ fontSize: "0.9rem", color: "rgba(255,255,255,0.9)", fontWeight: 700 }}>✅ Request received. Get ready for more freedom, more leverage, and fewer "why am I doing this myself?" moments.</p>
                 )}
+                <div style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.65)", marginTop: 12 }}>We will reach out to have your new AI agent installed as soon as possible.</div>
               </div>
-            ))}
-          </div>
+
+              <button onClick={resetQuiz} style={{ fontSize: "0.82rem", color: "#616061", textDecoration: "underline", background: "none", border: "none", cursor: "pointer" }}>↺ Retake the quiz</button>
+            </div>
+          )}
+
         </div>
       </div>
 
       <style>{`
-        @keyframes slideUp {
-          from { transform: scaleY(0); transform-origin: bottom; }
-          to { transform: scaleY(1); transform-origin: bottom; }
-        }
-        @keyframes sparkle {
-          0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
-          50% { transform: scale(1.2) rotate(180deg); opacity: 1; }
-        }
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(20px); }
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(8px); }
           to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes growWidth {
-          from { width: 0%; }
-          to { width: var(--target-width); }
         }
       `}</style>
     </div>
