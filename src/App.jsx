@@ -37,14 +37,14 @@ const MOCK_PROSPECTS = INITIAL_PROSPECTS;
 const MOCK_OUTREACH = [
   {
     id: "1", prospect: "Alex Morin", company: "Shipyard", channel: "linkedin",
-    message: "Hey Alex, saw your post about struggling to hire your first SDR. What if you didn't have to? I help solo founders fill their pipeline without hiring. No calls, no contracts, you can see it working in 48 hours. Worth 15 mins?",
+    message: "Hey Alex, saw your post about the SDR hire. Before you commit to headcount - HireWilliam builds AI that does the full sales motion at a fraction of the cost and is live in days. Worth 15 mins to see what that looks like for Shipyard?",
     status: "replied", research: "Alex's post from 3 days ago about hiring challenges",
     reply: "This looks great, let's chat. Thursday work?", time: "2h ago"
   },
   {
     id: "2", prospect: "Priya Kumar", company: "DataStack", channel: "email",
     subject: "Saw your Product Hunt launch",
-    message: "Hey Priya, congrats on the PH launch. 200+ upvotes is solid. Quick question: now that you've got product attention, who's doing outbound to convert that into pipeline? If the answer is \"nobody\" or \"me, badly\" - I might be able to help.",
+    message: "Hey Priya, congrats on the PH launch. 200+ upvotes is a strong signal. Now you need AI to scale what's working - outreach, support, content. HireWilliam builds those systems custom for your business. Worth a quick call?",
     status: "opened", research: "PH launch 4 days ago, upvote count", openCount: 3, time: "4h ago"
   },
   {
@@ -55,21 +55,21 @@ const MOCK_OUTREACH = [
   },
   {
     id: "4", prospect: "Nina Patel", company: "FormFlow", channel: "linkedin",
-    message: "Hi Nina - I noticed FormFlow just crossed 1K users on your changelog. That's the inflection point where outbound starts mattering. Happy to show you what that looks like without hiring.",
+    message: "Hi Nina - FormFlow just crossed 1K users. That's the point where ops and support start eating founder time. HireWilliam builds AI that handles that scale without adding headcount. Worth a look?",
     status: "sent", research: "FormFlow changelog update 2 days ago", time: "8h ago"
   },
   {
     id: "5", prospect: "Jake Rivera", company: "Launchpad", channel: "email",
     subject: "Quick question about Launchpad",
-    message: "Hey Jake, I've been watching Launchpad grow - the no-code space is heating up. Curious: are you doing any outbound right now, or is it all inbound? Either way, I think I can help you 3x your pipeline this quarter.",
+    message: "Hey Jake, no-code space is getting crowded. The teams pulling ahead have AI running their ops and sales while competitors do it manually. HireWilliam builds those systems. Worth 15 mins?",
     status: "opened", research: "Recent funding announcement, growing team", openCount: 3, time: "12h ago"
   },
 ];
 
 const MOCK_CHAT = [
-  { id: "1", sender: "william", content: "Morning! While you were asleep I sent 47 personalised messages. 6 founders replied. 2 want to book a call. I've put them in your Thursday slots.", time: "7:02 AM" },
-  { id: "2", sender: "william", content: "Alex from Shipyard replied \"this looks great, let's chat.\" Booked for 2pm Thursday.", time: "7:02 AM" },
-  { id: "3", sender: "william", content: "Priya from DataStack asked about pricing. I drafted a reply but need your approval before sending.", time: "7:03 AM" },
+  { id: "1", sender: "william", content: "Morning. While you were offline I processed 23 support tickets, published 3 pieces of content, and updated the CRM with last week's activity. Everything's logged.", time: "7:02 AM" },
+  { id: "2", sender: "william", content: "Alex from Shipyard replied to the outreach sequence. He's interested in the AI Agents build. I've drafted a follow-up for your review.", time: "7:02 AM" },
+  { id: "3", sender: "william", content: "Two leads from last week asked about the AI Strategy engagement. I've put together a brief on both businesses. Ready when you are.", time: "7:03 AM" },
 ];
 
 // ── Icons (inline SVG) ──
@@ -200,16 +200,17 @@ function Sidebar({ active, onNav, onClose }) {
 
 // ── Chat View ──
 const WILLIAM_INTRO_MESSAGES = [
-  { id: "intro-1", sender: "william", content: "So You found me. Good", time: "now" },
-  { id: "intro-2", sender: "william", content: "I'm William. The AI your business runs on. While you were reading this, I was already mapping your workflows, identifying your bottlenecks, and figuring out exactly where AI makes you the most money the fastest.", time: "now" },
-  { id: "intro-4", sender: "william", content: "Message Terry Lee the founder at terrylee@hirewilliam.com\nTell her I sent you and you want in.", time: "now" },
-  { id: "intro-5", sender: "william", content: "Fair warning, she's going to sound very calm and in control. That's because I've already done everything. You'll think she's a genius. She is. I'm just also there. Always.", time: "now" },
+  { id: "intro-1", sender: "william", content: "So you found us. Good.", time: "now" },
+  { id: "intro-2", sender: "william", content: "I'm William. HireWilliam is an AI agency - we build custom AI agents, automations, and integrations that run inside your business. Not tools you subscribe to. Systems we design and deploy for you.", time: "now" },
+  { id: "intro-3", sender: "william", content: "Tell me about your business and I'll show you exactly where AI creates the most leverage. Or drop your website.", time: "now" },
+  { id: "intro-4", sender: "william", content: "Fair warning - I'm not here to give you a generic pitch. I'm here to diagnose your specific situation and tell you what's actually possible.", time: "now" },
 ];
 
-const WILLIAM_FINAL_MSG = `Look, I could sit here and chat all day but that's not what I was built for. I was built to fill your calendar with people who want to buy what you're selling. And I'm almost ready to prove it.
+const WILLIAM_FINAL_MSG = `This is worth a proper conversation with Terry Lee, HireWilliam's founder.
 
-I'm not live yet. Message Terry Lee (terrylee@hirewilliam.com) 
-I promise she will get you all set`;
+She'll audit your business, identify exactly where AI creates the most leverage, and tell you what's possible.
+
+Email her at terrylee@hirewilliam.com - tell her William sent you and drop your website. She'll take it from there.`;
 
 function ChatView() {
   const [msgs, setMsgs] = useState([]);
@@ -719,7 +720,7 @@ function OutreachView() {
       id: "1", name: "Alex Morin", company: "Shipyard", channel: "linkedin", status: "replied", stage: "Meeting booked",
       stageColor: GREEN, time: "2h ago", avatar: "AM",
       thread: [
-        { from: "william", text: "Hey Alex, saw your post about struggling to hire your first SDR. What if you didn't have to? I help solo founders fill their pipeline without hiring. No calls, no contracts, you can see it working in 48 hours. Worth 15 mins?", time: "Yesterday, 11:32 PM", research: "Alex's LinkedIn post from 3 days ago about hiring challenges" },
+        { from: "william", text: "Hey Alex, saw your post about the SDR hire. Before you commit to headcount - we build AI that does the same job at a fraction of the cost and is live in days. Worth 15 mins to see what that looks like for Shipyard?", time: "Yesterday, 11:32 PM", research: "Alex's LinkedIn post from 3 days ago about hiring challenges" },
         { from: "prospect", text: "This looks great, let's chat. Thursday work?", time: "Today, 8:14 AM" },
         { from: "william", text: "Thursday's perfect. I've sent you a calendar link for 2pm - does that work? Looking forward to it.", time: "Today, 8:22 AM" },
         { from: "prospect", text: "Confirmed. See you then.", time: "Today, 8:30 AM" },
@@ -731,7 +732,7 @@ function OutreachView() {
       thread: [
         { from: "william", text: "Subject: Saw your Product Hunt launch\n\nHey Priya, congrats on the PH launch. 200+ upvotes is solid. Quick question: now that you've got product attention, who's doing outbound to convert that into pipeline? If the answer is \"nobody\" or \"me, badly\" - I might be able to help.", time: "Yesterday, 10:15 PM", research: "Product Hunt launch 4 days ago, 200+ upvotes" },
         { from: "prospect", text: "Hey, thanks! We're actually struggling with exactly this. How does this work?", time: "Today, 6:45 AM" },
-        { from: "william", text: "DRAFT - waiting for your approval:\n\nGreat question, Priya. Short version: I handle the full outbound motion - finding the right people, writing personalised outreach, managing replies, booking meetings. Want me to show you what I'd do for DataStack specifically? I can find 5 prospects and draft outreach right now, no commitment.", time: "Today, 7:02 AM", draft: true },
+        { from: "william", text: "DRAFT - waiting for your approval:\n\nGreat question, Priya. Short version: HireWilliam builds the AI systems that run your sales motion end-to-end - prospecting, outreach, replies, meetings. Custom-built for DataStack, not a generic tool. Want to see what that looks like for your specific ICP?", time: "Today, 7:02 AM", draft: true },
       ]
     },
     {
@@ -740,14 +741,14 @@ function OutreachView() {
       thread: [
         { from: "william", text: "Hey Leo, been following the Kitemaker journey. Building in public is hard when you're also trying to sell. What if the selling part ran itself?", time: "Yesterday, 9:45 PM", research: "Leo actively posts build-in-public content on Instagram" },
         { from: "prospect", text: "Intrigued. How does this work?", time: "Today, 5:30 AM" },
-        { from: "william", text: "Short version: I handle your entire outbound - finding the right people, writing personalised messages, handling replies, booking meetings. You wake up to calls on your calendar instead of an empty pipeline. Want me to show you what I'd send to your ideal customers?", time: "Today, 5:48 AM" },
+        { from: "william", text: "Short version: HireWilliam is an AI agency. We build custom outreach systems that handle your entire sales motion - prospecting, personalised messages, replies, meetings - all automated. You focus on the product. The pipeline runs itself. Want to see what that looks like for Kitemaker?", time: "Today, 5:48 AM" },
       ]
     },
     {
       id: "4", name: "Jake Rivera", company: "Launchpad", channel: "email", status: "opened", stage: "Engaged - no reply yet",
       stageColor: "#378add", time: "12h ago", avatar: "JR",
       thread: [
-        { from: "william", text: "Subject: Quick question about Launchpad\n\nHey Jake, I've been watching Launchpad grow - the no-code space is heating up. Curious: are you doing any outbound right now, or is it all inbound? Either way, I think I can help you 3x your pipeline this quarter.", time: "2 days ago, 10:00 PM", research: "Recent funding announcement, growing team, no visible outbound" },
+        { from: "william", text: "Subject: AI for Launchpad\n\nHey Jake, no-code space is getting crowded fast. The teams pulling ahead right now have AI running their ops and sales while their competitors are still doing it manually. HireWilliam builds those systems. Worth 15 mins to see what that would look like for Launchpad?", time: "2 days ago, 10:00 PM", research: "Recent funding announcement, growing team, no visible outbound" },
         { from: "system", text: "Opened 3 times. Last opened 4 hours ago. No reply yet.", time: "Today" },
         { from: "william", text: "QUEUED - follow-up in 24h:\n\nHey Jake, just bumping this up. I know you're busy shipping - that's exactly why I exist. Happy to show you what personalised outreach to your ICP looks like. Takes 5 minutes to see it.", time: "Scheduled: Tomorrow, 9:00 AM", queued: true },
       ]
@@ -756,7 +757,7 @@ function OutreachView() {
       id: "5", name: "Nina Patel", company: "FormFlow", channel: "linkedin", status: "sent", stage: "Contacted",
       stageColor: "#378add", time: "8h ago", avatar: "NP",
       thread: [
-        { from: "william", text: "Hi Nina - I noticed FormFlow just crossed 1K users on your changelog. That's the inflection point where outbound starts mattering. Happy to show you what that looks like without hiring.", time: "Yesterday, 11:00 PM", research: "FormFlow changelog update showing 1K users milestone" },
+        { from: "william", text: "Hi Nina - FormFlow just crossed 1K users. That's the point where ops and support start eating founder time. HireWilliam builds AI that handles that scale without adding headcount. Want to see what that looks like for FormFlow?", time: "Yesterday, 11:00 PM", research: "FormFlow changelog update showing 1K users milestone" },
         { from: "system", text: "Connection request accepted. Message delivered.", time: "Today, 3:15 AM" },
       ]
     },
@@ -764,7 +765,7 @@ function OutreachView() {
       id: "6", name: "Sara Chen", company: "Metrify", channel: "linkedin", status: "sent", stage: "New - first contact",
       stageColor: INK_SOFT, time: "1d ago", avatar: "SC",
       thread: [
-        { from: "william", text: "Hey Sara, saw Metrify is building in the analytics space - competitive market but your positioning around real-time dashboards stands out. Are you doing any outbound to get in front of data teams, or is it all inbound right now?", time: "2 days ago, 11:30 PM", research: "Metrify website review, LinkedIn profile, recent analytics industry posts" },
+        { from: "william", text: "Hey Sara, Metrify's positioning around real-time dashboards is strong. The analytics space is moving fast though - the teams winning right now have AI running their content, outreach, and ops. HireWilliam builds that. Want to see what we'd deploy for Metrify?", time: "2 days ago, 11:30 PM", research: "Metrify website review, LinkedIn profile, recent analytics industry posts" },
         { from: "system", text: "Connection request pending.", time: "Yesterday" },
       ]
     },
@@ -772,12 +773,12 @@ function OutreachView() {
       id: "7", name: "Dan Fields", company: "Beacon", channel: "email", status: "won", stage: "Signed up",
       stageColor: GREEN, time: "3d ago", avatar: "DF",
       thread: [
-        { from: "william", text: "Subject: Beacon + better outbound\n\nHey Dan, I noticed Beacon is hiring its first AE - which tells me you've got product-market fit and now need pipeline. What if you could skip the SDR hire entirely and have someone filling your AE's calendar from day one?", time: "2 weeks ago", research: "Job posting for AE on Beacon careers page" },
+        { from: "william", text: "Subject: Beacon + AI\n\nHey Dan, noticed Beacon is scaling the team. Before you add headcount across ops, support, and sales - worth seeing what HireWilliam builds for companies at your stage. Custom AI that fills those roles without the hiring cost. 15 mins?", time: "2 weeks ago", research: "Job posting for AE on Beacon careers page" },
         { from: "prospect", text: "This is exactly what we need. Can we talk this week?", time: "12 days ago" },
         { from: "william", text: "Absolutely. I've sent a calendar link - pick any slot that works. Looking forward to showing you what I can do for Beacon.", time: "12 days ago" },
-        { from: "system", text: "Meeting held. Dan signed up for HireWilliam.", time: "1 week ago" },
-        { from: "prospect", text: "Just signed up. Let's get started.", time: "1 week ago" },
-        { from: "william", text: "Welcome aboard, Dan. Already researching your ICP. You'll have your first batch of prospects by tomorrow morning.", time: "1 week ago" },
+        { from: "system", text: "Meeting held. Dan engaged HireWilliam. Build kicked off.", time: "1 week ago" },
+        { from: "prospect", text: "Contract signed. Let's get started.", time: "1 week ago" },
+        { from: "william", text: "Welcome to HireWilliam, Dan. Audit's already running. You'll have the full AI roadmap for Beacon by end of week.", time: "1 week ago" },
       ]
     },
   ];
@@ -2024,7 +2025,7 @@ function ForFoundersView({ onNav }) {
           <span className="ff-chan-hash">#</span>
           <span className="ff-chan-name">for-founders</span>
           <span className="ff-chan-sep" />
-          <span className="ff-chan-desc">Your AI workforce</span>
+          <span className="ff-chan-desc">AI Agency for Founders</span>
           <span className="ff-ai-pill">AI</span>
         </div>
 
@@ -2034,8 +2035,8 @@ function ForFoundersView({ onNav }) {
             <div className="ff-msg-right">
               <div className="ff-meta"><span className="ff-sender">William</span><span className="ff-ai-pill">AI</span><span className="ff-ts">9:00 AM</span></div>
               <div className="ff-body">
-                So you found me. Good.<br /><br />
-                Make Money? Save Time? Stay Unstoppable? All of the above? <strong>That's what we're here for.</strong>
+                So you found us. Good.<br /><br />
+                HireWilliam is an AI agency. We design, build, and run custom AI systems inside your business. Agents, automations, integrations. <strong>The AI workforce your business needs - without the headcount.</strong>
               </div>
             </div>
           </div>
@@ -2092,7 +2093,7 @@ function ForFoundersView({ onNav }) {
                   <div className="ff-card">
                     <div className="ff-card-top"><span className="ff-cico">📡</span><span className="ff-ctag ff-tb">OUTREACH</span></div>
                     <div className="ff-ctitle">Sales & Outreach Automation</div>
-                    <div className="ff-cbody">Email, LinkedIn, Instagram - personalised at scale. William finds your prospects, writes the messages, manages replies, and books the meetings. Your pipeline fills while you sleep.</div>
+                    <div className="ff-cbody">Email, LinkedIn, Instagram - personalised at scale. We build the AI system that finds your prospects, writes the messages, manages replies, and books the meetings. Custom-built for your ICP, not a generic tool.</div>
                   </div>
                   <div className="ff-card">
                     <div className="ff-card-top"><span className="ff-cico">💬</span><span className="ff-ctag ff-tg">SUPPORT</span></div>
@@ -2151,7 +2152,7 @@ function ForFoundersView({ onNav }) {
                   <div className="ff-card">
                     <div className="ff-card-top"><span className="ff-cico">👥</span><span className="ff-ctag ff-tr2">TEAM</span></div>
                     <div className="ff-ctitle">AI Hiring & Team Augmentation</div>
-                    <div className="ff-cbody">Instead of hiring 5 people, deploy William. We build AI that fills the roles you can't afford yet - SDR, ops manager, content lead, analyst - without the headcount cost.</div>
+                    <div className="ff-cbody">Instead of hiring 5 people, deploy AI. We build systems that fill the roles you can't afford yet - outreach specialist, ops manager, content lead, analyst - custom-built and running inside your business without the headcount cost.</div>
                   </div>
                 </div>
               </div>
@@ -2212,8 +2213,8 @@ function ForFoundersView({ onNav }) {
                 <span className="ff-ts">9:06 AM</span>
               </div>
               <div className="ff-body">
-                Genuine question - why are you still doing manually what AI can do in 3 seconds? We need to talk.<br /><br />
-                Message me at <a href="mailto:terrylee@hirewilliam.com">terrylee@hirewilliam.com</a> - William does all the work, but I still check my emails.
+                HireWilliam builds custom AI systems that run inside your business. Not tools. Not subscriptions. A proper AI build, scoped to your exact situation.<br /><br />
+                If you want to know what that looks like for your business, message me: <a href="mailto:terrylee@hirewilliam.com">terrylee@hirewilliam.com</a>. William already has a read on what you need.
               </div>
             </div>
           </div>
