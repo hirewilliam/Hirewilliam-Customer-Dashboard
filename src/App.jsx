@@ -161,7 +161,7 @@ function Sidebar({ active, onNav, onClose }) {
     { id: "chat", label: "talk-to-william", dot: true },
     { id: "outreach", label: "activity-log", badge: "3" },
     { id: "meetings", label: "meetings", badge: "2" },
-    { id: "pipeline", label: "pipeline" },
+    { id: "pipeline", label: "results" },
     { id: "analytics", label: "analytics" },
   ];
 
@@ -325,233 +325,151 @@ function ChatView() {
   );
 }
 
-// ── Pipeline View ──
+// ── Results View (Testimonials) ──
 function PipelineView() {
-  const [prospects, setProspects] = useState(MOCK_PROSPECTS);
-  const [filter, setFilter] = useState({ channel: null, time: null, score: null });
-  const [draggedCard, setDraggedCard] = useState(null);
-  const [expandedCardId, setExpandedCardId] = useState(null);
   const isMobile = useIsMobile();
 
-  const stages = [
-    { id: "new", label: "New", color: INK_SOFT, desc: "Researching" },
-    { id: "contacted", label: "Contacted", color: "#378add", desc: "First message sent" },
-    { id: "interested", label: "Interested", color: AMBER, desc: "Positive response" },
-    { id: "meeting", label: "Meeting", color: RED, desc: "Call scheduled" },
-    { id: "won", label: "Won", color: GREEN, desc: "Customer" },
-    { id: "lost", label: "Lost", color: INK_GHOST, desc: "Not a fit" },
+  const CATEGORIES = [
+    { id: "sales",    label: "Sales",            color: "#5a3fa0" },
+    { id: "marketing", label: "Marketing",        color: "#1a8a5a" },
+    { id: "ops",      label: "Operations",        color: "#b86a0a" },
+    { id: "support",  label: "Customer Support",  color: "#378add" },
+    { id: "strategy", label: "Strategy",          color: "#c93535" },
   ];
 
-  // Helper: time since activity
-  const timeAgo = (timestamp) => {
-    const seconds = Math.floor((Date.now() - timestamp) / 1000);
-    if (seconds < 60) return "now";
-    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-    return `${Math.floor(seconds / 86400)}d ago`;
-  };
+  const INITIAL_TESTIMONIALS = [
+    {
+      id: "1", category: "ops",
+      quote: "We mainly used it for follow-ups and CRM updates. Before this, we were constantly behind on both. Now most of that just runs in the background. It genuinely saves us hours every week.",
+      name: "James R.", company: "Venture Studio", initials: "JR",
+    },
+    {
+      id: "2", category: "support",
+      quote: "We didn't expect it to actually feel like people were doing the work, but that's kind of what happens. Leads get followed up, CRM gets updated, and we don't have to chase everything manually anymore.",
+      name: "Anika T.", company: "SaaS Startup", initials: "AT",
+    },
+    {
+      id: "3", category: "ops",
+      quote: "There was a point where we were just constantly doing small tasks all day. This helped remove a lot of that. It definitely changed how the team spends its time.",
+      name: "Marcus L.", company: "Scale-up", initials: "ML",
+    },
+    {
+      id: "4", category: "support",
+      quote: "It helped us automate lead handling and basic customer replies. I wouldn't say it replaces a team fully, but it definitely reduces the load. Worth looking at if you're still doing ops manually.",
+      name: "Priya S.", company: "B2B Platform", initials: "PS",
+    },
+    {
+      id: "5", category: "marketing",
+      quote: "We sent it to our entire startup group chat. That probably says it all. It's one of the few services that actually reduced workload instead of just adding another dashboard.",
+      name: "Daniel K.", company: "Founder Community", initials: "DK",
+    },
+    {
+      id: "6", category: "sales",
+      quote: "It reduced a lot of the repetitive stuff we were doing. We're not fully hands-off, but it's good enough that I've already told another founder to try it.",
+      name: "Sofia M.", company: "Growth Agency", initials: "SM",
+    },
+    {
+      id: "7", category: "ops",
+      quote: "Feels like it quietly takes care of a bunch of admin tasks in the background. I don't think about it much anymore, which is probably a good sign. Recommended it already.",
+      name: "Tom W.", company: "E-commerce Brand", initials: "TW",
+    },
+    {
+      id: "8", category: "marketing",
+      quote: "Honestly it's like hiring an intern who doesn't sleep or complain. Slightly terrifying but in a good way.",
+      name: "Rachel N.", company: "Creative Studio", initials: "RN",
+    },
+    {
+      id: "9", category: "sales",
+      quote: "It does the boring work I keep avoiding, so I'm kind of emotionally conflicted about it. But yeah, I'd recommend it.",
+      name: "Ben O.", company: "Bootstrapped SaaS", initials: "BO",
+    },
+    {
+      id: "10", category: "support",
+      quote: "Now I have no excuse to forget follow-ups, which is mildly annoying. Still telling other founders about it though.",
+      name: "Layla F.", company: "Tech Startup", initials: "LF",
+    },
+    {
+      id: "11", category: "strategy",
+      quote: "We replaced a bunch of we should automate this conversations with just it already being automated. That shift alone was worth it.",
+      name: "Chris P.", company: "Ops-heavy Business", initials: "CP",
+    },
+  ];
 
-  // Helper: determine if lead is stale
-  const isStale = (timestamp) => Date.now() - timestamp > 432000000; // 5+ days
+  const [testimonials, setTestimonials] = useState(INITIAL_TESTIMONIALS);
+  const [draggedCard, setDraggedCard] = useState(null);
+  const [dragOverCategory, setDragOverCategory] = useState(null);
 
-  // Helper: get conversion rate
-  const getConversionRate = (stageId) => {
-    const stageIndex = stages.findIndex(s => s.id === stageId);
-    if (stageIndex === 0) return null; // No rate for "New"
-    const prevStageId = stages[stageIndex - 1].id;
-    const prevCount = prospects.filter(p => p.stage === prevStageId).length;
-    const currentCount = prospects.filter(p => p.stage === stageId).length;
-    if (prevCount === 0) return null;
-    return Math.round((currentCount / prevCount) * 100);
-  };
-
-  // Filter prospects
-  const filteredProspects = prospects.filter(p => {
-    if (filter.channel && p.channel !== filter.channel) return false;
-    if (filter.time) {
-      const hours = filter.time === "today" ? 24 : filter.time === "week" ? 168 : 720;
-      if (Date.now() - p.lastActivityTime > hours * 3600000) return false;
-    }
-    if (filter.score) {
-      const scores = { hot: [80, 100], warm: [50, 79], cold: [0, 49] };
-      const range = scores[filter.score];
-      if (p.score < range[0] || p.score > range[1]) return false;
-    }
-    return true;
-  });
-
-  // Drag handlers
-  const handleDragStart = (e, prospect) => {
-    setDraggedCard(prospect);
+  const handleDragStart = (e, t) => {
+    setDraggedCard(t);
     e.dataTransfer.effectAllowed = "move";
   };
 
-  const handleDragOver = (e) => {
+  const handleDragOver = (e, catId) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
+    setDragOverCategory(catId);
   };
 
-  const handleDrop = (e, stageId) => {
+  const handleDrop = (e, catId) => {
     e.preventDefault();
     if (!draggedCard) return;
-    setProspects(p => p.map(prospect => 
-      prospect.id === draggedCard.id 
-        ? { ...prospect, stage: stageId, lastActivityTime: Date.now(), activities: [...(prospect.activities || []), { time: Date.now(), action: "Manually moved" }] }
-        : prospect
-    ));
+    setTestimonials(prev => prev.map(t => t.id === draggedCard.id ? { ...t, category: catId } : t));
     setDraggedCard(null);
+    setDragOverCategory(null);
   };
+
+  const handleDragEnd = () => {
+    setDraggedCard(null);
+    setDragOverCategory(null);
+  };
+
+  const Stars = () => (
+    <div style={{ display: "flex", gap: 2, marginBottom: 10 }}>
+      {[1,2,3,4,5].map(i => (
+        <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b" strokeWidth="1">
+          <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
+        </svg>
+      ))}
+    </div>
+  );
 
   if (isMobile) {
     return (
       <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
-        {/* Header */}
-        <div style={{ padding: "14px 16px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <IconHash s={14} />
-            <span style={{ fontWeight: 600, fontSize: 15 }}>pipeline</span>
-            <span style={{ fontSize: 11, color: INK_GHOST, marginLeft: 8 }}>{filteredProspects.length} prospects</span>
-          </div>
+        <div style={{ padding: "14px 16px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+          <IconHash s={14} />
+          <span style={{ fontWeight: 600, fontSize: 15 }}>results</span>
+          <span style={{ fontSize: 11, color: INK_GHOST, marginLeft: 4 }}>{testimonials.length} founders</span>
         </div>
-
-        {/* Compact Filters — channel + time + score */}
-        <div style={{ padding: "10px 16px", borderBottom: `1px solid ${RULE}`, display: "flex", gap: 6, alignItems: "center", background: PAPER_WARM, flexShrink: 0, flexWrap: "wrap" }}>
-          <select
-            value={filter.channel || ""}
-            onChange={(e) => setFilter({ ...filter, channel: e.target.value || null })}
-            style={{ fontSize: 12, padding: "4px 6px", borderRadius: 6, border: `1px solid ${RULE}`, background: "#fff", cursor: "pointer" }}
-          >
-            <option value="">All channels</option>
-            <option value="email">Email</option>
-            <option value="linkedin">LinkedIn</option>
-            <option value="instagram">Instagram</option>
-          </select>
-          <select
-            value={filter.time || ""}
-            onChange={(e) => setFilter({ ...filter, time: e.target.value || null })}
-            style={{ fontSize: 12, padding: "4px 6px", borderRadius: 6, border: `1px solid ${RULE}`, background: "#fff", cursor: "pointer" }}
-          >
-            <option value="">All time</option>
-            <option value="today">Today</option>
-            <option value="week">This week</option>
-            <option value="month">This month</option>
-          </select>
-          <select
-            value={filter.score || ""}
-            onChange={(e) => setFilter({ ...filter, score: e.target.value || null })}
-            style={{ fontSize: 12, padding: "4px 6px", borderRadius: 6, border: `1px solid ${RULE}`, background: "#fff", cursor: "pointer" }}
-          >
-            <option value="">All scores</option>
-            <option value="hot">Hot (80+)</option>
-            <option value="warm">Warm (50-79)</option>
-            <option value="cold">Cold (0-49)</option>
-          </select>
-          {(filter.channel || filter.time || filter.score) && (
-            <button
-              onClick={() => setFilter({ channel: null, time: null, score: null })}
-              style={{ fontSize: 11, padding: "4px 8px", borderRadius: 6, border: "none", background: RULE, color: INK, cursor: "pointer" }}
-            >Clear</button>
-          )}
-        </div>
-
-        {/* Vertical list grouped by stage — all 6 stages always shown */}
         <div style={{ flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: "12px 16px" }}>
-          {stages.map(st => {
-            const items = filteredProspects.filter(p => p.stage === st.id);
-            const conversionRate = getConversionRate(st.id);
-            const prevStage = stages[stages.findIndex(s => s.id === st.id) - 1];
+          {CATEGORIES.map(cat => {
+            const items = testimonials.filter(t => t.category === cat.id);
+            if (items.length === 0) return null;
             return (
-              <div key={st.id} style={{ marginBottom: 20 }}>
-                {/* Stage header: dot + label + count + conversion rate + description */}
-                <div style={{ marginBottom: 10 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 28 }}>
-                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: st.color, flexShrink: 0 }} />
-                    <span style={{ fontSize: 11, fontWeight: 700, color: st.color, textTransform: "uppercase", letterSpacing: 0.5 }}>{st.label}</span>
-                    <span style={{ fontSize: 11, color: INK_GHOST }}>{items.length}</span>
-                  </div>
-                  {conversionRate !== null && prevStage && (
-                    <div style={{ fontSize: 10, color: INK_GHOST, marginLeft: 16, marginTop: 2 }}>
-                      {conversionRate}% converted from {prevStage.label}
-                    </div>
-                  )}
-                  <div style={{ fontSize: 10, color: INK_GHOST, fontStyle: "italic", marginLeft: 16, marginTop: 1 }}>{st.desc}</div>
+              <div key={cat.id} style={{ marginBottom: 24 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: cat.color, flexShrink: 0 }} />
+                  <span style={{ fontSize: 11, fontWeight: 700, color: cat.color, textTransform: "uppercase", letterSpacing: 0.5 }}>{cat.label}</span>
+                  <span style={{ fontSize: 11, color: INK_GHOST }}>{items.length}</span>
                 </div>
-
-                {items.length === 0 ? (
-                  <div style={{ padding: "12px 16px", background: PAPER_WARM, borderRadius: 8, fontSize: 12, color: INK_GHOST, textAlign: "center" }}>No prospects</div>
-                ) : (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                    {items.map(p => {
-                      const stale = isStale(p.lastActivityTime);
-                      const recentMove = Date.now() - p.lastActivityTime < 3600000;
-                      const isExpanded = expandedCardId === p.id;
-                      return (
-                        <div key={p.id}>
-                          <div
-                            onClick={() => setExpandedCardId(isExpanded ? null : p.id)}
-                            style={{
-                              background: stale ? "rgba(255,255,255,0.5)" : "#fff",
-                              border: recentMove ? `2px solid ${GREEN}` : `1px solid ${RULE}`,
-                              borderRadius: 10,
-                              padding: "14px 16px",
-                              opacity: stale ? 0.7 : 1,
-                              cursor: "pointer",
-                              boxShadow: recentMove ? `0 0 8px ${GREEN}40` : "none",
-                            }}
-                          >
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-                              <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ fontSize: 13, fontWeight: 600, color: INK }}>{p.name}</div>
-                                <div style={{ fontSize: 11, color: INK_SOFT }}>{p.company} · {p.role}</div>
-                              </div>
-                              <div style={{ fontSize: 13, fontWeight: 700, color: p.score >= 80 ? GREEN : p.score >= 50 ? AMBER : INK_GHOST, marginLeft: 8, flexShrink: 0 }}>{p.score}</div>
-                            </div>
-                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                              <Badge text={p.channel} color={p.channel} />
-                            </div>
-                            <div style={{ fontSize: 11, color: INK_SOFT, lineHeight: 1.4, marginBottom: 6 }}>{p.lastAction}</div>
-                            {/* "Moved X ago" timeline dot */}
-                            <div style={{ fontSize: 9, display: "flex", alignItems: "center", gap: 4, color: INK_GHOST }}>
-                              <span style={{ width: 6, height: 6, borderRadius: "50%", background: recentMove ? GREEN : st.color, display: "inline-block" }} />
-                              Moved {timeAgo(p.lastActivityTime)}
-                            </div>
-                          </div>
-
-                          {/* Inline stage-move row (tap-to-expand) */}
-                          {isExpanded && (
-                            <div style={{ background: PAPER_WARM, border: `1px solid ${RULE}`, borderTop: "none", borderRadius: "0 0 10px 10px", padding: "10px 12px" }}>
-                              <div style={{ fontSize: 10, color: INK_GHOST, marginBottom: 8 }}>Move to stage:</div>
-                              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                                {stages.filter(s => s.id !== st.id).map(s => (
-                                  <button
-                                    key={s.id}
-                                    onClick={() => {
-                                      setProspects(prev => prev.map(prospect =>
-                                        prospect.id === p.id
-                                          ? { ...prospect, stage: s.id, lastActivityTime: Date.now(), activities: [...(prospect.activities || []), { time: Date.now(), action: "Manually moved" }] }
-                                          : prospect
-                                      ));
-                                      setExpandedCardId(null);
-                                    }}
-                                    style={{ fontSize: 11, fontWeight: 600, padding: "5px 10px", borderRadius: 6, border: `1px solid ${s.color}`, background: "#fff", color: s.color, cursor: "pointer" }}
-                                  >
-                                    {s.label}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-                          )}
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {items.map(t => (
+                    <div key={t.id} style={{ background: "#fff", border: `1px solid ${RULE}`, borderTop: `3px solid ${cat.color}`, borderRadius: 10, padding: "14px 16px" }}>
+                      <Stars />
+                      <p style={{ fontSize: 13, color: "#3d3b35", lineHeight: 1.6, margin: "0 0 14px 0", fontStyle: "italic" }}>"{t.quote}"</p>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <div style={{ width: 32, height: 32, borderRadius: "50%", background: cat.color, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{t.initials}</div>
+                        <div>
+                          <div style={{ fontSize: 13, fontWeight: 700, color: "#0f0e0c" }}>{t.name}</div>
+                          <div style={{ fontSize: 11, color: "#72706a" }}>{t.company}</div>
                         </div>
-                      );
-                    })}
-                  </div>
-                )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             );
           })}
-          {filteredProspects.length === 0 && (
-            <div style={{ textAlign: "center", padding: 40, color: INK_GHOST, fontSize: 14 }}>No prospects match this filter.</div>
-          )}
         </div>
       </div>
     );
@@ -560,151 +478,80 @@ function PipelineView() {
   return (
     <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
       {/* Header */}
-      <div style={{ padding: "18px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <IconHash s={14} />
-          <span style={{ fontWeight: 600, fontSize: 15 }}>pipeline</span>
-          <span style={{ fontSize: 11, color: INK_GHOST, marginLeft: 8 }}>{filteredProspects.length} prospects</span>
-        </div>
+      <div style={{ padding: "18px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+        <IconHash s={14} />
+        <span style={{ fontWeight: 600, fontSize: 15 }}>results</span>
+        <span style={{ fontSize: 12, color: INK_GHOST, marginLeft: 4 }}>{testimonials.length} founders</span>
       </div>
 
-      {/* Filters */}
-      <div style={{ padding: "12px 20px", borderBottom: `1px solid ${RULE}`, display: "flex", gap: 8, alignItems: "center", background: PAPER_WARM, flexShrink: 0, flexWrap: "wrap" }}>
-        <span style={{ fontSize: 11, fontWeight: 600, color: INK_SOFT, textTransform: "uppercase" }}>Filter:</span>
-        <select
-          value={filter.channel || ""}
-          onChange={(e) => setFilter({ ...filter, channel: e.target.value || null })}
-          style={{ fontSize: 12, padding: "5px 8px", borderRadius: 6, border: `1px solid ${RULE}`, background: "#fff", cursor: "pointer" }}
-        >
-          <option value="">All channels</option>
-          <option value="email">Email</option>
-          <option value="linkedin">LinkedIn</option>
-          <option value="instagram">Instagram</option>
-        </select>
-        <select
-          value={filter.time || ""}
-          onChange={(e) => setFilter({ ...filter, time: e.target.value || null })}
-          style={{ fontSize: 12, padding: "5px 8px", borderRadius: 6, border: `1px solid ${RULE}`, background: "#fff", cursor: "pointer" }}
-        >
-          <option value="">All time</option>
-          <option value="today">Today</option>
-          <option value="week">This week</option>
-          <option value="month">This month</option>
-        </select>
-        <select
-          value={filter.score || ""}
-          onChange={(e) => setFilter({ ...filter, score: e.target.value || null })}
-          style={{ fontSize: 12, padding: "5px 8px", borderRadius: 6, border: `1px solid ${RULE}`, background: "#fff", cursor: "pointer" }}
-        >
-          <option value="">All scores</option>
-          <option value="hot">Hot (80+)</option>
-          <option value="warm">Warm (50-79)</option>
-          <option value="cold">Cold (0-49)</option>
-        </select>
-        {(filter.channel || filter.time || filter.score) && (
-          <button
-            onClick={() => setFilter({ channel: null, time: null, score: null })}
-            style={{ fontSize: 11, padding: "5px 10px", borderRadius: 6, border: "none", background: RULE, color: INK, cursor: "pointer" }}
-          >
-            Clear filters
-          </button>
-        )}
-      </div>
-
-      {/* Kanban Board */}
+      {/* Kanban board */}
       <div style={{ flex: 1, overflowY: "auto", overflowX: "auto", background: PAPER_WARM }}>
-        <div style={{ display: "grid", gridTemplateColumns: `repeat(${stages.length}, minmax(160px, 1fr))`, gap: 8, padding: 12, minWidth: stages.length * 168 + "px" }}>
-        {stages.map(st => {
-          const items = filteredProspects.filter(p => p.stage === st.id);
-          const conversionRate = getConversionRate(st.id);
-          const prevStageCount = stages.findIndex(s => s.id === st.id) > 0 
-            ? filteredProspects.filter(p => p.stage === stages[stages.findIndex(s => s.id === st.id) - 1].id).length 
-            : null;
-
-          return (
-            <div
-              key={st.id}
-              onDragOver={handleDragOver}
-              onDrop={(e) => handleDrop(e, st.id)}
-              style={{ display: "flex", flexDirection: "column", gap: 0 }}
-            >
-              {/* Column Header with Conversion Rate */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 8 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 4px" }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: st.color }}>{st.label}</div>
-                  <span style={{ fontSize: 10, fontWeight: 600, color: INK_GHOST, background: "#fff", padding: "2px 6px", borderRadius: 6 }}>
-                    {items.length}
-                  </span>
-                </div>
-                {conversionRate && (
-                  <div style={{ fontSize: 10, color: INK_GHOST, padding: "0 4px" }}>
-                    {conversionRate}% converted from {stages[stages.findIndex(s => s.id === st.id) - 1].label}
+        <div style={{ display: "grid", gridTemplateColumns: `repeat(${CATEGORIES.length}, minmax(200px, 1fr))`, gap: 10, padding: 14, minWidth: CATEGORIES.length * 218 + "px" }}>
+          {CATEGORIES.map(cat => {
+            const items = testimonials.filter(t => t.category === cat.id);
+            const isOver = dragOverCategory === cat.id;
+            return (
+              <div
+                key={cat.id}
+                onDragOver={(e) => handleDragOver(e, cat.id)}
+                onDrop={(e) => handleDrop(e, cat.id)}
+                onDragLeave={() => setDragOverCategory(null)}
+                style={{ display: "flex", flexDirection: "column", gap: 0 }}
+              >
+                {/* Column header */}
+                <div style={{ marginBottom: 10, padding: "0 4px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <div style={{ width: 8, height: 8, borderRadius: "50%", background: cat.color, flexShrink: 0 }} />
+                      <span style={{ fontSize: 12, fontWeight: 700, color: cat.color }}>{cat.label}</span>
+                    </div>
+                    <span style={{ fontSize: 10, fontWeight: 600, color: INK_GHOST, background: "#fff", padding: "2px 6px", borderRadius: 6 }}>{items.length}</span>
                   </div>
-                )}
-                <div style={{ fontSize: 9, color: INK_GHOST, padding: "0 4px", fontStyle: "italic" }}>{st.desc}</div>
-              </div>
+                </div>
 
-              {/* Cards */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 6, minHeight: 100 }}>
-                {items.map(p => {
-                  const stale = isStale(p.lastActivityTime);
-                  const recentMove = Date.now() - p.lastActivityTime < 3600000; // moved in last hour
-                  
-                  return (
+                {/* Cards drop zone */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, minHeight: 120, borderRadius: 10, padding: 6, transition: "background 0.15s", background: isOver ? `${cat.color}10` : "transparent", border: isOver ? `1.5px dashed ${cat.color}60` : "1.5px dashed transparent" }}>
+                  {items.map(t => (
                     <div
-                      key={p.id}
+                      key={t.id}
                       draggable
-                      onDragStart={(e) => handleDragStart(e, p)}
+                      onDragStart={(e) => handleDragStart(e, t)}
+                      onDragEnd={handleDragEnd}
                       style={{
-                        background: stale ? `rgba(255,255,255,0.5)` : "#fff",
-                        border: recentMove ? `2px solid ${GREEN}` : `1px solid ${RULE}`,
+                        background: "#fff",
+                        border: `1px solid ${RULE}`,
+                        borderTop: `3px solid ${cat.color}`,
                         borderRadius: 8,
-                        padding: "10px 12px",
+                        padding: "14px 14px 12px",
                         cursor: "grab",
-                        opacity: stale ? 0.6 : 1,
-                        transition: "all 0.2s",
-                        boxShadow: recentMove ? `0 0 8px ${GREEN}40` : "none",
+                        transition: "all 0.15s",
+                        opacity: draggedCard?.id === t.id ? 0.4 : 1,
+                        boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
                       }}
-                      onDragEnd={() => setDraggedCard(null)}
+                      onMouseEnter={e => e.currentTarget.style.boxShadow = "0 4px 14px rgba(0,0,0,0.1)"}
+                      onMouseLeave={e => e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,0.05)"}
                     >
-                      {/* Card Content */}
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
+                      <Stars />
+                      <p style={{ fontSize: 12, color: "#3d3b35", lineHeight: 1.6, margin: "0 0 14px 0", fontStyle: "italic" }}>"{t.quote}"</p>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, paddingTop: 10, borderTop: `1px solid ${RULE}` }}>
+                        <div style={{ width: 28, height: 28, borderRadius: "50%", background: cat.color, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{t.initials}</div>
                         <div>
-                          <div style={{ fontSize: 13, fontWeight: 600, color: INK }}>{p.name}</div>
-                          <div style={{ fontSize: 11, color: INK_SOFT }}>{p.company}</div>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: "#0f0e0c" }}>{t.name}</div>
+                          <div style={{ fontSize: 10, color: "#72706a" }}>{t.company}</div>
                         </div>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: p.score >= 80 ? GREEN : p.score >= 50 ? AMBER : INK_GHOST }}>
-                          {p.score}
-                        </div>
-                      </div>
-
-                      {/* Channel Badge */}
-                      <div style={{ marginBottom: 6 }}>
-                        <Badge text={p.channel} color={p.channel} />
-                      </div>
-
-                      {/* Last Activity */}
-                      <div style={{ fontSize: 10, color: INK_GHOST, marginBottom: 6 }}>
-                        {p.lastAction}
-                      </div>
-
-                      {/* Activity Timeline */}
-                      <div style={{ fontSize: 9, display: "flex", alignItems: "center", gap: 4, color: INK_GHOST }}>
-                        <span style={{
-                          width: 6,
-                          height: 6,
-                          borderRadius: "50%",
-                          background: recentMove ? GREEN : st.color,
-                        }} />
-                        Moved {timeAgo(p.lastActivityTime)}
                       </div>
                     </div>
-                  );
-                })}
+                  ))}
+
+                  {items.length === 0 && (
+                    <div style={{ padding: "20px 12px", textAlign: "center", color: INK_GHOST, fontSize: 11, borderRadius: 8, background: "rgba(255,255,255,0.5)" }}>
+                      No testimonials yet
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
         </div>
       </div>
     </div>
@@ -2258,7 +2105,7 @@ function MobileBottomNav({ active, onNav }) {
     { id: "chat",      label: "William",   Icon: IconChat,     badge: null },
     { id: "outreach",  label: "Activity",  Icon: IconMail,     badge: "3" },
     { id: "meetings",  label: "Meetings",  Icon: IconCalendar, badge: "2" },
-    { id: "pipeline",  label: "Pipeline",  Icon: IconPipeline, badge: null },
+    { id: "pipeline",  label: "Results",   Icon: IconPipeline, badge: null },
     { id: "analytics", label: "Analytics", Icon: IconChart,    badge: null },
     { id: "founders",  label: "Founders",  Icon: IconLock,     badge: null },
   ];
@@ -2385,7 +2232,7 @@ export default function App() {
             <div>
               <span style={{ color: "#fff", fontSize: 15, fontWeight: 700 }}>HireWilliam</span>
               <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", lineHeight: 1.2 }}>
-                {{ chat: "talk-to-william", pipeline: "pipeline", outreach: "activity-log", meetings: "meetings", analytics: "analytics", founders: "for-founders" }[page]}
+                {{ chat: "talk-to-william", pipeline: "results", outreach: "activity-log", meetings: "meetings", analytics: "analytics", founders: "for-founders" }[page]}
               </div>
             </div>
           </div>
