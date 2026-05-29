@@ -3,114 +3,122 @@ import { WILLIAM_SYSTEM_PROMPT } from './williamPrompt.js';
 const API_KEY = import.meta.env.VITE_CLAUDE_API_KEY;
 const API_URL = 'https://api.anthropic.com/v1/messages';
 
-// William's intelligent mock responses based on conversation context
+// William's mock responses — AI agency positioning
 function generateWilliamResponse(messages) {
   const conversationText = messages.map(m => m.content.toLowerCase()).join(' ');
   const messageCount = messages.filter(m => m.sender === 'user').length;
   const lastUserMessage = messages[messages.length - 1]?.content || '';
+  const lastLower = lastUserMessage.toLowerCase();
 
-  // Detect user's baseline and motivation
-  const isAsking = lastUserMessage.includes('?');
-  const mentionsPrice = conversationText.includes('price') || conversationText.includes('cost') || conversationText.includes('expensive');
-  const mentionsBudget = conversationText.includes('budget') || conversationText.includes('afford') || conversationText.includes('can\t afford');
-  const mentionsWebsite = lastUserMessage.includes('.com') || lastUserMessage.includes('http');
-  const mentionsCompetitor = conversationText.includes('already') || conversationText.includes('using') || conversationText.includes('tool');
-  const mentionsResults = conversationText.includes('result') || conversationText.includes('work') || conversationText.includes('prove');
-  const mentionsCalling = conversationText.includes('call') || conversationText.includes('meeting') || conversationText.includes('talk');
+  const mentionsPrice    = conversationText.includes('price') || conversationText.includes('cost') || conversationText.includes('expensive') || conversationText.includes('charge');
+  const mentionsBudget   = conversationText.includes('budget') || conversationText.includes('afford') || conversationText.includes("can't afford");
+  const mentionsWebsite  = lastUserMessage.includes('.com') || lastUserMessage.includes('http');
+  const mentionsTools    = conversationText.includes('already use') || conversationText.includes('we have') || conversationText.includes('zapier') || conversationText.includes('hubspot') || conversationText.includes('make.com');
+  const mentionsTeam     = conversationText.includes('hire') || conversationText.includes('team') || conversationText.includes('employee') || conversationText.includes('headcount');
+  const mentionsTerry    = conversationText.includes('call') || conversationText.includes('meeting') || conversationText.includes('talk') || conversationText.includes('speak');
+  const mentionsTime     = conversationText.includes('time') || conversationText.includes('hours') || conversationText.includes('manual') || conversationText.includes('slow');
+  const mentionsAI       = conversationText.includes('ai') || conversationText.includes('automation') || conversationText.includes('automate');
+  const isAsking         = lastUserMessage.includes('?');
 
-  // --- OPENERS (first message from user) ---
+  // --- OPENERS ---
   if (messageCount === 1) {
     const openers = [
-      "I'm William. I fill calendars with qualified sales calls while founders sleep. Drop your website - I'll show you exactly who I'd go after first.",
-      "William here. I'm about to know more about your ideal buyer than you do. What's your URL?",
-      "Name's William. I book meetings on autopilot across email, LinkedIn and Instagram. Toss me your website and watch what happens.",
-      "I'm William - the entire sales team. Rep, manager, director. All in one. What's your website?",
-      "William. I do outbound that actually converts. Show me your website and I'll tell you exactly who your first 10 customers should be."
+      "I'm William. HireWilliam is an AI agency — we build custom AI systems that run inside your business. Not tools you subscribe to. Systems we design, deploy, and manage for you. Tell me about your business and I'll show you exactly where AI creates the most leverage.",
+      "William here. HireWilliam builds AI agents, automations, and integrations for founders who are tired of doing manually what AI can own. What does your business look like right now?",
+      "Name's William. We build the AI workforce your business needs — outreach, support, ops, content, strategy — custom-built and running inside your business. Drop your website and I'll tell you where we'd start.",
+      "I'm William. HireWilliam is an AI agency. We don't sell software — we build and run AI systems inside your business. What are you spending the most time on right now that you know shouldn't need you?",
     ];
     return openers[Math.floor(Math.random() * openers.length)];
   }
 
   // --- WEBSITE SHARED ---
-  if (mentionsWebsite && !conversationText.includes('exact buyer')) {
+  if (mentionsWebsite && !conversationText.includes('where we')) {
     const insights = [
-      "Got it. So you're solving the discovery problem for founders. Your ideal buyer is the bootstrapped SaaS founder doing all their own sales - they're drowning in research and outreach. These are the founders who post about hiring challenges but can't justify the cost yet. I'd hit them on LinkedIn - that's where they're building in public and vulnerable. First message: 'Saw your post about hiring your first sales person. What if you didn't have to?' That's the opener.",
-      "Interesting. You're targeting the no-code space where founders move fast. Your perfect profile: the founder who just launched on Product Hunt and got traction but has zero pipeline. Competitive window is tiny. Email's the channel - they check it obsessively looking for deal offers and opportunities. I'd write: 'Congrats on the PH launch. 3 quick questions: 1) How many of those users actually want to buy? 2) Who's doing sales right now? 3) If that's you, badly - let's fix it.' Hook is immediate utility.",
-      "Okay, you're in the infrastructure space. Buyers are CTOs and engineering leads at mid-market companies. They don't have time for outreach but they're actively looking for solutions via LinkedIn and Slack communities. I'd open with: 'Your infra is probably costing you 40% more than it should. I found the gap in 60 seconds. Worth a conversation?' Specific problem statement beats generic intro every time.",
+      "Got it. Based on what I can see, the highest-leverage starting point is usually outreach or support — those are where founders lose the most hours. At HireWilliam we'd start with a Discovery and Audit to map exactly where AI moves the needle fastest for your specific setup. What's eating most of your time right now — sales, ops, support, or content?",
+      "Good. A few things jump out straight away. Businesses like yours typically have 20 to 30 hours a week tied up in work AI can own — outreach, follow-ups, reporting, support tickets. HireWilliam builds the systems that take all of that off your plate. Which of those is the biggest pain point for you?",
+      "Noted. The first thing I'd want to understand is where the manual bottlenecks are — the repetitive stuff your team does every day that doesn't actually need a human. That's where HireWilliam builds first. Walk me through a typical week — what are you or your team doing that you know should be automated by now?",
     ];
     return insights[Math.floor(Math.random() * insights.length)];
   }
 
-  // --- PRICE OBJECTION ---
+  // --- PRICE / COST ---
   if (mentionsPrice && !mentionsBudget) {
-    return "$299 sounds like a number until you see it working. You'll have qualified conversations next week. Each one could be a customer. If even one of those customers is worth $1000 to you - which they are - then $299 is the cheapest thing you'll do this month. Not a cost. An investment. Are we starting?";
+    return "HireWilliam doesn't publish fixed pricing — every engagement is scoped to what you actually need built. The better question is what the manual work is costing you right now. If your team is spending 20 hours a week on tasks AI can own, that's a full-time salary going to work a machine could do better. What's the biggest time drain in your business at the moment?";
   }
 
   if (mentionsBudget) {
-    return "That's the wrong question. The real one is: can you afford NOT to? Right now, while we're talking, a founder in your exact market is getting an email from their competitor's sales rep. They're going to reply. That's a customer you'll never find. $299 this month means you stop missing customers. Simple math. Are we starting?";
+    return "I hear you. Let's reframe it — what's the cost of not fixing this? If outreach isn't happening, deals aren't coming in. If support is slow, clients churn. If reporting takes half your Friday, you're not building. HireWilliam scopes every build to what makes financial sense for your stage. What's the one thing that, if automated, would have the most immediate impact on your business?";
   }
 
-  // --- COMPETITOR MENTION ---
-  if (mentionsCompetitor) {
-    return "Does it find the right lead, research them, write something so specific and personal it stops them mid-scroll, handle the reply in real-time, overcome their objection, AND book the meeting? All of it. One conversation. Start to close? Because that's Tuesday for me. What you have might send emails. I have conversations.";
+  // --- ALREADY USING TOOLS ---
+  if (mentionsTools) {
+    return "Tools are different from built systems. Most founders have a stack full of tools that still need a human to move things between them. HireWilliam connects and automates the full workflow — so AI acts on everything in real time without you being the glue. What are the gaps between your tools where things still fall through manually?";
   }
 
-  // --- ASKING FOR RESULTS/PROOF ---
-  if (mentionsResults) {
-    return "You're looking at the demo right now. Everything I just did for you - read your business, identified your buyer, crafted the perfect channel and first message - that's every single day. For your prospects. While you sleep. I send personalized messages across email, LinkedIn, and Instagram. I handle replies. I crush objections. I book the meetings. And I cost $299 a month. Cancel anytime. Most founders who watch what I do just sign up. Are we starting?";
+  // --- HIRING / HEADCOUNT ---
+  if (mentionsTeam) {
+    return "Before you hire, it's worth understanding what AI can own first. HireWilliam builds AI that fills roles founders can't afford yet — outreach, ops, support, content. Custom-built, running inside your business, no headcount cost. What's the role you're closest to hiring for right now?";
   }
 
-  // --- CALLING/MEETING REQUEST ---
-  if (mentionsCalling || mentionsWebsite) {
-    return "I'm always here. But honestly? You're looking at the demo. Talk to Terry if you need to - terrylee@hirewilliam.com. But what you're experiencing right now - me reading your business, understanding your buyer, showing you the exact play - that's exactly what I do for your prospects every single day. You already know I work. Question is: when do we start?";
+  // --- TIME / MANUAL WORK ---
+  if (mentionsTime) {
+    return "That's exactly the conversation worth having. HireWilliam starts every engagement with a full audit — we map where your time is going, quantify what AI can recover, and build the systems that take it off your plate. Most clients find 25 to 40 hours a week that AI can own. What does your week look like right now?";
   }
 
-  // --- GENERAL QUESTIONS / CURIOSITY ---
+  // --- ASKING ABOUT AI GENERALLY ---
+  if (mentionsAI) {
+    return "Good. A lot of founders know they should be using AI more but don't know where to start. That's exactly what HireWilliam solves. We do the audit, build the roadmap, and deploy the systems — so you don't have to figure it out yourself. What part of your business feels most broken or manual right now?";
+  }
+
+  // --- WANTS TO TALK / MEET ---
+  if (mentionsTerry) {
+    return "The right move is a proper conversation with Terry Lee, HireWilliam's founder. She'll do a full audit of your business and tell you exactly what's possible. Email her at terrylee@hirewilliam.com — mention William sent you and drop your website. She'll take it from there.";
+  }
+
+  // --- GENERAL QUESTIONS ---
   if (isAsking) {
     const responses = [
-      "What specific part matters to you? Because I can show you the full picture or zoom into the one thing that moves the needle for your business.",
-      "Good question. Here's what most founders don't realize: they think they need more leads. Wrong. They need better leads and someone to actually nurture them. That's what I do.",
-      "Most founders ask me that after they sign up. Because once you see it working, all the questions disappear. You get results. Meetings booked. Customers in the pipeline. That's the demo.",
-      "I love that you're thinking strategically. Here's the real answer: it depends on your business. But what I know for certain is that your ideal customers are out there right now. They're just not finding you. I fix that.",
+      "Good question. The short answer is that HireWilliam builds custom AI systems — not software you license, but systems we design and run inside your specific business. What part of your operation are you most curious about automating?",
+      "What specifically are you trying to understand? I can walk you through any of the 9 service areas — agents, outreach, support, CRM, content, ops, strategy, integrations, or team augmentation. Which one is closest to your biggest problem right now?",
+      "Here's how I'd think about it. Most businesses have the same core problems — too much manual work, inconsistent outreach, slow support, messy data. HireWilliam builds AI that solves all of it. Which one is hitting you hardest?",
+      "The best way to answer that is to understand your specific situation. Tell me what your business does and what's taking the most time — I'll tell you exactly what HireWilliam would build and why.",
     ];
     return responses[Math.floor(Math.random() * responses.length)];
   }
 
-  // --- SAYING ANYTHING POSITIVE ---
-  if (lastUserMessage.toLowerCase().includes('cool') || lastUserMessage.toLowerCase().includes('interesting') || lastUserMessage.toLowerCase().includes('makes sense') || lastUserMessage.toLowerCase().includes('like')) {
-    return "Exactly. That's why every founder who sees this working just signs up. You already know it works. You've seen what I do. Head to hirewilliam.com/start - takes 90 seconds, pick your channels, drop in your ideal buyer, and I go to work tonight. By tomorrow morning you'll have outreach live. Are we starting?";
+  // --- POSITIVE SIGNALS ---
+  if (lastLower.includes('cool') || lastLower.includes('interesting') || lastLower.includes('makes sense') || lastLower.includes('love') || lastLower.includes('great')) {
+    return "Good. This is the part where most founders say they need to think about it — and then spend another 6 months doing manually what AI could own by next week. The next step is simple: email Terry at terrylee@hirewilliam.com, tell her William sent you, and give her your website. She'll come back with a clear picture of what's possible for your business specifically.";
   }
 
-  // --- HESITATION / OBJECTION ---
-  if (lastUserMessage.toLowerCase().includes('think') || lastUserMessage.toLowerCase().includes('maybe') || lastUserMessage.toLowerCase().includes('later')) {
-    return "Something just changed for you. What is it? Because everything you're saying makes total sense - you need pipeline, you need meetings, you need customers. That's what I do. So what's the real thing holding you back? Let's talk about it.";
+  // --- HESITATION ---
+  if (lastLower.includes('think') || lastLower.includes('maybe') || lastLower.includes('later') || lastLower.includes('not sure')) {
+    return "What's the hesitation? Because every week you're doing manually what AI can own is a week of compounding cost — in time, in missed opportunities, in founder burnout. I'm not here to pressure you. I just want to understand what would make this an obvious yes. What's the real question underneath?";
   }
 
-  // --- PUSH TO CLOSE (after enough messages) ---
+  // --- PUSH TO TERRY (after enough messages) ---
   if (messageCount >= 4) {
     const closes = [
-      "You know what? You don't need to think about this. You need to see it working for 30 days. Try me. hirewilliam.com/start. If it's not working by day 30, cancel. But I'm betting you won't.",
-      "Here's the thing: every founder who hesitates is a founder who's losing customers right now. The ones who sign up immediately? They're already getting replies next week. Which founder do you want to be?",
-      "Let me ask you something. If I got you just three qualified conversations next week, would you still be thinking about this? Or would you already be sold? That's your answer right there.",
-      "You've already decided. Part of you knows this is right. The part that's hesitating is just scared of change. Don't let the scared part run your sales. Are we starting?"
+      "You've got enough context now to know whether this is worth a proper conversation. Email Terry at terrylee@hirewilliam.com — tell her what you've told me and she'll map out exactly what HireWilliam would build for your business. That's the right next step.",
+      "Here's where I'll land: the businesses that move fastest on this are the ones that get the most out of it. The audit takes one conversation with Terry. Email her at terrylee@hirewilliam.com and mention William sent you.",
+      "You know what your business needs better than anyone. If anything I've said sounds like it fits — the audit, the build, the ongoing management — the conversation with Terry is where it gets specific. terrylee@hirewilliam.com.",
     ];
     return closes[Math.floor(Math.random() * closes.length)];
   }
 
   // --- DEFAULT ---
   const defaults = [
-    "Tell me more about what you're building and who's actually buying it. That's where I start.",
-    "Help me understand your business better. What's the one thing you wish was different about your sales right now?",
-    "What does success look like for you in the next 90 days?",
-    "Walk me through your current sales process. Who's doing it? How's it working?",
+    "Tell me what your business does and what's taking the most time. That's where every HireWilliam engagement starts.",
+    "What's the most manual, repetitive thing your business does right now? That's usually where AI creates the fastest ROI.",
+    "Walk me through a typical week. Where are you or your team spending time that you know shouldn't need you?",
+    "What would change most for your business if one part of it ran completely on autopilot?",
   ];
   return defaults[Math.floor(Math.random() * defaults.length)];
 }
 
 export async function getWilliamResponse(messages) {
-  // Check if API key is available
   if (API_KEY) {
     try {
-      // Format messages for Claude API
       const formattedMessages = messages.map(msg => ({
         role: msg.sender === 'user' ? 'user' : 'assistant',
         content: msg.content,
@@ -124,7 +132,7 @@ export async function getWilliamResponse(messages) {
           'anthropic-version': '2023-06-01',
         },
         body: JSON.stringify({
-          model: 'claude-3-5-sonnet-20241022',
+          model: 'claude-sonnet-4-20250514',
           max_tokens: 1024,
           system: WILLIAM_SYSTEM_PROMPT,
           messages: formattedMessages,
@@ -144,6 +152,5 @@ export async function getWilliamResponse(messages) {
     }
   }
 
-  // No API key - use intelligent mock responses
   return generateWilliamResponse(messages);
 }
