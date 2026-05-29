@@ -340,58 +340,58 @@ function PipelineView() {
   const INITIAL_TESTIMONIALS = [
     {
       id: "1", category: "ops",
-      quote: "We mainly used it for follow-ups and CRM updates. Before this, we were constantly behind on both. Now most of that just runs in the background. It genuinely saves us hours every week.",
-      name: "James R.", company: "Venture Studio", initials: "JR",
+      quote: "We mainly used it for follow-ups and CRM updates. Before this, we were constantly behind on both. Now most of that just runs in the background. It's not magic, but it genuinely saves us hours every week.",
+      name: "Jorge Gamito", company: "CEO & Founder, Alma Lusa Tours", initials: "JG", photo: "/testimonials/jorge.png",
     },
     {
       id: "2", category: "support",
-      quote: "We didn't expect it to actually feel like people were doing the work, but that's kind of what happens. Leads get followed up, CRM gets updated, and we don't have to chase everything manually anymore.",
-      name: "Anika T.", company: "SaaS Startup", initials: "AT",
+      quote: "We didn't expect it to actually feel like \"people\" were doing the work, but that's kind of what happens. Leads get followed up, CRM gets updated, and we don't have to chase everything manually anymore.",
+      name: "Gillian Pieterse", company: "Authorised Principal, Sanla", initials: "GP", photo: "/testimonials/gillian.png",
     },
     {
       id: "3", category: "ops",
-      quote: "There was a point where we were just constantly doing small tasks all day. This helped remove a lot of that. It definitely changed how the team spends its time.",
-      name: "Marcus L.", company: "Scale-up", initials: "ML",
+      quote: "There was a point where we were just constantly doing small tasks all day. This helped remove a lot of that. It's not perfect, but it definitely changed how the team spends its time.",
+      name: "Sarah Lindsay Roberts-Rushmer", company: "Office Administrator & Bookkeeping", initials: "SR", photo: "/testimonials/sarah.png",
     },
     {
       id: "4", category: "support",
-      quote: "It helped us automate lead handling and basic customer replies. I wouldn't say it replaces a team fully, but it definitely reduces the load. Worth looking at if you're still doing ops manually.",
-      name: "Priya S.", company: "B2B Platform", initials: "PS",
+      quote: "If you're still doing a lot of ops manually, this is worth looking at. It helped us automate lead handling and basic customer replies. I wouldn't say it replaces a team fully, but it definitely reduces the load.",
+      name: "Teodora Djukic", company: "Founder, WiFeed", initials: "TD", photo: "/testimonials/teodora.png",
     },
     {
       id: "5", category: "marketing",
-      quote: "We sent it to our entire startup group chat. That probably says it all. It's one of the few services that actually reduced workload instead of just adding another dashboard.",
-      name: "Daniel K.", company: "Founder Community", initials: "DK",
+      quote: "\"We sent it to our entire startup group chat\" That probably says it all. It's flawless, it's one of the few services that actually reduced workload instead of just adding another dashboard. Would recommend for teams scaling fast.",
+      name: "Cat Inne", company: "catinne.com", initials: "CI", photo: "/testimonials/cat.png",
     },
     {
       id: "6", category: "sales",
-      quote: "It reduced a lot of the repetitive stuff we were doing. We're not fully hands-off, but it's good enough that I've already told another founder to try it.",
-      name: "Sofia M.", company: "Growth Agency", initials: "SM",
+      quote: "Not gonna lie, With Hire William it reduced a lot of the repetitive stuff we were doing. We're not fully hands-off, but it's good enough that I've already told another founder to try it.",
+      name: "Riccardo Lamberto", company: "Programme Management Global BBA, EADA", initials: "RL", photo: "/testimonials/riccardo.png",
     },
     {
       id: "7", category: "ops",
-      quote: "Feels like it quietly takes care of a bunch of admin tasks in the background. I don't think about it much anymore, which is probably a good sign. Recommended it already.",
-      name: "Tom W.", company: "E-commerce Brand", initials: "TW",
+      quote: "Feels like it quietly takes care of a bunch of admin tasks in the background. Thanks to hirewilliam.com I don't think about it much anymore, which is probably a good sign. Recommended it already.",
+      name: "Irina Medvednikova", company: "Global Director, Charter & Incentive Group Sales", initials: "IM", photo: "/testimonials/irina.png",
     },
     {
       id: "8", category: "marketing",
       quote: "Honestly it's like hiring an intern who doesn't sleep or complain. Slightly terrifying but in a good way.",
-      name: "Rachel N.", company: "Creative Studio", initials: "RN",
+      name: "Mio Kasai", company: "Self-employed Artist / Painter", initials: "MK", photo: "/testimonials/mio.png",
     },
     {
       id: "9", category: "sales",
-      quote: "It does the boring work I keep avoiding, so I'm kind of emotionally conflicted about it. But yeah, I'd recommend it.",
-      name: "Ben O.", company: "Bootstrapped SaaS", initials: "BO",
+      quote: "It does the boring work I keep avoiding, so I'm kind of emotionally conflicted about it. But yeah… I'd recommend it.",
+      name: "Bryan Calloway", company: "Freelance Fashion Stylist", initials: "BC", photo: "/testimonials/bryan.png",
     },
     {
-      id: "10", category: "support",
-      quote: "Now I have no excuse to forget follow-ups, which is mildly annoying. Still telling other founders about it though.",
-      name: "Layla F.", company: "Tech Startup", initials: "LF",
+      id: "10", category: "strategy",
+      quote: "When we meet with hire William We replaced a bunch of \"we should automate this\" conversations with just… it already being automated.",
+      name: "Emile van Zyl", company: "Building a Discord CRM, Community Relationships", initials: "EV", photo: "/testimonials/emile.png",
     },
     {
-      id: "11", category: "strategy",
-      quote: "We replaced a bunch of we should automate this conversations with just it already being automated. That shift alone was worth it.",
-      name: "Chris P.", company: "Ops-heavy Business", initials: "CP",
+      id: "11", category: "support",
+      quote: "Hire Williams set up tt's good, but now I have no excuse to \"forget\" follow-ups, which is annoying. Still telling other founders about it though.",
+      name: "Courtney van Senus", company: "Customer Success Manager", initials: "CS", photo: "/testimonials/courtney.png",
     },
   ];
 
@@ -424,9 +424,9 @@ function PipelineView() {
   };
 
   const Stars = () => (
-    <div style={{ display: "flex", gap: 2, marginBottom: 10 }}>
+    <div style={{ display: "flex", gap: 3, marginBottom: 12 }}>
       {[1,2,3,4,5].map(i => (
-        <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b" strokeWidth="1">
+        <svg key={i} width="20" height="20" viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b" strokeWidth="1">
           <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
         </svg>
       ))}
@@ -454,14 +454,17 @@ function PipelineView() {
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   {items.map(t => (
-                    <div key={t.id} style={{ background: "#fff", border: `1px solid ${RULE}`, borderTop: `3px solid ${cat.color}`, borderRadius: 10, padding: "14px 16px" }}>
+                    <div key={t.id} style={{ background: "#fff", border: `1px solid ${RULE}`, borderTop: `3px solid ${cat.color}`, borderRadius: 10, padding: "18px 18px 16px" }}>
                       <Stars />
-                      <p style={{ fontSize: 13, color: "#3d3b35", lineHeight: 1.6, margin: "0 0 14px 0", fontStyle: "italic" }}>"{t.quote}"</p>
+                      <p style={{ fontSize: 15, color: "#3d3b35", lineHeight: 1.7, margin: "0 0 16px 0", fontStyle: "italic" }}>"{t.quote}"</p>
                       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                        <div style={{ width: 32, height: 32, borderRadius: "50%", background: cat.color, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{t.initials}</div>
+                        {t.photo
+                          ? <img src={t.photo} alt={t.name} style={{ width: 36, height: 36, borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: `2px solid ${cat.color}30` }} />
+                          : <div style={{ width: 36, height: 36, borderRadius: "50%", background: cat.color, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>{t.initials}</div>
+                        }
                         <div>
-                          <div style={{ fontSize: 13, fontWeight: 700, color: "#0f0e0c" }}>{t.name}</div>
-                          <div style={{ fontSize: 11, color: "#72706a" }}>{t.company}</div>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: "#0f0e0c" }}>{t.name}</div>
+                          <div style={{ fontSize: 12, color: "#72706a" }}>{t.company}</div>
                         </div>
                       </div>
                     </div>
@@ -486,7 +489,7 @@ function PipelineView() {
 
       {/* Kanban board */}
       <div style={{ flex: 1, overflowY: "auto", overflowX: "auto", background: PAPER_WARM }}>
-        <div style={{ display: "grid", gridTemplateColumns: `repeat(${CATEGORIES.length}, minmax(200px, 1fr))`, gap: 10, padding: 14, minWidth: CATEGORIES.length * 218 + "px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: `repeat(${CATEGORIES.length}, minmax(240px, 1fr))`, gap: 12, padding: 16, minWidth: CATEGORIES.length * 260 + "px" }}>
           {CATEGORIES.map(cat => {
             const items = testimonials.filter(t => t.category === cat.id);
             const isOver = dragOverCategory === cat.id;
@@ -521,8 +524,8 @@ function PipelineView() {
                         background: "#fff",
                         border: `1px solid ${RULE}`,
                         borderTop: `3px solid ${cat.color}`,
-                        borderRadius: 8,
-                        padding: "14px 14px 12px",
+                        borderRadius: 10,
+                        padding: "18px 18px 14px",
                         cursor: "grab",
                         transition: "all 0.15s",
                         opacity: draggedCard?.id === t.id ? 0.4 : 1,
@@ -532,12 +535,15 @@ function PipelineView() {
                       onMouseLeave={e => e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,0.05)"}
                     >
                       <Stars />
-                      <p style={{ fontSize: 12, color: "#3d3b35", lineHeight: 1.6, margin: "0 0 14px 0", fontStyle: "italic" }}>"{t.quote}"</p>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, paddingTop: 10, borderTop: `1px solid ${RULE}` }}>
-                        <div style={{ width: 28, height: 28, borderRadius: "50%", background: cat.color, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{t.initials}</div>
-                        <div>
-                          <div style={{ fontSize: 12, fontWeight: 700, color: "#0f0e0c" }}>{t.name}</div>
-                          <div style={{ fontSize: 10, color: "#72706a" }}>{t.company}</div>
+                      <p style={{ fontSize: 14, color: "#3d3b35", lineHeight: 1.7, margin: "0 0 16px 0", fontStyle: "italic" }}>"{t.quote}"</p>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, paddingTop: 12, borderTop: `1px solid ${RULE}` }}>
+                        {t.photo
+                          ? <img src={t.photo} alt={t.name} style={{ width: 34, height: 34, borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: `2px solid ${cat.color}30` }} />
+                          : <div style={{ width: 34, height: 34, borderRadius: "50%", background: cat.color, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{t.initials}</div>
+                        }
+                        <div style={{ minWidth: 0 }}>
+                          <div style={{ fontSize: 13, fontWeight: 700, color: "#0f0e0c" }}>{t.name}</div>
+                          <div style={{ fontSize: 11, color: "#72706a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.company}</div>
                         </div>
                       </div>
                     </div>
