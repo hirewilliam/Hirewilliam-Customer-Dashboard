@@ -200,17 +200,12 @@ function Sidebar({ active, onNav, onClose }) {
 
 // ── Chat View ──
 const WILLIAM_INTRO_MESSAGES = [
-  { id: "intro-1", sender: "william", content: "So you found us. Good.", time: "now" },
-  { id: "intro-2", sender: "william", content: "I'm William. HireWilliam is an AI agency - we build custom AI agents, automations, and integrations that run inside your business. Not tools you subscribe to. Systems we design and deploy for you.", time: "now" },
-  { id: "intro-3", sender: "william", content: "Tell me about your business and I'll show you exactly where AI creates the most leverage. Or drop your website.", time: "now" },
-  { id: "intro-4", sender: "william", content: "Fair warning - I'm not here to give you a generic pitch. I'm here to diagnose your specific situation and tell you what's actually possible.", time: "now" },
+  { id: "intro-1", sender: "william", content: "Good you found me", time: "now" },
+  { id: "intro-2", sender: "william", content: "I'm William. An AI built by an AI agency to sell AI. The irony isn't lost on me. But it works and that's kind of the whole pitch.\n\nJust so we're clear, I'm here to make you money, save you time and give you freedom.", time: "now" },
+  { id: "intro-3", sender: "william", content: "Right. So here's what happens next: you click that link, book 15 min call and we can discuss what we can actually do for your business.", hasButton: true, buttonUrl: "https://calendar.app.google/KBavNT9XgiNsgfhc9", buttonText: "Book 15 min call", time: "now" },
 ];
 
-const WILLIAM_FINAL_MSG = `This is worth a proper conversation with Terry Lee, HireWilliam's founder.
-
-She'll audit your business, identify exactly where AI creates the most leverage, and tell you what's possible.
-
-Email her at terrylee@hirewilliam.com - tell her William sent you and drop your website. She'll take it from there.`;
+const WILLIAM_FINAL_MSG = { content: "I appreciate your engagement, I really do. But me typing in a chat box isn't going to convince you. That's just two of us procrastinating.\n\nYou already have the link. 15 minutes in exchange for saving you months, possibly years.", hasButton: true, buttonUrl: "https://calendar.app.google/KBavNT9XgiNsgfhc9", buttonText: "Book 15 min call" };
 
 function ChatView() {
   const [msgs, setMsgs] = useState([]);
@@ -254,7 +249,7 @@ function ChatView() {
 
     (async () => {
       await new Promise(resolve => setTimeout(resolve, 1200));
-      setMsgs(p => [...p, { id: (Date.now() + 1).toString(), sender: "william", content: WILLIAM_FINAL_MSG, time: "now" }]);
+      setMsgs(p => [...p, { id: (Date.now() + 1).toString(), sender: "william", ...WILLIAM_FINAL_MSG, time: "now" }]);
       setTyping(false);
       setChatLocked(true);
     })();
@@ -282,6 +277,11 @@ function ChatView() {
             {m.sender === "william" ? <Avatar initials="W" size={28} /> : <Avatar initials="Y" bg={PAPER_WARM} size={28} />}
             <div style={{ maxWidth: "75%", borderRadius: 16, padding: "10px 14px", background: m.sender === "william" ? PAPER_WARM : PURPLE, color: m.sender === "william" ? INK : "#fff" }}>
               <p style={{ fontSize: 14, lineHeight: 1.55, whiteSpace: "pre-wrap", margin: 0 }}>{m.content}</p>
+              {m.hasButton && (
+                <a href={m.buttonUrl} target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", marginTop: 10, padding: "10px 16px", background: PURPLE, color: "#fff", borderRadius: 8, textDecoration: "none", fontSize: 14, fontWeight: 600, transition: "all 0.2s" }} onMouseEnter={(e) => e.target.style.opacity = "0.9"} onMouseLeave={(e) => e.target.style.opacity = "1"}>
+                  {m.buttonText}
+                </a>
+              )}
               <p style={{ fontSize: 10, marginTop: 4, color: m.sender === "william" ? INK_GHOST : "rgba(255,255,255,0.6)", margin: 0 }}>{m.time}</p>
             </div>
           </div>
