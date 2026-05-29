@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { getWilliamResponse } from "./claudeApi.js";
+import { saveQuizSubmission } from "./firebase.js";
 
 const PURPLE = "#5a3fa0";
 const PURPLE_LIGHT = "#7155b8";
@@ -1709,11 +1710,15 @@ function AnalyticsView() {
     return { total, intro, headline, desc };
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!email) return;
-    const body = encodeURIComponent("Quiz responses:" + JSON.stringify(answers));
-    window.location.href = `mailto:info@hirewilliam.com?subject=quiz&body=From: ${encodeURIComponent(email)}%0D%0A%0D%0A${body}`;
-    setSubmitted(true);
+    try {
+      await saveQuizSubmission({ email, answers, score: computedTotal });
+      setSubmitted(true);
+    } catch (err) {
+      console.error("Failed to save submission:", err);
+      alert("Something went wrong. Please try again.");
+    }
   };
 
   const resetQuiz = () => {
@@ -1730,6 +1735,10 @@ function AnalyticsView() {
   const pct = Math.round((currentIndex / QUIZ_QUESTIONS.length) * 100);
   const q = QUIZ_QUESTIONS[currentIndex];
   const selected = answers[q?.id];
+  const computedTotal = QUIZ_QUESTIONS.reduce((sum, qq) => {
+    const idx = answers[qq.id];
+    return sum + (idx !== undefined ? qq.options[idx].s : 3);
+  }, 0);
   const { total, intro, headline, desc } = screen === "results" ? getResults() : {};
 
   // Shared container style
