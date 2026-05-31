@@ -15,7 +15,7 @@ function generateWilliamResponse(messages) {
   const mentionsWebsite  = lastUserMessage.includes('.com') || lastUserMessage.includes('http');
   const mentionsTools    = conversationText.includes('already use') || conversationText.includes('we have') || conversationText.includes('zapier') || conversationText.includes('hubspot') || conversationText.includes('make.com');
   const mentionsTeam     = conversationText.includes('hire') || conversationText.includes('team') || conversationText.includes('employee') || conversationText.includes('headcount');
-  const mentionsthe team    = conversationText.includes('call') || conversationText.includes('meeting') || conversationText.includes('talk') || conversationText.includes('speak');
+  const mentionsMeeting  = conversationText.includes('call') || conversationText.includes('meeting') || conversationText.includes('talk') || conversationText.includes('speak');
   const mentionsTime     = conversationText.includes('time') || conversationText.includes('hours') || conversationText.includes('manual') || conversationText.includes('slow');
   const mentionsAI       = conversationText.includes('ai') || conversationText.includes('automation') || conversationText.includes('automate');
   const isAsking         = lastUserMessage.includes('?');
@@ -71,8 +71,8 @@ function generateWilliamResponse(messages) {
   }
 
   // --- WANTS TO TALK / MEET ---
-  if (mentionsthe team) {
-    return "The right move is a proper conversation with HireWilliam, HireWilliam's founder. They'll do a full audit of your business and tell you exactly what's possible. Email her at info@hirewilliam.com — mention William sent you and drop your website. They'll take it from there.";
+  if (mentionsMeeting) {
+    return "The right move is a proper conversation with the HireWilliam team. They'll audit your business and tell you exactly what's possible. Email info@hirewilliam.com — mention William sent you and drop your website. They'll take it from there.";
   }
 
   // --- GENERAL QUESTIONS ---
@@ -88,7 +88,7 @@ function generateWilliamResponse(messages) {
 
   // --- POSITIVE SIGNALS ---
   if (lastLower.includes('cool') || lastLower.includes('interesting') || lastLower.includes('makes sense') || lastLower.includes('love') || lastLower.includes('great')) {
-    return "Good. This is the part where most founders say they need to think about it — and then spend another 6 months doing manually what AI could own by next week. The next step is simple: email us at info@hirewilliam.com, tell her William sent you, and give her your website. They'll come back with a clear picture of what's possible for your business specifically.";
+    return "Good. This is the part where most founders say they need to think about it — and then spend another 6 months doing manually what AI could own by next week. The next step is simple: email the HireWilliam team at info@hirewilliam.com, mention William sent you, and drop your website. They'll come back with a clear picture of what's possible for your business specifically.";
   }
 
   // --- HESITATION ---
@@ -96,12 +96,12 @@ function generateWilliamResponse(messages) {
     return "What's the hesitation? Because every week you're doing manually what AI can own is a week of compounding cost — in time, in missed opportunities, in founder burnout. I'm not here to pressure you. I just want to understand what would make this an obvious yes. What's the real question underneath?";
   }
 
-  // --- PUSH TO TERRY (after enough messages) ---
+  // --- CLOSE (after enough messages) ---
   if (messageCount >= 4) {
     const closes = [
-      "You've got enough context now to know whether this is worth a proper conversation. Email Us at info@hirewilliam.com — tell her what you've told me and she'll map out exactly what HireWilliam would build for your business. That's the right next step.",
-      "Here's where I'll land: the businesses that move fastest on this are the ones that get the most out of it. The audit takes one conversation with the team. Email her at info@hirewilliam.com and mention William sent you.",
-      "You know what your business needs better than anyone. If anything I've said sounds like it fits — the audit, the build, the ongoing management — the conversation with the team is where it gets specific. info@hirewilliam.com.",
+      "You've got enough context now to know whether this is worth a proper conversation. Email the HireWilliam team at info@hirewilliam.com — tell them what you've told me and they'll map out exactly what HireWilliam would build for your business. That's the right next step.",
+      "Here's where I'll land: the businesses that move fastest on this are the ones that get the most out of it. The audit takes one conversation with the team. Email info@hirewilliam.com and mention William sent you.",
+      "You know what your business needs better than anyone. If anything I've said sounds like it fits — the audit, the build, the ongoing management — the conversation with the HireWilliam team is where it gets specific. info@hirewilliam.com.",
     ];
     return closes[Math.floor(Math.random() * closes.length)];
   }
