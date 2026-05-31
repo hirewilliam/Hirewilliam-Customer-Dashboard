@@ -826,450 +826,377 @@ function OutreachView() {
 
 // ── MEETINGS SECTION — YEAR 3030 ──────────────────────────────────────────
 
-// Neural particle field
-function NeuralCanvas() {
-  const canvasRef = useRef(null);
-  const stateRef = useRef({ particles: [], mouse: { x: -9999, y: -9999 }, raf: null });
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    const state = stateRef.current;
-
-    const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
-    resize();
-    const ro = new ResizeObserver(resize);
-    ro.observe(canvas);
-
-    const COLORS = ["#8b5cf6", "#22d3ee", "#a78bfa", "#06b6d4", "#c4b5fd", "#67e8f9", "#ffffff"];
-    state.particles = Array.from({ length: 95 }, () => {
-      const r = Math.random() * 2.0 + 0.4;
-      return {
-        x: Math.random() * (canvas.width || 500),
-        y: Math.random() * (canvas.height || 700),
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        r, baseR: r,
-        phase: Math.random() * Math.PI * 2,
-        phaseSpeed: 0.012 + Math.random() * 0.022,
-        color: COLORS[Math.floor(Math.random() * COLORS.length)],
-        alpha: Math.random() * 0.65 + 0.2,
-      };
-    });
-
-    const onMove = (e) => {
-      const rect = canvas.getBoundingClientRect();
-      const src = e.touches ? e.touches[0] : e;
-      state.mouse = { x: src.clientX - rect.left, y: src.clientY - rect.top };
-    };
-    const onLeave = () => { state.mouse = { x: -9999, y: -9999 }; };
-    canvas.addEventListener("mousemove", onMove);
-    canvas.addEventListener("touchmove", onMove, { passive: true });
-    canvas.addEventListener("mouseleave", onLeave);
-    canvas.addEventListener("touchend", onLeave);
-
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const { particles, mouse } = state;
-
-      particles.forEach(p => {
-        p.phase += p.phaseSpeed;
-        p.r = Math.max(0.1, p.baseR + Math.sin(p.phase) * 0.7);
-        const dx = mouse.x - p.x, dy = mouse.y - p.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 140 && dist > 0) {
-          const f = (140 - dist) / 140;
-          p.vx -= (dx / dist) * f * 1.8;
-          p.vy -= (dy / dist) * f * 1.8;
-        }
-        p.vx *= 0.963; p.vy *= 0.963;
-        p.x += p.vx; p.y += p.vy;
-        if (p.x < 0) { p.x = 0; p.vx *= -1; }
-        if (p.x > canvas.width) { p.x = canvas.width; p.vx *= -1; }
-        if (p.y < 0) { p.y = 0; p.vy *= -1; }
-        if (p.y > canvas.height) { p.y = canvas.height; p.vy *= -1; }
-
-        ctx.shadowBlur = 12;
-        ctx.shadowColor = p.color;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = p.color;
-        ctx.globalAlpha = p.alpha;
-        ctx.fill();
-        ctx.shadowBlur = 0;
-        ctx.globalAlpha = 1;
-      });
-
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const a = particles[i], b = particles[j];
-          const dx = a.x - b.x, dy = a.y - b.y;
-          const d = Math.sqrt(dx * dx + dy * dy);
-          if (d < 105) {
-            const grad = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
-            grad.addColorStop(0, a.color);
-            grad.addColorStop(1, b.color);
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.strokeStyle = grad;
-            ctx.globalAlpha = (1 - d / 105) * 0.22;
-            ctx.lineWidth = 0.7;
-            ctx.shadowBlur = 4;
-            ctx.shadowColor = "#8b5cf6";
-            ctx.stroke();
-            ctx.shadowBlur = 0;
-            ctx.globalAlpha = 1;
-          }
-        }
-      }
-      state.raf = requestAnimationFrame(draw);
-    };
-    draw();
-
-    return () => {
-      cancelAnimationFrame(state.raf);
-      ro.disconnect();
-      canvas.removeEventListener("mousemove", onMove);
-      canvas.removeEventListener("touchmove", onMove);
-      canvas.removeEventListener("mouseleave", onLeave);
-      canvas.removeEventListener("touchend", onLeave);
-    };
-  }, []);
-
-  return <canvas ref={canvasRef} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block" }} />;
-}
-
-// Rotating radar with sweep + blips
-function RadarCanvas() {
-  const canvasRef = useRef(null);
-  const rafRef = useRef(null);
-  const angleRef = useRef(0);
-  const SIZE = typeof window !== "undefined" && window.innerWidth < 480 ? 86 : 110;
-  const blips = [
-    { angle: 42,  dist: 0.62, color: "#22d3ee" },
-    { angle: 155, dist: 0.72, color: "#fbbf24" },
-    { angle: 248, dist: 0.52, color: "#22d3ee" },
-  ];
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    const cx = SIZE / 2, cy = SIZE / 2, r = SIZE / 2 - 3;
-
-    const draw = () => {
-      angleRef.current = (angleRef.current + 1.1) % 360;
-      const sweep = (angleRef.current - 90) * Math.PI / 180;
-      ctx.clearRect(0, 0, SIZE, SIZE);
-
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.clip();
-
-      ctx.fillStyle = "#04010d";
-      ctx.fillRect(0, 0, SIZE, SIZE);
-
-      [0.33, 0.66, 1].forEach(s => {
-        ctx.beginPath();
-        ctx.arc(cx, cy, r * s, 0, Math.PI * 2);
-        ctx.strokeStyle = "rgba(34,211,238,0.07)";
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      });
-      ctx.beginPath();
-      ctx.moveTo(cx - r, cy); ctx.lineTo(cx + r, cy);
-      ctx.moveTo(cx, cy - r); ctx.lineTo(cx, cy + r);
-      ctx.strokeStyle = "rgba(34,211,238,0.04)";
-      ctx.lineWidth = 0.5;
-      ctx.stroke();
-
-      const trail = 70 * Math.PI / 180;
-      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-      grad.addColorStop(0, "rgba(34,211,238,0.0)");
-      grad.addColorStop(0.5, "rgba(34,211,238,0.05)");
-      grad.addColorStop(1, "rgba(34,211,238,0.14)");
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.arc(cx, cy, r, sweep - trail, sweep);
-      ctx.closePath();
-      ctx.fillStyle = grad;
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.lineTo(cx + r * Math.cos(sweep), cy + r * Math.sin(sweep));
-      ctx.strokeStyle = "#22d3ee";
-      ctx.lineWidth = 1.5;
-      ctx.shadowBlur = 7;
-      ctx.shadowColor = "#22d3ee";
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-
-      blips.forEach(b => {
-        const br = (b.angle - 90) * Math.PI / 180;
-        const bx = cx + b.dist * r * Math.cos(br);
-        const by = cy + b.dist * r * Math.sin(br);
-        const diff = ((angleRef.current - b.angle + 360) % 360);
-        const fade = diff < 55 ? 1 - diff / 55 : 0.28;
-        ctx.beginPath();
-        ctx.arc(bx, by, 3.5, 0, Math.PI * 2);
-        ctx.fillStyle = b.color;
-        ctx.globalAlpha = 0.35 + fade * 0.65;
-        ctx.shadowBlur = 8 + fade * 14;
-        ctx.shadowColor = b.color;
-        ctx.fill();
-        ctx.globalAlpha = 1;
-        ctx.shadowBlur = 0;
-        if (fade > 0.45) {
-          ctx.beginPath();
-          ctx.arc(bx, by, 3.5 + 3.5 * fade, 0, Math.PI * 2);
-          ctx.strokeStyle = b.color;
-          ctx.globalAlpha = (fade - 0.45) * 0.5;
-          ctx.lineWidth = 0.8;
-          ctx.stroke();
-          ctx.globalAlpha = 1;
-        }
-      });
-
-      ctx.restore();
-      ctx.beginPath();
-      ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(34,211,238,0.18)";
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      rafRef.current = requestAnimationFrame(draw);
-    };
-    draw();
-    return () => cancelAnimationFrame(rafRef.current);
-  }, []);
-
-  return <canvas ref={canvasRef} width={SIZE} height={SIZE} style={{ display: "block", borderRadius: "50%", flexShrink: 0 }} />;
-}
-
-// Sliding heartbeat line
-function HeartbeatLine() {
-  return (
-    <div style={{ width: "100%", overflow: "hidden", height: 22, position: "relative" }}>
-      <svg width="100%" height="22" viewBox="0 0 260 22" preserveAspectRatio="none" style={{ display: "block" }}>
-        <line x1="0" y1="11" x2="260" y2="11" stroke="rgba(34,211,238,0.1)" strokeWidth="1" />
-      </svg>
-      <svg style={{ position: "absolute", top: 0, left: 0, animation: "hb-slide 3.4s linear infinite", overflow: "visible" }} width="80" height="22" viewBox="0 0 80 22">
-        <polyline points="0,11 18,11 26,3 34,19 42,11 80,11" fill="none" stroke="#22d3ee" strokeWidth="1.5" style={{ filter: "drop-shadow(0 0 4px #22d3ee)" }} />
-      </svg>
-    </div>
-  );
-}
-
-// SVG waveform week selector
-function WaveformRail({ days, meetingsByDay, selectedDay, onSelect }) {
-  const ELP = "#8b5cf6", ELC = "#22d3ee", DIM = "#b0ada4";
-  const isMob = typeof window !== "undefined" && window.innerWidth < 480;
-  const DW = isMob ? 32 : 38, BW = isMob ? 11 : 13, H = isMob ? 34 : 40, MAX = isMob ? 22 : 28;
-  const W = days.length * DW;
-  return (
-    <svg viewBox={`0 0 ${W} ${H + 16}`} width="100%" height={H + 16} style={{ display: "block" }}>
-      {days.map((d, i) => {
-        const cnt = meetingsByDay[d].length;
-        const bh = cnt > 0 ? Math.max(10, (cnt / 3) * MAX) : 3;
-        const x = i * DW + (DW - BW) / 2;
-        const y = H - bh;
-        const active = selectedDay === d;
-        const hasM = cnt > 0;
-        const col = active ? ELC : hasM ? ELP : "rgba(139,92,246,0.12)";
-        return (
-          <g key={d} onClick={() => hasM && onSelect(active ? null : d)} style={{ cursor: hasM ? "pointer" : "default" }}>
-            <rect x={x} y={H - 3} width={BW} height={3} rx={1.5} fill="rgba(139,92,246,0.08)" />
-            <rect x={x} y={y} width={BW} height={bh} rx={3} fill={col}
-              opacity={active ? 1 : hasM ? 0.6 : 1}
-              style={{ filter: active ? `drop-shadow(0 0 6px ${ELC})` : hasM ? `drop-shadow(0 0 3px ${ELP})` : "none" }}
-            />
-            {active && <line x1={x + BW / 2} y1={0} x2={x + BW / 2} y2={H - 3} stroke={ELC} strokeWidth="1" strokeDasharray="3,3" opacity="0.35" />}
-            {hasM && !active && <circle cx={x + BW / 2} cy={y - 5} r={2} fill={ELP} style={{ animation: `sf-blink 2s ease-in-out infinite`, animationDelay: `${i * 0.28}s` }} />}
-            <text x={x + BW / 2} y={H + 13} textAnchor="middle" fill={active ? ELC : hasM ? "#3d3b35" : DIM} fontSize="7" fontWeight="800" letterSpacing="0.07em" style={{ fontFamily: "inherit" }}>
-              {d.toUpperCase()}
-            </text>
-          </g>
-        );
-      })}
-    </svg>
-  );
-}
-
-// Typewriter system log — types each entry character by character
-function TypewriterLog({ entries, okColor }) {
-  const [revealed, setRevealed] = useState(0);
-  const [chars, setChars] = useState(0);
-
-  useEffect(() => { setRevealed(0); setChars(0); }, [entries]);
-
-  useEffect(() => {
-    if (revealed >= entries.length) return;
-    const entry = entries[revealed];
-    if (chars < entry.log.length) {
-      const t = setTimeout(() => setChars(c => c + 1), 15);
-      return () => clearTimeout(t);
-    }
-    const t = setTimeout(() => { setRevealed(r => r + 1); setChars(0); }, 150);
-    return () => clearTimeout(t);
-  }, [revealed, chars, entries]);
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-      {entries.map((e, i) => {
-        if (i > revealed) return null;
-        const isLast = i === entries.length - 1;
-        const text = i < revealed ? e.log : e.log.slice(0, chars);
-        const cursor = i === revealed && chars < e.log.length;
-        return (
-          <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-            <span style={{ fontSize: 10, fontWeight: 800, color: isLast ? okColor : "#72706a", minWidth: 36, flexShrink: 0, fontVariantNumeric: "tabular-nums", letterSpacing: "0.02em", paddingTop: 1 }}>{e.t}</span>
-            <span style={{ fontSize: 13, color: isLast ? okColor : "#3d3b35", fontWeight: isLast ? 700 : 400, lineHeight: 1.45, textShadow: isLast ? `0 0 12px ${okColor}66` : "none" }}>
-              {text}{cursor && <span style={{ animation: "sf-blink 0.55s step-end infinite", color: "#22d3ee" }}>_</span>}
-            </span>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-// ── Meetings ──
+// ── Meetings (Agent Workflow Demo) ──
 function MeetingsView() {
   const isMobile = useIsMobile();
-  const [expanded, setExpanded]   = useState(null);
-  const [count, setCount]         = useState(0);
-  const [selectedDay, setSelectedDay] = useState(null);
-  const [hoveredCard, setHoveredCard] = useState(null);
+  const [phase, setPhase] = useState(0); // 0=idle 1-4=tool steps 5=slack
+  const [notionPain, setNotionPain] = useState('');
+  const [notionStatus, setNotionStatus] = useState('');
+  const [notionPainShow, setNotionPainShow] = useState(false);
+  const [notionStatusShow, setNotionStatusShow] = useState(false);
+  const [airtableRowShow, setAirtableRowShow] = useState(false);
+  const [airtableName, setAirtableName] = useState('⤢ ');
+  const [gmailSubj, setGmailSubj] = useState('');
+  const [gmailBody, setGmailBody] = useState('');
+  const [gmailBtnShow, setGmailBtnShow] = useState(false);
+  const [gmailSent, setGmailSent] = useState(false);
+  const [calBooked, setCalBooked] = useState(false);
+  const [calEvShow, setCalEvShow] = useState(false);
+  const [slackShow, setSlackShow] = useState(false);
+  const [slackMsg, setSlackMsg] = useState('');
+  const [slackAttach, setSlackAttach] = useState(false);
+  const [slackReactions, setSlackReactions] = useState(false);
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const [cursorVisible, setCursorVisible] = useState(false);
+  const [ripple, setRipple] = useState(null);
+  const [activeWin, setActiveWin] = useState(null); // 'notion'|'airtable'|'gmail'|'cal'
+  const [doneWins, setDoneWins] = useState([]);
+  const containerRef = useRef(null);
+  const isRunning = useRef(false);
 
-  const SF   = "#faf9f6";
-  const CARD = "#ffffff";
-  const ELP  = "#8b5cf6";
-  const ELC  = "#22d3ee";
-  const ELG  = "#10b981";
-  const ELA  = "#fbbf24";
-  const TX   = "#0f0e0c";
-  const DIM  = "#72706a";
-  const BR   = "#ddd9d0";
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-  const chCol = ch => ({ LinkedIn: "#3b82f6", Email: ELG, Instagram: "#ec4899" }[ch] || ELP);
-  const chLbl = ch => ({ LinkedIn: "LI", Email: "EM", Instagram: "IG" }[ch] || "--");
+  function getElCenter(id) {
+    const el = document.getElementById(id);
+    if (!el || !containerRef.current) return { x: 0, y: 0 };
+    const er = el.getBoundingClientRect();
+    const cr = containerRef.current.getBoundingClientRect();
+    return { x: er.left - cr.left + er.width / 2, y: er.top - cr.top + er.height / 2 };
+  }
 
-  const meetings = [
-    {
-      id: "1", prospect: "Alex Morin", company: "Shipyard", avatar: "AM",
-      time: "Thu 2:00 PM", day: "Thu", status: "confirmed",
-      channel: "LinkedIn", freq: "LI-7749", value: "$12k",
-      trail: [
-        { t: "06:14", log: "Prospect identified — LinkedIn AE hiring signal" },
-        { t: "06:15", log: "Message constructed, referenced job post" },
-        { t: "06:15", log: "Dispatched via LinkedIn DM" },
-        { t: "09:33", log: "Reply received — positive intent" },
-        { t: "09:34", log: "Calendar link dispatched" },
-        { t: "09:41", log: "SIGNAL LOCKED — Thu 2:00 PM" },
-      ],
-    },
-    {
-      id: "2", prospect: "Sarah Kim", company: "BuildKit", avatar: "SK",
-      time: "Thu 4:30 PM", day: "Thu", status: "pending",
-      channel: "Email", freq: "EM-3312", value: "$8k",
-      trail: [
-        { t: "05:02", log: "Prospect identified — Product Hunt launch" },
-        { t: "05:03", log: "Cold email constructed, launch day referenced" },
-        { t: "05:03", log: "Dispatched via email" },
-        { t: "07:55", log: "Reply received — info requested" },
-        { t: "07:55", log: "Follow-up sent with calendar link" },
-        { t: "—",     log: "AWAITING CONFIRMATION" },
-      ],
-    },
-    {
-      id: "3", prospect: "Dan Fields", company: "Beacon", avatar: "DF",
-      time: "Fri 10:00 AM", day: "Fri", status: "confirmed",
-      channel: "Instagram", freq: "IG-5501", value: "$15k",
-      trail: [
-        { t: "04:11", log: "Prospect identified — Instagram build post" },
-        { t: "04:12", log: "DM constructed, post content referenced" },
-        { t: "04:12", log: "Dispatched via Instagram DM" },
-        { t: "05:08", log: "Reply received in 57 min — strong interest" },
-        { t: "05:09", log: "Calendar link dispatched" },
-        { t: "05:22", log: "SIGNAL LOCKED — Fri 10:00 AM" },
-      ],
-    },
-  ];
+  async function moveTo(id, ms = 550) {
+    const pos = getElCenter(id);
+    setCursorPos(pos);
+    await sleep(ms);
+  }
 
-  const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
-  const meetingsByDay = days.reduce((a, d) => { a[d] = meetings.filter(m => m.day === d); return a; }, {});
-  const visible = selectedDay ? meetings.filter(m => m.day === selectedDay) : meetings;
+  async function clickEl(id) {
+    await moveTo(id, 400);
+    await sleep(60);
+    const pos = getElCenter(id);
+    setRipple({ x: pos.x, y: pos.y, key: Date.now() });
+    await sleep(300);
+  }
 
-  useEffect(() => {
-    let i = 0;
-    const go = () => { i++; setCount(i); if (i < meetings.length) setTimeout(go, 300); };
-    setTimeout(go, 900);
-  }, []);
+  async function typeInto(setter, text, speed = 25) {
+    let current = '';
+    for (let i = 0; i < text.length; i++) {
+      current += text[i];
+      setter(current);
+      await sleep(speed);
+    }
+  }
 
-  const tilts = [0, 0, 0];
+  async function runSequence() {
+    if (isRunning.current) return;
+    isRunning.current = true;
+
+    // reset
+    setPhase(0); setNotionPain(''); setNotionStatus(''); setNotionPainShow(false); setNotionStatusShow(false);
+    setAirtableRowShow(false); setAirtableName('⤢ ');
+    setGmailSubj(''); setGmailBody(''); setGmailBtnShow(false); setGmailSent(false);
+    setCalBooked(false); setCalEvShow(false);
+    setSlackShow(false); setSlackMsg(''); setSlackAttach(false); setSlackReactions(false);
+    setCursorVisible(false); setRipple(null); setActiveWin(null); setDoneWins([]);
+    await sleep(500);
+
+    setCursorVisible(true);
+    setCursorPos(getElCenter('mw-notion'));
+
+    // ── NOTION ──
+    setActiveWin('notion');
+    await sleep(500);
+    await clickEl('mw-notion-pain-row');
+    setNotionPainShow(true);
+    await typeInto(setNotionPain, 'Manual sales ops, no outbound system', 28);
+    await sleep(300);
+    await clickEl('mw-notion-status-row');
+    setNotionStatusShow(true);
+    await typeInto(setNotionStatus, 'Ready for outreach', 35);
+    await sleep(400);
+    setActiveWin(null); setDoneWins(d => [...d, 'notion']);
+    await sleep(500);
+
+    // ── AIRTABLE ──
+    setActiveWin('airtable');
+    await clickEl('mw-at-add-btn');
+    await sleep(300);
+    setAirtableRowShow(true);
+    await sleep(200);
+    await clickEl('mw-at-name-cell');
+    await typeInto(setAirtableName, '⤢ Alex Morin', 30);
+    await sleep(400);
+    setActiveWin(null); setDoneWins(d => [...d, 'airtable']);
+    await sleep(500);
+
+    // ── GMAIL ──
+    setActiveWin('gmail');
+    await clickEl('mw-gmail-subj');
+    await typeInto(setGmailSubj, "Saw you're hiring an AE at Shipyard...", 20);
+    await sleep(300);
+    await clickEl('mw-gmail-body');
+    await typeInto(setGmailBody, "Hey Alex,\n\nNoticed Shipyard just posted for an Account Executive. That's usually the point where outbound starts eating founder time.\n\nWe build AI that handles the full workflow — leads, messages, replies, bookings.\n\nWorth a look?\n\nWilliam", 11);
+    await sleep(400);
+    setGmailBtnShow(true);
+    await clickEl('mw-gmail-send');
+    await sleep(150);
+    setGmailSent(true);
+    setActiveWin(null); setDoneWins(d => [...d, 'gmail']);
+    await sleep(600);
+
+    // ── CALENDAR ──
+    setActiveWin('cal');
+    await clickEl('mw-cal-day5');
+    setCalBooked(true);
+    await sleep(400);
+    await clickEl('mw-cal-thu-slot');
+    await sleep(300);
+    setCalEvShow(true);
+    setActiveWin(null); setDoneWins(d => [...d, 'cal']);
+    await sleep(600);
+    setCursorVisible(false);
+
+    // ── SLACK ──
+    setSlackShow(true);
+    await sleep(500);
+    const msg = "Here's what ran while you were away.\n\nProspect research completed and filed. Notion updated, CRM populated, email sent, meeting on the calendar.\n\nI'll pick up again at 3am while you're asleep. 👇";
+    await typeInto(setSlackMsg, msg, 14);
+    await sleep(400);
+    setSlackAttach(true);
+    await sleep(500);
+    setSlackReactions(true);
+
+    isRunning.current = false;
+  }
+
+  useEffect(() => { setTimeout(runSequence, 800); }, []);
+
+  const winStyle = (id) => ({
+    borderRadius: 10,
+    overflow: 'hidden',
+    background: '#fff',
+    boxShadow: activeWin === id
+      ? '0 0 0 2.5px #6366f1, 0 4px 32px rgba(99,102,241,0.18)'
+      : doneWins.includes(id)
+      ? '0 0 0 2px #16a34a, 0 4px 20px rgba(22,163,74,0.10)'
+      : '0 2px 16px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.06)',
+    transition: 'box-shadow 0.3s',
+  });
+
+  const dots = (
+    <div style={{ display: 'flex', gap: 5 }}>
+      <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }} />
+      <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#febc2e' }} />
+      <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }} />
+    </div>
+  );
 
   return (
-    <div style={{ flex:1, minHeight:0, display:"flex", flexDirection:"column", background:SF, overflow:"hidden", position:"relative" }}>
+    <div ref={containerRef} style={{ flex: 1, minHeight: 0, overflowY: 'auto', background: '#f0f0f0', padding: isMobile ? 12 : 20, position: 'relative' }}>
+
+      {/* William cursor */}
+      {cursorVisible && (
+        <div style={{ position: 'absolute', left: cursorPos.x, top: cursorPos.y, pointerEvents: 'none', zIndex: 999, transform: 'translate(-2px,-2px)', transition: 'left 0.5s cubic-bezier(.4,0,.2,1), top 0.5s cubic-bezier(.4,0,.2,1)' }}>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.35))' }}>
+            <path d="M2 2L7.5 16L9.5 10L16 8L2 2Z" fill="white" stroke="#6366f1" strokeWidth="1.4" strokeLinejoin="round"/>
+          </svg>
+          <div style={{ position: 'absolute', left: 20, top: 2, background: '#6366f1', color: '#fff', fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10, whiteSpace: 'nowrap', boxShadow: '0 1px 6px rgba(99,102,241,0.4)' }}>William</div>
+        </div>
+      )}
+
+      {/* Click ripple */}
+      {ripple && (
+        <div key={ripple.key} style={{ position: 'absolute', left: ripple.x - 12, top: ripple.y - 12, width: 24, height: 24, border: '2px solid #6366f1', borderRadius: '50%', pointerEvents: 'none', zIndex: 998, animation: 'mw-ripple 0.45s ease-out forwards' }} />
+      )}
+
       <style>{`
-        @keyframes sf-scan    { 0%{top:-1px;opacity:0} 5%{opacity:.8} 95%{opacity:.35} 100%{top:100%;opacity:0} }
-        @keyframes sf-live    { 0%,100%{opacity:1;transform:scale(1);box-shadow:0 0 0 0 rgba(16,185,129,.8)} 60%{opacity:.6;transform:scale(.75);box-shadow:0 0 0 7px rgba(16,185,129,0)} }
-        @keyframes sf-blink   { 0%,49%,100%{opacity:1} 50%,99%{opacity:.18} }
-        @keyframes sf-conf    { 0%,100%{box-shadow:0 0 0 1px rgba(139,92,246,.28),0 4px 22px rgba(139,92,246,.07)} 50%{box-shadow:0 0 0 1px rgba(139,92,246,.58),0 4px 32px rgba(139,92,246,.18)} }
-        @keyframes sf-pend    { 0%,100%{box-shadow:0 0 0 1px rgba(251,191,36,.22),0 4px 18px rgba(251,191,36,.06)} 50%{box-shadow:0 0 0 1px rgba(251,191,36,.52),0 4px 26px rgba(251,191,36,.14)} }
-        @keyframes sf-open    { 0%,100%{box-shadow:0 0 0 1px rgba(34,211,238,.55),0 8px 40px rgba(34,211,238,.16),0 0 70px rgba(139,92,246,.09)} 50%{box-shadow:0 0 0 1px rgba(34,211,238,.9),0 8px 55px rgba(34,211,238,.28),0 0 90px rgba(139,92,246,.13)} }
-        @keyframes sf-enter   { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes sf-bar     { 0%{left:-45%} 100%{left:110%} }
-        @keyframes hb-slide   { from{transform:translateX(-90px)} to{transform:translateX(calc(100vw + 90px))} }
-        @keyframes count-glow { 0%,100%{text-shadow:0 0 22px rgba(139,92,246,.55),0 0 44px rgba(139,92,246,.28)} 50%{text-shadow:0 0 32px rgba(139,92,246,.9),0 0 64px rgba(139,92,246,.45),0 0 90px rgba(34,211,238,.18)} }
-        @keyframes sf-orbit-cw  { from{transform:rotate(0deg)}   to{transform:rotate(360deg)} }
-        @keyframes sf-orbit-ccw { from{transform:rotate(0deg)}   to{transform:rotate(-360deg)} }
+        @keyframes mw-ripple { 0%{transform:scale(0.4);opacity:0.9} 100%{transform:scale(2.2);opacity:0} }
+        @keyframes mw-pop { 0%{transform:scale(0.3)} 70%{transform:scale(1.3)} 100%{transform:scale(1)} }
+        @keyframes mw-ev { 0%{transform:scaleY(0);transform-origin:top} 60%{transform:scaleY(1.1)} 100%{transform:scaleY(1)} }
+        @keyframes mw-slide { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
       `}</style>
 
-      {/* Full-section particle field */}
-      <NeuralCanvas />
+      {/* Header */}
+      <div style={{ textAlign: 'center', marginBottom: 20 }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#fff', border: '1px solid #e0e0e0', borderRadius: 20, padding: '4px 14px', fontSize: 11, color: '#16a34a', fontWeight: 600, marginBottom: 10, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#16a34a', display: 'inline-block', animation: 'mw-live 1.5s ease-in-out infinite' }} />
+          William is working
+        </div>
+        <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: '#111', marginBottom: 4 }}>Watch William run a full workflow autonomously</div>
+        <div style={{ fontSize: 12, color: '#999' }}>No human involved. This is what runs inside your business.</div>
+      </div>
 
-      {/* Single clean scan line */}
-      <div style={{ position:"absolute", left:0, right:0, height:"1px", zIndex:2, pointerEvents:"none", background:`linear-gradient(90deg,transparent,${ELP},${ELC},transparent)`, animation:"sf-scan 12s linear infinite" }} />
+      {/* 2x2 Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12, marginBottom: 12 }}>
 
-      {/* ── The Bridge ── */}
-      <div style={{ position:"relative", zIndex:4, flexShrink:0, padding: isMobile ? "18px 16px 14px" : "22px 24px 16px", borderBottom:`1px solid ${BR}`, backdropFilter:"blur(18px)", background:"rgba(250,249,246,0.97)" }}>
-        <div style={{ display:"flex", alignItems:"center", gap: isMobile ? 16 : 22 }}>
-
-          {/* Radar */}
-          <div style={{ position:"relative", flexShrink:0 }}>
-            <RadarCanvas />
-            <div style={{ position:"absolute", bottom:-3, right:-3, width:20, height:20, borderRadius:"50%", background:ELP, border:`2px solid ${SF}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, fontWeight:900, color:"#fff" }}>
-              {meetings.filter(m => m.status === "confirmed").length}
+        {/* NOTION */}
+        <div id="mw-notion" style={winStyle('notion')}>
+          <div style={{ background: '#f7f7f5', display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderBottom: '1px solid #e8e8e6' }}>
+            {dots}
+            <span style={{ fontSize: 11, color: '#9b9b9b', marginLeft: 8 }}>Workspace / CRM / <span style={{ color: '#37352f', fontWeight: 500 }}>Alex Morin</span></span>
+          </div>
+          <div style={{ padding: '12px 14px' }}>
+            <div style={{ fontSize: 18 }}>📋</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#1a1a1a', marginBottom: 8, fontFamily: 'Georgia, serif' }}>Alex Morin — Shipyard</div>
+            <div style={{ height: 1, background: '#e8e8e6', marginBottom: 8 }} />
+            {[['Company','Shipyard'],['Industry','Dev Tools'],['Signal', null, <span style={{ background: '#e3f2fd', color: '#1565c0', borderRadius: 3, padding: '1px 7px', fontSize: 11, fontWeight: 500 }}>Hiring AE — 2h ago</span>],['ICP Match', null, <span style={{ background: '#e8f5e9', color: '#2e7d32', borderRadius: 3, padding: '1px 7px', fontSize: 11, fontWeight: 500 }}>High</span>]].map(([k,v,tag]) => (
+              <div key={k} style={{ display: 'flex', alignItems: 'center', marginBottom: 1, borderRadius: 4, padding: '3px 0' }}>
+                <span style={{ fontSize: 11, color: '#9b9b9b', width: 80, flexShrink: 0 }}>{k}</span>
+                <span style={{ fontSize: 12, color: '#37352f' }}>{tag || v}</span>
+              </div>
+            ))}
+            <div id="mw-notion-pain-row" style={{ display: 'flex', alignItems: 'center', marginBottom: 1, borderRadius: 4, padding: '3px 0', opacity: notionPainShow ? 1 : 0, transition: 'opacity 0.4s' }}>
+              <span style={{ fontSize: 11, color: '#9b9b9b', width: 80, flexShrink: 0 }}>Pain Point</span>
+              <span style={{ fontSize: 12, color: '#37352f' }}>{notionPain}</span>
+            </div>
+            <div id="mw-notion-status-row" style={{ display: 'flex', alignItems: 'center', marginBottom: 1, borderRadius: 4, padding: '3px 0', opacity: notionStatusShow ? 1 : 0, transition: 'opacity 0.4s' }}>
+              <span style={{ fontSize: 11, color: '#9b9b9b', width: 80, flexShrink: 0 }}>Status</span>
+              <span style={{ background: '#fff8e1', color: '#856404', borderRadius: 3, padding: '1px 7px', fontSize: 11, fontWeight: 500 }}>{notionStatus}</span>
             </div>
           </div>
+        </div>
 
-          {/* Info panel */}
-          <div style={{ flex:1, minWidth:0 }}>
-            <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:7 }}>
-              <span style={{ width:6, height:6, borderRadius:"50%", background:ELG, flexShrink:0, animation:"sf-live 2s ease-in-out infinite" }} />
-              <span style={{ fontSize: isMobile ? 9 : 8, letterSpacing:"0.16em", color:ELC, fontWeight:700, textTransform:"uppercase" }}>Neural Link Active · William AI</span>
+        {/* AIRTABLE */}
+        <div id="mw-airtable" style={winStyle('airtable')}>
+          <div style={{ background: '#151515', display: 'flex', alignItems: 'center', padding: '0 12px', height: 36, gap: 8 }}>
+            {dots}
+            <span style={{ color: '#FCB400', fontWeight: 800, fontSize: 13, marginLeft: 6 }}>Airtable</span>
+            <span style={{ color: '#fff', fontSize: 11, opacity: 0.7, marginLeft: 4 }}>/ HireWilliam CRM</span>
+          </div>
+          <div style={{ background: '#fff', borderBottom: '1px solid #e0e0e0', padding: '0 10px', height: 32, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 11, color: '#666', padding: '3px 7px', borderRadius: 4, cursor: 'default' }}>Filter</span>
+            <span style={{ fontSize: 11, color: '#666', padding: '3px 7px', borderRadius: 4, cursor: 'default' }}>Sort</span>
+            <span style={{ flex: 1 }} />
+            <span id="mw-at-add-btn" style={{ fontSize: 11, color: '#1a73e8', fontWeight: 600, padding: '3px 7px', borderRadius: 4, cursor: 'default' }}>+ Add record</span>
+          </div>
+          <div style={{ background: '#f9f9f9', borderBottom: '1px solid #e0e0e0', padding: '0 10px', display: 'flex' }}>
+            <div style={{ fontSize: 11, color: '#0073ea', padding: '5px 10px', borderBottom: '2px solid #0073ea', fontWeight: 600 }}>Grid view</div>
+            <div style={{ fontSize: 11, color: '#888', padding: '5px 10px' }}>Form</div>
+          </div>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr>
+                  <th style={{ background: '#f5f5f5', fontSize: 10, color: '#444', fontWeight: 500, padding: '5px 8px', borderRight: '1px solid #ddd', borderBottom: '2px solid #ddd', textAlign: 'left' }}>Aa Name</th>
+                  <th style={{ background: '#f5f5f5', fontSize: 10, color: '#444', fontWeight: 500, padding: '5px 8px', borderRight: '1px solid #ddd', borderBottom: '2px solid #ddd', textAlign: 'left' }}>Aa Company</th>
+                  <th style={{ background: '#f5f5f5', fontSize: 10, color: '#444', fontWeight: 500, padding: '5px 8px', borderRight: '1px solid #ddd', borderBottom: '2px solid #ddd', textAlign: 'left' }}>Stage</th>
+                  <th style={{ background: '#f5f5f5', fontSize: 10, color: '#444', fontWeight: 500, padding: '5px 8px', borderBottom: '2px solid #ddd', textAlign: 'left' }}>$ Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td style={{ fontSize: 11, color: '#333', padding: '5px 8px', borderBottom: '1px solid #eee' }}>Sarah Kim</td><td style={{ fontSize: 11, color: '#333', padding: '5px 8px', borderBottom: '1px solid #eee' }}>BuildKit</td><td style={{ fontSize: 11, padding: '5px 8px', borderBottom: '1px solid #eee' }}><span style={{ background: '#d1fae5', color: '#065f46', borderRadius: 3, padding: '1px 7px', fontSize: 10, fontWeight: 600 }}>Qualified</span></td><td style={{ fontSize: 11, color: '#333', padding: '5px 8px', borderBottom: '1px solid #eee' }}>$8,000</td></tr>
+                <tr><td style={{ fontSize: 11, color: '#333', padding: '5px 8px', borderBottom: '1px solid #eee' }}>Dan Fields</td><td style={{ fontSize: 11, color: '#333', padding: '5px 8px', borderBottom: '1px solid #eee' }}>Beacon</td><td style={{ fontSize: 11, padding: '5px 8px', borderBottom: '1px solid #eee' }}><span style={{ background: '#fef3c7', color: '#92400e', borderRadius: 3, padding: '1px 7px', fontSize: 10, fontWeight: 600 }}>Contacted</span></td><td style={{ fontSize: 11, color: '#333', padding: '5px 8px', borderBottom: '1px solid #eee' }}>$15,000</td></tr>
+                {airtableRowShow && (
+                  <tr style={{ background: '#fffde7', animation: 'mw-slide 0.4s ease' }}>
+                    <td id="mw-at-name-cell" style={{ fontSize: 11, color: '#333', padding: '5px 8px', borderBottom: '1px solid #eee', fontWeight: 600 }}>{airtableName}</td>
+                    <td style={{ fontSize: 11, color: '#333', padding: '5px 8px', borderBottom: '1px solid #eee' }}>Shipyard</td>
+                    <td style={{ fontSize: 11, padding: '5px 8px', borderBottom: '1px solid #eee' }}><span style={{ background: '#dbeafe', color: '#1e40af', borderRadius: 3, padding: '1px 7px', fontSize: 10, fontWeight: 600 }}>Prospect</span></td>
+                    <td style={{ fontSize: 11, color: '#1a73e8', padding: '5px 8px', borderBottom: '1px solid #eee', fontSize: 10 }}>$12,000</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+            <div style={{ fontSize: 11, color: '#bbb', padding: '5px 8px' }}>+ Add a record</div>
+          </div>
+        </div>
+
+        {/* GMAIL */}
+        <div id="mw-gmail" style={winStyle('gmail')}>
+          <div style={{ background: '#fff', borderBottom: '1px solid #e0e0e0', padding: '7px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
+            {dots}
+            <span style={{ fontSize: 20, letterSpacing: -0.5 }}>
+              <span style={{ color: '#EA4335', fontWeight: 700 }}>G</span><span style={{ color: '#4285F4' }}>m</span><span style={{ color: '#EA4335' }}>a</span><span style={{ color: '#FBBC05' }}>i</span><span style={{ color: '#34A853' }}>l</span>
+            </span>
+            <div style={{ flex: 1, background: '#eaf1fb', borderRadius: 20, padding: '5px 12px', fontSize: 12, color: '#777' }}>Search mail</div>
+            <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#6366f1', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700 }}>W</div>
+          </div>
+          <div style={{ display: 'flex', minHeight: 195 }}>
+            <div style={{ width: 64, borderRight: '1px solid #e8eaed', padding: '6px 0', flexShrink: 0 }}>
+              {[['✏️','Compose',true],['📥','Inbox'],['⭐','Starred'],['📤','Sent']].map(([icon,label,active]) => (
+                <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, padding: '5px 2px', fontSize: 9, color: active ? '#c5221f' : '#444', background: active ? '#fce8e6' : 'transparent', borderRadius: 6, margin: '1px 3px', cursor: 'default' }}>
+                  <span style={{ fontSize: 15 }}>{icon}</span>{label}
+                </div>
+              ))}
             </div>
-
-            <div style={{ display:"flex", alignItems:"baseline", gap:8, marginBottom:5 }}>
-              <span style={{ fontSize: isMobile ? 40 : 50, fontWeight:900, color:TX, lineHeight:1, fontVariantNumeric:"tabular-nums", animation:"count-glow 3.2s ease-in-out infinite" }}>{count}</span>
-              <span style={{ fontSize:11, color:DIM, lineHeight:1.4 }}>signals<br/>locked</span>
+            <div style={{ flex: 1, padding: 6 }}>
+              <div style={{ background: '#fff', borderRadius: '8px 8px 0 0', boxShadow: '0 1px 3px rgba(0,0,0,0.15), 0 6px 20px rgba(0,0,0,0.12)', overflow: 'hidden' }}>
+                <div style={{ background: '#404040', padding: '7px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 12, color: '#fff', fontWeight: 500 }}>New Message</span>
+                  <span style={{ color: '#ccc', fontSize: 13 }}>✕</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', padding: '4px 10px', borderBottom: '1px solid #e8eaed', minHeight: 28 }}>
+                  <span style={{ fontSize: 11, color: '#5f6368', width: 28 }}>To</span>
+                  <span style={{ background: '#e8f0fe', borderRadius: 12, padding: '2px 9px', fontSize: 11, color: '#1a73e8' }}>alex@shipyard.dev</span>
+                </div>
+                <div id="mw-gmail-subj" style={{ display: 'flex', alignItems: 'center', padding: '4px 10px', borderBottom: '1px solid #e8eaed', minHeight: 28 }}>
+                  <span style={{ fontSize: 11, color: '#5f6368', width: 28, flexShrink: 0 }}>Sub</span>
+                  <span style={{ fontSize: 12, color: '#202124' }}>{gmailSubj}</span>
+                </div>
+                <div id="mw-gmail-body" style={{ padding: '8px 10px', fontSize: 12, color: '#202124', lineHeight: 1.6, whiteSpace: 'pre-wrap', minHeight: 72 }}>{gmailBody}</div>
+                <div style={{ borderTop: '1px solid #e8eaed', padding: '7px 10px', display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <button id="mw-gmail-send" style={{ background: gmailSent ? '#16a34a' : '#1a73e8', color: '#fff', border: 'none', borderRadius: 4, padding: '6px 16px', fontSize: 12, fontWeight: 500, cursor: 'pointer', opacity: gmailBtnShow ? 1 : 0, transition: 'opacity 0.3s, background 0.3s', fontFamily: 'inherit' }}>
+                    {gmailSent ? '✓ Sent' : 'Send'}
+                  </button>
+                  <span style={{ color: '#5f6368', fontSize: 15 }}>📎</span>
+                </div>
+              </div>
             </div>
+          </div>
+        </div>
 
-            <div style={{ fontSize:12, color:DIM, marginBottom:10, fontWeight:400 }}>
-              William locked {meetings.length} signals this week.
+        {/* CALENDAR */}
+        <div id="mw-cal" style={winStyle('cal')}>
+          <div style={{ background: '#fff', borderBottom: '1px solid #e0e0e0', padding: '7px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
+            {dots}
+            <div style={{ width: 26, height: 26, borderRadius: 4, border: '2px solid #4285f4', overflow: 'hidden', flexShrink: 0 }}>
+              <div style={{ background: '#4285f4', height: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 5, color: '#fff', fontWeight: 700 }}>JUN</div>
+              <div style={{ background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 17, fontSize: 11, fontWeight: 700, color: '#4285f4' }}>5</div>
             </div>
-
-            <HeartbeatLine />
-
-            <div style={{ display:"flex", gap:isMobile ? 8 : 16, marginTop:10, flexWrap:"wrap" }}>
-              {[{l:"IN PROGRESS",v:"2",c:ELA},{l:"NEXT CALL",v:"4h 22m",c:ELG},{l:"PIPELINE",v:"$35k",c:ELC}].map(({l,v,c}) => (
-                <div key={l} style={{ minWidth: isMobile ? 60 : "auto" }}>
-                  <div style={{ fontSize: isMobile ? 8 : 7, letterSpacing:"0.1em", color:DIM, fontWeight:700 }}>{l}</div>
-                  <div style={{ fontSize: isMobile ? 13 : 12, fontWeight:800, color:c, marginTop:2, textShadow:`0 0 10px ${c}55` }}>{v}</div>
+            <span style={{ fontSize: 18, color: '#5f6368', fontWeight: 300 }}>Calendar</span>
+            <div style={{ flex: 1, background: '#f1f3f4', borderRadius: 20, padding: '5px 12px', fontSize: 12, color: '#777' }}>Search</div>
+          </div>
+          <div style={{ display: 'flex', minHeight: 205 }}>
+            <div style={{ width: 130, flexShrink: 0, borderRight: '1px solid #e8eaed', padding: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <span style={{ fontSize: 10, color: '#3c4043', fontWeight: 600 }}>June 2026</span>
+                <span style={{ fontSize: 11, color: '#70757a', cursor: 'default' }}>‹ ›</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 1 }}>
+                {['M','T','W','T','F','S','S'].map((d,i) => <div key={i} style={{ fontSize: 8, color: '#70757a', textAlign: 'center', padding: '2px 0', fontWeight: 500 }}>{d}</div>)}
+                {[26,27,28,29,30,31,1,2,3,4,'5',6,7,8,9,10,11,12,13,14,15].map((d,i) => {
+                  const isOther = i < 6;
+                  const isToday = d === 3;
+                  const isDay5 = d === '5';
+                  return (
+                    <div id={isDay5 ? 'mw-cal-day5' : undefined} key={i} style={{ fontSize: 10, color: isOther ? '#ccc' : isToday ? '#fff' : calBooked && isDay5 ? '#fff' : '#3c4043', textAlign: 'center', width: 17, height: 17, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', margin: 'auto', background: isToday ? '#1a73e8' : calBooked && isDay5 ? '#34a853' : 'transparent', fontWeight: isToday || (calBooked && isDay5) ? 700 : 400, animation: calBooked && isDay5 ? 'mw-pop 0.45s ease' : 'none', cursor: 'default' }}>{d}</div>
+                  );
+                })}
+              </div>
+              <div style={{ marginTop: 10, padding: 6, background: '#e8f5e9', borderRadius: 6, opacity: calEvShow ? 1 : 0, transition: 'opacity 0.5s' }}>
+                <div style={{ fontSize: 9, color: '#2e7d32', fontWeight: 700 }}>CONFIRMED</div>
+                <div style={{ fontSize: 10, color: '#1b5e20', fontWeight: 600, marginTop: 1 }}>Alex Morin</div>
+                <div style={{ fontSize: 9, color: '#388e3c' }}>Thu Jun 5 · 2:00 PM</div>
+              </div>
+            </div>
+            <div style={{ flex: 1, overflow: 'hidden' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '34px repeat(7,1fr)', borderBottom: '1px solid #e8eaed' }}>
+                <div style={{ fontSize: 8, color: '#70757a', padding: 4, textAlign: 'right' }}>GMT</div>
+                {['MON','TUE','WED','THU','FRI','SAT','SUN'].map((d,i) => (
+                  <div key={d} style={{ textAlign: 'center', padding: '5px 2px' }}>
+                    <span style={{ fontSize: 9, color: i === 3 ? '#1a73e8' : '#70757a', display: 'block', fontWeight: i===3?600:400 }}>{d}</span>
+                    <span style={{ fontSize: 15, color: i===2?'#fff':i===3?'#1a73e8':'#3c4043', display: 'inline-block', background: i===2?'#1a73e8':'transparent', borderRadius:'50%', width:i===2?26:undefined, height:i===2?26:undefined, lineHeight:i===2?'26px':undefined, textAlign:'center' }}>{i+1}</span>
+                  </div>
+                ))}
+              </div>
+              {[['9 AM',false],['10 AM',false],['11 AM',true],['1 PM',false]].map(([time, hasStandup], ri) => (
+                <div key={time} style={{ display: 'grid', gridTemplateColumns: '34px repeat(7,1fr)' }}>
+                  <div style={{ fontSize: 8, color: '#70757a', padding: '2px 3px', textAlign: 'right', height: 26, borderTop: '1px solid #f1f3f4' }}>{time}</div>
+                  {[0,1,2,3,4,5,6].map(ci => (
+                    <div id={ci===3&&time==='1 PM'?'mw-cal-thu-slot':undefined} key={ci} style={{ borderLeft: '1px solid #e8eaed', height: 26, borderTop: '1px solid #f1f3f4', background: ci===2?'#f8f9fa':'transparent', position: 'relative' }}>
+                      {hasStandup && ci===0 && <div style={{ position:'absolute',left:2,right:2,top:2,bottom:2,background:'#1a73e8',borderRadius:3,padding:'1px 4px',fontSize:9,color:'#fff',fontWeight:500,overflow:'hidden',whiteSpace:'nowrap' }}>Team standup</div>}
+                      {ci===3 && time==='1 PM' && calEvShow && <div style={{ position:'absolute',left:2,right:2,top:2,bottom:2,background:'#0f9d58',borderRadius:3,padding:'1px 4px',fontSize:9,color:'#fff',fontWeight:500,overflow:'hidden',whiteSpace:'nowrap',animation:'mw-ev 0.5s ease' }}>Alex Morin · 2pm</div>}
+                    </div>
+                  ))}
                 </div>
               ))}
             </div>
@@ -1277,117 +1204,67 @@ function MeetingsView() {
         </div>
       </div>
 
-      {/* ── Waveform Week Rail ── */}
-      <div style={{ position:"relative", zIndex:4, padding: isMobile ? "10px 16px 2px" : "10px 24px 2px", borderBottom:`1px solid ${BR}`, flexShrink:0, backdropFilter:"blur(12px)", background:"rgba(250,249,246,0.97)" }}>
-        <WaveformRail days={days} meetingsByDay={meetingsByDay} selectedDay={selectedDay} onSelect={setSelectedDay} />
-      </div>
-
-      {/* ── Signal File Cards ── */}
-      <div style={{ position:"relative", zIndex:4, flex:1, overflowY:"auto", WebkitOverflowScrolling:"touch", padding: isMobile ? "12px" : "16px 20px", display:"flex", flexDirection:"column", gap:11 }}>
-        {visible.map((m, i) => {
-          const isOpen = expanded === m.id;
-          const ok     = m.status === "confirmed";
-          const ch     = chCol(m.channel);
-          const hov    = hoveredCard === m.id && !isMobile;
-          const tilt   = (!isMobile && !isOpen) ? (tilts[i] ?? 0) : 0;
-          const okCol  = ok ? ELG : ELA;
-
-          return (
-            <div key={m.id} style={{ position:"relative", animation:`sf-enter 0.36s ease ${i * 95}ms both` }}>
-              {/* Hover ghost reflection */}
-              {hov && !isOpen && (
-                <div style={{ position:"absolute", inset:0, borderRadius:14, background:ch, opacity:0.06, transform:"translateY(9px) scale(0.96)", filter:"blur(18px)", zIndex:-1, pointerEvents:"none" }} />
-              )}
-              <div
-                onClick={() => setExpanded(isOpen ? null : m.id)}
-                onMouseEnter={() => setHoveredCard(m.id)}
-                onMouseLeave={() => setHoveredCard(null)}
-                style={{
-                  borderRadius:12, cursor:"pointer",
-                  background:CARD, backdropFilter:"blur(26px)",
-                  borderLeft:`3px solid ${ch}`,
-                  boxShadow: `inset 4px 0 18px ${ch}18`,
-                  transition:"transform 0.22s ease, box-shadow 0.22s ease",
-                  transform: isOpen ? "translateY(-2px)" : hov ? "translateY(-4px)" : "none",
-                  animation: isOpen ? "sf-open 2.6s ease-in-out infinite" : ok ? "sf-conf 3.8s ease-in-out infinite" : "sf-pend 3.8s ease-in-out infinite",
-                }}
-              >
-                {/* Card face */}
-                <div style={{ display:"flex", alignItems:"center", gap:13, padding: isMobile ? "14px 14px" : "16px 18px" }}>
-                  {/* Spinning ring avatar */}
-                  <div style={{ position:"relative", width:44, height:44, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                    <div style={{ position:"absolute", inset:0, borderRadius:"50%", border:`1.5px dashed ${ch}`, opacity:0.45, animation:"sf-orbit-cw 9s linear infinite" }} />
-                    <div style={{ position:"absolute", inset:5, borderRadius:"50%", border:`1px solid ${ch}22`, animation:"sf-orbit-ccw 14s linear infinite" }} />
-                    <div style={{ width:32, height:32, borderRadius:"50%", background:`linear-gradient(135deg,${ch}28,${ch}0c)`, border:`1px solid ${ch}44`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:900, color:ch, letterSpacing:"0.04em" }}>
-                      {m.avatar}
-                    </div>
-                  </div>
-
-                  {/* Name + freq */}
-                  <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ fontSize: isMobile ? 14 : 15, fontWeight:700, color:TX, letterSpacing:"0.01em" }}>{m.prospect}</div>
-                    <div style={{ fontSize: isMobile ? 11 : 10, color:DIM, letterSpacing:"0.04em", marginTop:3 }}>
-                      {m.company} &nbsp;·&nbsp; <span style={{ color:ch }}>{m.freq}</span>
-                    </div>
-                  </div>
-
-                  {/* Time block — departure board style */}
-                  <div style={{ textAlign:"right", flexShrink:0, marginRight:4 }}>
-                    <div style={{ fontSize:7, letterSpacing:"0.14em", color:DIM, fontWeight:700, marginBottom:2 }}>{m.time.split(" ")[0].toUpperCase()}</div>
-                    <div style={{ fontSize: isMobile ? 15 : 18, fontWeight:900, color:TX, fontVariantNumeric:"tabular-nums", lineHeight:1 }}>
-                      {m.time.split(" ").slice(1).join(" ")}
-                    </div>
-                    <div style={{ display:"flex", alignItems:"center", justifyContent:"flex-end", gap:4, marginTop:4, flexWrap:"wrap" }}>
-                      <span style={{ fontSize:8, fontWeight:900, background:ch, color:"#fff", borderRadius:3, padding:"2px 5px", letterSpacing:"0.05em" }}>{chLbl(m.channel)}</span>
-                      <span style={{ fontSize: isMobile ? 8 : 9, fontWeight:800, letterSpacing:"0.07em", color:okCol, animation:!ok?"sf-blink 1.8s ease-in-out infinite":"none", textShadow:`0 0 8px ${okCol}` }}>
-                        {ok ? "CONFIRMED" : "PENDING"}
-                      </span>
-                    </div>
-                  </div>
-
-                  <span style={{ fontSize:10, color:DIM }}>{isOpen ? "▲" : "▼"}</span>
-                </div>
-
-                {/* Expanded typewriter log */}
-                {isOpen && (
-                  <div style={{ borderTop:`1px solid #ddd9d0`, padding: isMobile ? "12px 14px 16px" : "14px 18px 18px" }}>
-                    <div style={{ position:"relative", height:1, background:"rgba(34,211,238,0.07)", overflow:"hidden", marginBottom:13, borderRadius:1 }}>
-                      <div style={{ position:"absolute", top:0, bottom:0, width:"40%", background:`linear-gradient(90deg,transparent,${ELC},transparent)`, animation:"sf-bar 2s linear infinite" }} />
-                    </div>
-                    <div style={{ fontSize:8, letterSpacing:"0.2em", color:ELC, fontWeight:700, marginBottom:12, textTransform:"uppercase" }}>
-                      ▸ System Log — {m.prospect} / {m.company}
-                    </div>
-                    <TypewriterLog key={m.id} entries={m.trail} okColor={okCol} />
-                    <div style={{ marginTop:16, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-                      <span style={{ fontSize:9, letterSpacing:"0.12em", color:DIM }}>EST. DEAL VALUE</span>
-                      <span style={{ fontSize:16, fontWeight:900, color:ELG, textShadow:`0 0 18px ${ELG}` }}>{m.value}</span>
-                    </div>
-                    <div style={{ marginTop:11, display:"flex", gap:8 }}>
-                      <button style={{ flex:1, padding:"10px 0", borderRadius:8, cursor:"pointer", border:`1px solid ${ELP}55`, background:`${ELP}12`, fontSize:10, fontWeight:800, color:ELP, fontFamily:"inherit", letterSpacing:"0.1em", textTransform:"uppercase" }}>
-                        View Convo
-                      </button>
-                      <button style={{ flex:1, padding:"10px 0", borderRadius:8, cursor:"pointer", border:`1px solid ${ELC}66`, background:`${ELC}10`, fontSize:10, fontWeight:800, color:ELC, fontFamily:"inherit", letterSpacing:"0.1em", textTransform:"uppercase", boxShadow:`0 0 14px ${ELC}25` }}>
-                        Prep Brief
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        })}
-
-        {visible.length === 0 && (
-          <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:9, paddingTop:60 }}>
-            <div style={{ fontSize:8, letterSpacing:"0.22em", color:`${ELP}55`, animation:"sf-blink 1.8s ease-in-out infinite" }}>NO SIGNAL DETECTED</div>
-            <div style={{ fontSize:13, color:DIM }}>No meetings on {selectedDay}</div>
-            <div style={{ fontSize:9, color:`${ELC}44`, letterSpacing:"0.1em" }}>William is scanning...</div>
+      {/* SLACK */}
+      <div style={{ background: '#fff', border: '1px solid #e0e0e0', borderRadius: 10, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.05)', opacity: slackShow ? 1 : 0, transition: 'opacity 0.6s', marginBottom: 14 }}>
+        <div style={{ background: '#3f0e40', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
+          {dots}
+          <span style={{ color: '#fff', fontSize: 13, fontWeight: 700, flex: 1, marginLeft: 8 }}>HireWilliam</span>
+          <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: 16, padding: '3px 10px', fontSize: 10, color: '#fff', display: 'flex', alignItems: 'center', gap: 5 }}>
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#2bac76', display: 'inline-block' }} />William online
           </div>
-        )}
+        </div>
+        <div style={{ background: '#3f0e40', borderTop: '1px solid rgba(255,255,255,0.08)', padding: '5px 14px', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>#</span>
+          <span style={{ color: '#fff', fontSize: 12, fontWeight: 600 }}>results</span>
+          <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, marginLeft: 4 }}>· 3 members</span>
+        </div>
+        <div style={{ padding: '14px', background: '#fff' }}>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+            <div style={{ width: 36, height: 36, borderRadius: 8, background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 800, color: '#fff', flexShrink: 0 }}>W</div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
+                <span style={{ fontSize: 14, fontWeight: 700, color: '#1d1c1d' }}>William</span>
+                <span style={{ fontSize: 10, background: '#6366f1', color: '#fff', borderRadius: 3, padding: '1px 6px', fontWeight: 600 }}>AI</span>
+                <span style={{ fontSize: 11, color: '#999' }}>9:41 AM</span>
+              </div>
+              <div style={{ fontSize: 13, color: '#1d1c1d', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{slackMsg}</div>
+              {slackAttach && (
+                <div style={{ marginTop: 10, borderLeft: '3px solid #2bac76', background: '#f8fdf9', borderRadius: '0 6px 6px 0', padding: '10px 12px', animation: 'mw-slide 0.4s ease' }}>
+                  <div style={{ fontSize: 10, color: '#2bac76', fontWeight: 700, letterSpacing: '0.06em', marginBottom: 8 }}>WORKFLOW COMPLETE</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                    {[['◻ NOTION','#888','Research filed','Alex Morin · Shipyard'],['⬛ AIRTABLE','#fcb400','CRM updated','Stage Qualified · $12k'],['📧 GMAIL','#ea4335','Email sent · reply received','Positive intent confirmed'],['📅 CALENDAR','#1a73e8','Meeting booked','Thu Jun 5 · 2:00 PM']].map(([title,color,val,sub]) => (
+                      <div key={title} style={{ background: '#fff', border: '1px solid #e8e8e6', borderRadius: 6, padding: '7px 10px' }}>
+                        <div style={{ fontSize: 9, color, fontWeight: 700, marginBottom: 2 }}>{title}</div>
+                        <div style={{ fontSize: 11, color: '#1d1c1d', fontWeight: 500 }}>{val}</div>
+                        <div style={{ fontSize: 10, color: '#999' }}>{sub}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {slackReactions && (
+                <div style={{ display: 'flex', gap: 6, marginTop: 10, animation: 'mw-slide 0.4s ease' }}>
+                  {[['🔥','3'],['🚀','2'],['👀','1']].map(([emoji,count]) => (
+                    <span key={emoji} style={{ background: '#f1f1f1', borderRadius: 12, padding: '3px 9px', fontSize: 11, cursor: 'default', border: '1px solid #e0e0e0' }}>{emoji} {count}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+        <div style={{ borderTop: '1px solid #e8eaed', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 8, background: '#fff' }}>
+          <div style={{ flex: 1, background: '#f1f1f1', borderRadius: 6, padding: '7px 12px', fontSize: 12, color: '#aaa', border: '1px solid #e0e0e0' }}>Message #results</div>
+          <span style={{ fontSize: 16, cursor: 'default' }}>😊</span>
+        </div>
       </div>
+
+      <button onClick={runSequence} style={{ display: 'block', margin: '0 auto 16px', background: '#fff', border: '1px solid #ddd', color: '#888', borderRadius: 8, padding: '9px 24px', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit' }}>
+        Replay
+      </button>
     </div>
   );
 }
+
 
 // ── Analytics (AI Readiness Quiz) ──
 const QUIZ_QUESTIONS = [
