@@ -629,7 +629,7 @@ function OutreachView() {
       stageColor: GREEN, time: "3d ago", avatar: "DF",
       thread: [
         { from: "prospect", text: "Everyone keeps telling me we should be using AI more. I do not even know where to begin.", time: "2 weeks ago" },
-        { from: "william", text: "Audit done. You are losing 34 hours a week to work AI can own. Top 5 opportunities ranked by time saved: onboarding (11 hrs), support triage (8 hrs), outreach (6 hrs), reporting (5 hrs), content (4 hrs). I have built the roadmap. Want Terry to walk you through it?", time: "2 weeks ago", research: "Full operations audit across Beacon's tools, workflows, team size, and current manual processes" },
+        { from: "william", text: "Audit done. You are losing 34 hours a week to work AI can own. Top 5 opportunities ranked by time saved: onboarding (11 hrs), support triage (8 hrs), outreach (6 hrs), reporting (5 hrs), content (4 hrs). I have built the roadmap. Want the team to walk you through it?", time: "2 weeks ago", research: "Full operations audit across Beacon's tools, workflows, team size, and current manual processes" },
         { from: "prospect", text: "This is exactly what we need. Can we talk this week?", time: "12 days ago" },
         { from: "system", text: "Meeting held. Engagement confirmed. Build kicked off.", time: "1 week ago" },
         { from: "prospect", text: "Contract signed. Let's get started.", time: "1 week ago" },
@@ -2066,7 +2066,7 @@ function ForFoundersView({ onNav }) {
           <div className="ff-ibar">
             <div className="ff-itext">Message #for-founders</div>
             <div className="ff-ial">
-              <a href="mailto:terrylee@hirewilliam.com" className="ff-ilink">✉ Email Terry</a>
+              <a href="mailto:info@hirewilliam.com" className="ff-ilink">✉ Email Us</a>
               <a href="https://hirewilliam.com" className="ff-ilink">↗ hirewilliam.com</a>
             </div>
           </div>
