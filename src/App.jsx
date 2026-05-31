@@ -829,13 +829,12 @@ function OutreachView() {
 // ── Meetings (Agent Workflow Demo) ──
 function MeetingsView() {
   const isMobile = useIsMobile();
-  const [phase, setPhase] = useState(0); // 0=idle 1-4=tool steps 5=slack
   const [notionPain, setNotionPain] = useState('');
   const [notionStatus, setNotionStatus] = useState('');
   const [notionPainShow, setNotionPainShow] = useState(false);
   const [notionStatusShow, setNotionStatusShow] = useState(false);
   const [airtableRowShow, setAirtableRowShow] = useState(false);
-  const [airtableName, setAirtableName] = useState('⤢ ');
+  const [airtableName, setAirtableName] = useState('');
   const [gmailSubj, setGmailSubj] = useState('');
   const [gmailBody, setGmailBody] = useState('');
   const [gmailBtnShow, setGmailBtnShow] = useState(false);
@@ -849,7 +848,7 @@ function MeetingsView() {
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [cursorVisible, setCursorVisible] = useState(false);
   const [ripple, setRipple] = useState(null);
-  const [activeWin, setActiveWin] = useState(null); // 'notion'|'airtable'|'gmail'|'cal'
+  const [activeWin, setActiveWin] = useState(null);
   const [doneWins, setDoneWins] = useState([]);
   const containerRef = useRef(null);
   const isRunning = useRef(false);
@@ -864,117 +863,115 @@ function MeetingsView() {
     return { x: er.left - cr.left + er.width / 2, y: er.top - cr.top + er.height / 2 };
   }
 
-  async function moveTo(id, ms = 550) {
-    const pos = getElCenter(id);
-    setCursorPos(pos);
+  async function moveTo(id, ms = 500) {
+    if (isMobile) return;
+    setCursorPos(getElCenter(id));
     await sleep(ms);
   }
 
   async function clickEl(id) {
-    await moveTo(id, 400);
-    await sleep(60);
-    const pos = getElCenter(id);
-    setRipple({ x: pos.x, y: pos.y, key: Date.now() });
-    await sleep(300);
+    if (!isMobile) {
+      await moveTo(id, 380);
+      await sleep(60);
+      const pos = getElCenter(id);
+      setRipple({ x: pos.x, y: pos.y, key: Date.now() });
+      await sleep(280);
+    } else {
+      await sleep(180);
+    }
   }
 
-  async function typeInto(setter, text, speed = 25) {
+  async function typeInto(setter, text, speed = 22) {
     let current = '';
     for (let i = 0; i < text.length; i++) {
       current += text[i];
       setter(current);
-      await sleep(speed);
+      await sleep(isMobile ? Math.max(speed - 8, 8) : speed);
     }
   }
 
   async function runSequence() {
     if (isRunning.current) return;
     isRunning.current = true;
-
-    // reset
-    setPhase(0); setNotionPain(''); setNotionStatus(''); setNotionPainShow(false); setNotionStatusShow(false);
-    setAirtableRowShow(false); setAirtableName('⤢ ');
+    setNotionPain(''); setNotionStatus(''); setNotionPainShow(false); setNotionStatusShow(false);
+    setAirtableRowShow(false); setAirtableName('');
     setGmailSubj(''); setGmailBody(''); setGmailBtnShow(false); setGmailSent(false);
     setCalBooked(false); setCalEvShow(false);
     setSlackShow(false); setSlackMsg(''); setSlackAttach(false); setSlackReactions(false);
     setCursorVisible(false); setRipple(null); setActiveWin(null); setDoneWins([]);
-    await sleep(500);
+    await sleep(400);
 
-    setCursorVisible(true);
-    setCursorPos(getElCenter('mw-notion'));
+    if (!isMobile) { setCursorVisible(true); setCursorPos(getElCenter('mw-notion')); }
 
-    // ── NOTION ──
+    // NOTION
     setActiveWin('notion');
-    await sleep(500);
+    await sleep(isMobile ? 400 : 500);
     await clickEl('mw-notion-pain-row');
     setNotionPainShow(true);
-    await typeInto(setNotionPain, 'Manual sales ops, no outbound system', 28);
-    await sleep(300);
+    await typeInto(setNotionPain, 'Manual sales ops, no outbound system', isMobile ? 18 : 28);
+    await sleep(250);
     await clickEl('mw-notion-status-row');
     setNotionStatusShow(true);
-    await typeInto(setNotionStatus, 'Ready for outreach', 35);
-    await sleep(400);
+    await typeInto(setNotionStatus, 'Ready for outreach', isMobile ? 22 : 35);
+    await sleep(300);
     setActiveWin(null); setDoneWins(d => [...d, 'notion']);
-    await sleep(500);
+    await sleep(400);
 
-    // ── AIRTABLE ──
+    // AIRTABLE
     setActiveWin('airtable');
     await clickEl('mw-at-add-btn');
-    await sleep(300);
+    await sleep(250);
     setAirtableRowShow(true);
-    await sleep(200);
+    await sleep(180);
     await clickEl('mw-at-name-cell');
-    await typeInto(setAirtableName, '⤢ Alex Morin', 30);
-    await sleep(400);
+    await typeInto(setAirtableName, 'Alex Morin', isMobile ? 22 : 30);
+    await sleep(300);
     setActiveWin(null); setDoneWins(d => [...d, 'airtable']);
-    await sleep(500);
+    await sleep(400);
 
-    // ── GMAIL ──
+    // GMAIL
     setActiveWin('gmail');
     await clickEl('mw-gmail-subj');
-    await typeInto(setGmailSubj, "Saw you're hiring an AE at Shipyard...", 20);
-    await sleep(300);
+    await typeInto(setGmailSubj, "Saw you're hiring an AE at Shipyard...", isMobile ? 14 : 20);
+    await sleep(250);
     await clickEl('mw-gmail-body');
-    await typeInto(setGmailBody, "Hey Alex,\n\nNoticed Shipyard just posted for an Account Executive. That's usually the point where outbound starts eating founder time.\n\nWe build AI that handles the full workflow — leads, messages, replies, bookings.\n\nWorth a look?\n\nWilliam", 11);
-    await sleep(400);
+    await typeInto(setGmailBody, "Hey Alex,\n\nNoticed Shipyard just posted for an AE. That's usually the point where outbound starts eating founder time.\n\nWe build AI that handles the full workflow.\n\nWorth a look?\n\nWilliam", isMobile ? 8 : 11);
+    await sleep(350);
     setGmailBtnShow(true);
     await clickEl('mw-gmail-send');
-    await sleep(150);
+    await sleep(120);
     setGmailSent(true);
     setActiveWin(null); setDoneWins(d => [...d, 'gmail']);
-    await sleep(600);
+    await sleep(500);
 
-    // ── CALENDAR ──
+    // CALENDAR
     setActiveWin('cal');
     await clickEl('mw-cal-day5');
     setCalBooked(true);
-    await sleep(400);
-    await clickEl('mw-cal-thu-slot');
-    await sleep(300);
+    await sleep(350);
+    if (!isMobile) await clickEl('mw-cal-thu-slot');
+    await sleep(250);
     setCalEvShow(true);
     setActiveWin(null); setDoneWins(d => [...d, 'cal']);
-    await sleep(600);
-    setCursorVisible(false);
+    await sleep(500);
+    if (!isMobile) setCursorVisible(false);
 
-    // ── SLACK ──
+    // SLACK
     setSlackShow(true);
-    await sleep(500);
-    const msg = "Here's what ran while you were away.\n\nProspect research completed and filed. Notion updated, CRM populated, email sent, meeting on the calendar.\n\nI'll pick up again at 3am while you're asleep. 👇";
-    await typeInto(setSlackMsg, msg, 14);
     await sleep(400);
+    const msg = "Here's what ran while you were away.\n\nProspect research completed and filed. Notion updated, CRM populated, email sent, meeting on the calendar.\n\nI'll pick up again at 3am while you're asleep. 👇";
+    await typeInto(setSlackMsg, msg, isMobile ? 10 : 14);
+    await sleep(350);
     setSlackAttach(true);
-    await sleep(500);
+    await sleep(400);
     setSlackReactions(true);
-
     isRunning.current = false;
   }
 
   useEffect(() => { setTimeout(runSequence, 800); }, []);
 
   const winStyle = (id) => ({
-    borderRadius: 10,
-    overflow: 'hidden',
-    background: '#fff',
+    borderRadius: 10, overflow: 'hidden', background: '#fff',
     boxShadow: activeWin === id
       ? '0 0 0 2.5px #6366f1, 0 4px 32px rgba(99,102,241,0.18)'
       : doneWins.includes(id)
@@ -985,232 +982,271 @@ function MeetingsView() {
 
   const dots = (
     <div style={{ display: 'flex', gap: 5 }}>
-      <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }} />
-      <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#febc2e' }} />
-      <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }} />
+      {['#ff5f57','#febc2e','#28c840'].map(c => <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />)}
     </div>
   );
 
-  return (
-    <div ref={containerRef} style={{ flex: 1, minHeight: 0, overflowY: 'auto', background: '#f0f0f0', padding: isMobile ? 12 : 20, position: 'relative' }}>
+  const fs = isMobile ? 10 : 11;
+  const bodyFs = isMobile ? 11 : 12;
 
-      {/* William cursor */}
-      {cursorVisible && (
-        <div style={{ position: 'absolute', left: cursorPos.x, top: cursorPos.y, pointerEvents: 'none', zIndex: 999, transform: 'translate(-2px,-2px)', transition: 'left 0.5s cubic-bezier(.4,0,.2,1), top 0.5s cubic-bezier(.4,0,.2,1)' }}>
+  return (
+    <div ref={containerRef} style={{ flex: 1, minHeight: 0, overflowY: 'auto', background: '#f0f0f0', padding: isMobile ? 10 : 20, position: 'relative' }}>
+
+      {/* Cursor — desktop only */}
+      {!isMobile && cursorVisible && (
+        <div style={{ position: 'absolute', left: cursorPos.x, top: cursorPos.y, pointerEvents: 'none', zIndex: 999, transform: 'translate(-2px,-2px)', transition: 'left 0.48s cubic-bezier(.4,0,.2,1), top 0.48s cubic-bezier(.4,0,.2,1)' }}>
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.35))' }}>
             <path d="M2 2L7.5 16L9.5 10L16 8L2 2Z" fill="white" stroke="#6366f1" strokeWidth="1.4" strokeLinejoin="round"/>
           </svg>
           <div style={{ position: 'absolute', left: 20, top: 2, background: '#6366f1', color: '#fff', fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10, whiteSpace: 'nowrap', boxShadow: '0 1px 6px rgba(99,102,241,0.4)' }}>William</div>
         </div>
       )}
-
-      {/* Click ripple */}
-      {ripple && (
+      {!isMobile && ripple && (
         <div key={ripple.key} style={{ position: 'absolute', left: ripple.x - 12, top: ripple.y - 12, width: 24, height: 24, border: '2px solid #6366f1', borderRadius: '50%', pointerEvents: 'none', zIndex: 998, animation: 'mw-ripple 0.45s ease-out forwards' }} />
       )}
 
       <style>{`
         @keyframes mw-ripple { 0%{transform:scale(0.4);opacity:0.9} 100%{transform:scale(2.2);opacity:0} }
         @keyframes mw-pop { 0%{transform:scale(0.3)} 70%{transform:scale(1.3)} 100%{transform:scale(1)} }
-        @keyframes mw-ev { 0%{transform:scaleY(0);transform-origin:top} 60%{transform:scaleY(1.1)} 100%{transform:scaleY(1)} }
-        @keyframes mw-slide { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes mw-ev { 0%{transform:scaleY(0);transform-origin:top} 60%{transform:scaleY(1.08)} 100%{transform:scaleY(1)} }
+        @keyframes mw-slide { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes mw-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
       `}</style>
 
       {/* Header */}
-      <div style={{ textAlign: 'center', marginBottom: 20 }}>
+      <div style={{ textAlign: 'center', marginBottom: isMobile ? 14 : 20 }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#fff', border: '1px solid #e0e0e0', borderRadius: 20, padding: '4px 14px', fontSize: 11, color: '#16a34a', fontWeight: 600, marginBottom: 10, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#16a34a', display: 'inline-block', animation: 'mw-live 1.5s ease-in-out infinite' }} />
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#16a34a', display: 'inline-block', animation: 'mw-pulse 1.5s ease-in-out infinite' }} />
           William is working
         </div>
-        <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: '#111', marginBottom: 4 }}>Watch William run a full workflow autonomously</div>
-        <div style={{ fontSize: 12, color: '#999' }}>No human involved. This is what runs inside your business.</div>
+        <div style={{ fontSize: isMobile ? 14 : 18, fontWeight: 700, color: '#111', marginBottom: 4, padding: isMobile ? '0 4px' : 0 }}>Watch William run a full workflow autonomously</div>
+        <div style={{ fontSize: isMobile ? 11 : 12, color: '#999' }}>No human involved. This is what runs inside your business.</div>
       </div>
 
-      {/* 2x2 Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12, marginBottom: 12 }}>
+      {/* 2x2 grid — single col on mobile */}
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 10 : 12, marginBottom: isMobile ? 10 : 12 }}>
 
         {/* NOTION */}
         <div id="mw-notion" style={winStyle('notion')}>
-          <div style={{ background: '#f7f7f5', display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderBottom: '1px solid #e8e8e6' }}>
+          <div style={{ background: '#f7f7f5', display: 'flex', alignItems: 'center', gap: 8, padding: '7px 12px', borderBottom: '1px solid #e8e8e6' }}>
             {dots}
-            <span style={{ fontSize: 11, color: '#9b9b9b', marginLeft: 8 }}>Workspace / CRM / <span style={{ color: '#37352f', fontWeight: 500 }}>Alex Morin</span></span>
+            <span style={{ fontSize: fs, color: '#9b9b9b', marginLeft: 6 }}>Workspace / CRM / <span style={{ color: '#37352f', fontWeight: 500 }}>Alex Morin</span></span>
           </div>
-          <div style={{ padding: '12px 14px' }}>
-            <div style={{ fontSize: 18 }}>📋</div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#1a1a1a', marginBottom: 8, fontFamily: 'Georgia, serif' }}>Alex Morin — Shipyard</div>
-            <div style={{ height: 1, background: '#e8e8e6', marginBottom: 8 }} />
-            {[['Company','Shipyard'],['Industry','Dev Tools'],['Signal', null, <span style={{ background: '#e3f2fd', color: '#1565c0', borderRadius: 3, padding: '1px 7px', fontSize: 11, fontWeight: 500 }}>Hiring AE — 2h ago</span>],['ICP Match', null, <span style={{ background: '#e8f5e9', color: '#2e7d32', borderRadius: 3, padding: '1px 7px', fontSize: 11, fontWeight: 500 }}>High</span>]].map(([k,v,tag]) => (
-              <div key={k} style={{ display: 'flex', alignItems: 'center', marginBottom: 1, borderRadius: 4, padding: '3px 0' }}>
-                <span style={{ fontSize: 11, color: '#9b9b9b', width: 80, flexShrink: 0 }}>{k}</span>
-                <span style={{ fontSize: 12, color: '#37352f' }}>{tag || v}</span>
+          <div style={{ padding: isMobile ? '10px 12px' : '12px 14px' }}>
+            <div style={{ fontSize: isMobile ? 16 : 18 }}>📋</div>
+            <div style={{ fontSize: isMobile ? 14 : 16, fontWeight: 700, color: '#1a1a1a', marginBottom: 8, fontFamily: 'Georgia, serif' }}>Alex Morin — Shipyard</div>
+            <div style={{ height: 1, background: '#e8e8e6', marginBottom: 6 }} />
+            {[['Company','Shipyard'],['Industry','Dev Tools'],['Signal',null,<span key="s" style={{ background: '#e3f2fd', color: '#1565c0', borderRadius: 3, padding: '1px 7px', fontSize: fs, fontWeight: 500 }}>Hiring AE — 2h ago</span>],['ICP Match',null,<span key="i" style={{ background: '#e8f5e9', color: '#2e7d32', borderRadius: 3, padding: '1px 7px', fontSize: fs, fontWeight: 500 }}>High</span>]].map(([k,v,tag]) => (
+              <div key={k} style={{ display: 'flex', alignItems: 'center', marginBottom: 2, padding: '2px 0' }}>
+                <span style={{ fontSize: fs, color: '#9b9b9b', width: isMobile ? 72 : 80, flexShrink: 0 }}>{k}</span>
+                <span style={{ fontSize: bodyFs, color: '#37352f' }}>{tag || v}</span>
               </div>
             ))}
-            <div id="mw-notion-pain-row" style={{ display: 'flex', alignItems: 'center', marginBottom: 1, borderRadius: 4, padding: '3px 0', opacity: notionPainShow ? 1 : 0, transition: 'opacity 0.4s' }}>
-              <span style={{ fontSize: 11, color: '#9b9b9b', width: 80, flexShrink: 0 }}>Pain Point</span>
-              <span style={{ fontSize: 12, color: '#37352f' }}>{notionPain}</span>
+            <div id="mw-notion-pain-row" style={{ display: 'flex', alignItems: 'center', marginBottom: 2, padding: '2px 0', opacity: notionPainShow ? 1 : 0, transition: 'opacity 0.4s' }}>
+              <span style={{ fontSize: fs, color: '#9b9b9b', width: isMobile ? 72 : 80, flexShrink: 0 }}>Pain Point</span>
+              <span style={{ fontSize: bodyFs, color: '#37352f' }}>{notionPain}</span>
             </div>
-            <div id="mw-notion-status-row" style={{ display: 'flex', alignItems: 'center', marginBottom: 1, borderRadius: 4, padding: '3px 0', opacity: notionStatusShow ? 1 : 0, transition: 'opacity 0.4s' }}>
-              <span style={{ fontSize: 11, color: '#9b9b9b', width: 80, flexShrink: 0 }}>Status</span>
-              <span style={{ background: '#fff8e1', color: '#856404', borderRadius: 3, padding: '1px 7px', fontSize: 11, fontWeight: 500 }}>{notionStatus}</span>
+            <div id="mw-notion-status-row" style={{ display: 'flex', alignItems: 'center', marginBottom: 2, padding: '2px 0', opacity: notionStatusShow ? 1 : 0, transition: 'opacity 0.4s' }}>
+              <span style={{ fontSize: fs, color: '#9b9b9b', width: isMobile ? 72 : 80, flexShrink: 0 }}>Status</span>
+              <span style={{ background: '#fff8e1', color: '#856404', borderRadius: 3, padding: '1px 7px', fontSize: fs, fontWeight: 500 }}>{notionStatus}</span>
             </div>
           </div>
         </div>
 
         {/* AIRTABLE */}
         <div id="mw-airtable" style={winStyle('airtable')}>
-          <div style={{ background: '#151515', display: 'flex', alignItems: 'center', padding: '0 12px', height: 36, gap: 8 }}>
+          <div style={{ background: '#151515', display: 'flex', alignItems: 'center', padding: '0 12px', height: 34, gap: 8 }}>
             {dots}
             <span style={{ color: '#FCB400', fontWeight: 800, fontSize: 13, marginLeft: 6 }}>Airtable</span>
-            <span style={{ color: '#fff', fontSize: 11, opacity: 0.7, marginLeft: 4 }}>/ HireWilliam CRM</span>
+            {!isMobile && <span style={{ color: '#fff', fontSize: 11, opacity: 0.6, marginLeft: 4 }}>/ HireWilliam CRM</span>}
           </div>
-          <div style={{ background: '#fff', borderBottom: '1px solid #e0e0e0', padding: '0 10px', height: 32, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 11, color: '#666', padding: '3px 7px', borderRadius: 4, cursor: 'default' }}>Filter</span>
-            <span style={{ fontSize: 11, color: '#666', padding: '3px 7px', borderRadius: 4, cursor: 'default' }}>Sort</span>
+          <div style={{ background: '#fff', borderBottom: '1px solid #e0e0e0', padding: '0 10px', height: 30, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: fs, color: '#666', padding: '2px 6px', borderRadius: 4 }}>Filter</span>
+            <span style={{ fontSize: fs, color: '#666', padding: '2px 6px', borderRadius: 4 }}>Sort</span>
             <span style={{ flex: 1 }} />
-            <span id="mw-at-add-btn" style={{ fontSize: 11, color: '#1a73e8', fontWeight: 600, padding: '3px 7px', borderRadius: 4, cursor: 'default' }}>+ Add record</span>
+            <span id="mw-at-add-btn" style={{ fontSize: fs, color: '#1a73e8', fontWeight: 600, padding: '2px 6px', borderRadius: 4, cursor: 'default' }}>+ Add record</span>
           </div>
           <div style={{ background: '#f9f9f9', borderBottom: '1px solid #e0e0e0', padding: '0 10px', display: 'flex' }}>
-            <div style={{ fontSize: 11, color: '#0073ea', padding: '5px 10px', borderBottom: '2px solid #0073ea', fontWeight: 600 }}>Grid view</div>
-            <div style={{ fontSize: 11, color: '#888', padding: '5px 10px' }}>Form</div>
+            <div style={{ fontSize: fs, color: '#0073ea', padding: '4px 8px', borderBottom: '2px solid #0073ea', fontWeight: 600 }}>Grid view</div>
+            <div style={{ fontSize: fs, color: '#888', padding: '4px 8px' }}>Form</div>
           </div>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: isMobile ? 280 : 'auto' }}>
               <thead>
                 <tr>
-                  <th style={{ background: '#f5f5f5', fontSize: 10, color: '#444', fontWeight: 500, padding: '5px 8px', borderRight: '1px solid #ddd', borderBottom: '2px solid #ddd', textAlign: 'left' }}>Aa Name</th>
-                  <th style={{ background: '#f5f5f5', fontSize: 10, color: '#444', fontWeight: 500, padding: '5px 8px', borderRight: '1px solid #ddd', borderBottom: '2px solid #ddd', textAlign: 'left' }}>Aa Company</th>
-                  <th style={{ background: '#f5f5f5', fontSize: 10, color: '#444', fontWeight: 500, padding: '5px 8px', borderRight: '1px solid #ddd', borderBottom: '2px solid #ddd', textAlign: 'left' }}>Stage</th>
-                  <th style={{ background: '#f5f5f5', fontSize: 10, color: '#444', fontWeight: 500, padding: '5px 8px', borderBottom: '2px solid #ddd', textAlign: 'left' }}>$ Value</th>
+                  {['Name','Company','Stage','Value'].map(h => (
+                    <th key={h} style={{ background: '#f5f5f5', fontSize: 10, color: '#444', fontWeight: 500, padding: '4px 8px', borderRight: '1px solid #ddd', borderBottom: '2px solid #ddd', textAlign: 'left', whiteSpace: 'nowrap' }}>{h}</th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                <tr><td style={{ fontSize: 11, color: '#333', padding: '5px 8px', borderBottom: '1px solid #eee' }}>Sarah Kim</td><td style={{ fontSize: 11, color: '#333', padding: '5px 8px', borderBottom: '1px solid #eee' }}>BuildKit</td><td style={{ fontSize: 11, padding: '5px 8px', borderBottom: '1px solid #eee' }}><span style={{ background: '#d1fae5', color: '#065f46', borderRadius: 3, padding: '1px 7px', fontSize: 10, fontWeight: 600 }}>Qualified</span></td><td style={{ fontSize: 11, color: '#333', padding: '5px 8px', borderBottom: '1px solid #eee' }}>$8,000</td></tr>
-                <tr><td style={{ fontSize: 11, color: '#333', padding: '5px 8px', borderBottom: '1px solid #eee' }}>Dan Fields</td><td style={{ fontSize: 11, color: '#333', padding: '5px 8px', borderBottom: '1px solid #eee' }}>Beacon</td><td style={{ fontSize: 11, padding: '5px 8px', borderBottom: '1px solid #eee' }}><span style={{ background: '#fef3c7', color: '#92400e', borderRadius: 3, padding: '1px 7px', fontSize: 10, fontWeight: 600 }}>Contacted</span></td><td style={{ fontSize: 11, color: '#333', padding: '5px 8px', borderBottom: '1px solid #eee' }}>$15,000</td></tr>
+                <tr>
+                  <td style={{ fontSize: fs, color: '#333', padding: '4px 8px', borderBottom: '1px solid #eee', whiteSpace: 'nowrap' }}>Sarah Kim</td>
+                  <td style={{ fontSize: fs, color: '#333', padding: '4px 8px', borderBottom: '1px solid #eee' }}>BuildKit</td>
+                  <td style={{ fontSize: fs, padding: '4px 8px', borderBottom: '1px solid #eee' }}><span style={{ background: '#d1fae5', color: '#065f46', borderRadius: 3, padding: '1px 6px', fontSize: 10, fontWeight: 600 }}>Qualified</span></td>
+                  <td style={{ fontSize: fs, color: '#333', padding: '4px 8px', borderBottom: '1px solid #eee' }}>$8k</td>
+                </tr>
+                <tr>
+                  <td style={{ fontSize: fs, color: '#333', padding: '4px 8px', borderBottom: '1px solid #eee', whiteSpace: 'nowrap' }}>Dan Fields</td>
+                  <td style={{ fontSize: fs, color: '#333', padding: '4px 8px', borderBottom: '1px solid #eee' }}>Beacon</td>
+                  <td style={{ fontSize: fs, padding: '4px 8px', borderBottom: '1px solid #eee' }}><span style={{ background: '#fef3c7', color: '#92400e', borderRadius: 3, padding: '1px 6px', fontSize: 10, fontWeight: 600 }}>Contacted</span></td>
+                  <td style={{ fontSize: fs, color: '#333', padding: '4px 8px', borderBottom: '1px solid #eee' }}>$15k</td>
+                </tr>
                 {airtableRowShow && (
                   <tr style={{ background: '#fffde7', animation: 'mw-slide 0.4s ease' }}>
-                    <td id="mw-at-name-cell" style={{ fontSize: 11, color: '#333', padding: '5px 8px', borderBottom: '1px solid #eee', fontWeight: 600 }}>{airtableName}</td>
-                    <td style={{ fontSize: 11, color: '#333', padding: '5px 8px', borderBottom: '1px solid #eee' }}>Shipyard</td>
-                    <td style={{ fontSize: 11, padding: '5px 8px', borderBottom: '1px solid #eee' }}><span style={{ background: '#dbeafe', color: '#1e40af', borderRadius: 3, padding: '1px 7px', fontSize: 10, fontWeight: 600 }}>Prospect</span></td>
-                    <td style={{ fontSize: 11, color: '#1a73e8', padding: '5px 8px', borderBottom: '1px solid #eee', fontSize: 10 }}>$12,000</td>
+                    <td id="mw-at-name-cell" style={{ fontSize: fs, color: '#333', padding: '4px 8px', borderBottom: '1px solid #eee', fontWeight: 600, whiteSpace: 'nowrap' }}>{airtableName || ' '}</td>
+                    <td style={{ fontSize: fs, color: '#333', padding: '4px 8px', borderBottom: '1px solid #eee' }}>Shipyard</td>
+                    <td style={{ fontSize: fs, padding: '4px 8px', borderBottom: '1px solid #eee' }}><span style={{ background: '#dbeafe', color: '#1e40af', borderRadius: 3, padding: '1px 6px', fontSize: 10, fontWeight: 600 }}>Prospect</span></td>
+                    <td style={{ fontSize: fs, color: '#1a73e8', padding: '4px 8px', borderBottom: '1px solid #eee' }}>$12k</td>
                   </tr>
                 )}
               </tbody>
             </table>
-            <div style={{ fontSize: 11, color: '#bbb', padding: '5px 8px' }}>+ Add a record</div>
+            <div style={{ fontSize: fs, color: '#bbb', padding: '4px 8px' }}>+ Add a record</div>
           </div>
         </div>
 
         {/* GMAIL */}
         <div id="mw-gmail" style={winStyle('gmail')}>
-          <div style={{ background: '#fff', borderBottom: '1px solid #e0e0e0', padding: '7px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ background: '#fff', borderBottom: '1px solid #e0e0e0', padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
             {dots}
-            <span style={{ fontSize: 20, letterSpacing: -0.5 }}>
+            <span style={{ fontSize: 18, letterSpacing: -0.5, marginLeft: 4 }}>
               <span style={{ color: '#EA4335', fontWeight: 700 }}>G</span><span style={{ color: '#4285F4' }}>m</span><span style={{ color: '#EA4335' }}>a</span><span style={{ color: '#FBBC05' }}>i</span><span style={{ color: '#34A853' }}>l</span>
             </span>
-            <div style={{ flex: 1, background: '#eaf1fb', borderRadius: 20, padding: '5px 12px', fontSize: 12, color: '#777' }}>Search mail</div>
-            <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#6366f1', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700 }}>W</div>
+            {!isMobile && <div style={{ flex: 1, background: '#eaf1fb', borderRadius: 20, padding: '4px 12px', fontSize: 12, color: '#777' }}>Search mail</div>}
+            <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#6366f1', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, marginLeft: 'auto' }}>W</div>
           </div>
-          <div style={{ display: 'flex', minHeight: 195 }}>
-            <div style={{ width: 64, borderRight: '1px solid #e8eaed', padding: '6px 0', flexShrink: 0 }}>
-              {[['✏️','Compose',true],['📥','Inbox'],['⭐','Starred'],['📤','Sent']].map(([icon,label,active]) => (
-                <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, padding: '5px 2px', fontSize: 9, color: active ? '#c5221f' : '#444', background: active ? '#fce8e6' : 'transparent', borderRadius: 6, margin: '1px 3px', cursor: 'default' }}>
-                  <span style={{ fontSize: 15 }}>{icon}</span>{label}
+          <div style={{ display: 'flex', minHeight: isMobile ? 160 : 195 }}>
+            {!isMobile && (
+              <div style={{ width: 60, borderRight: '1px solid #e8eaed', padding: '6px 0', flexShrink: 0 }}>
+                {[['✏️','Compose',true],['📥','Inbox'],['⭐','Starred'],['📤','Sent']].map(([icon,label,active]) => (
+                  <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, padding: '4px 2px', fontSize: 9, color: active ? '#c5221f' : '#444', background: active ? '#fce8e6' : 'transparent', borderRadius: 6, margin: '1px 3px', cursor: 'default' }}>
+                    <span style={{ fontSize: 14 }}>{icon}</span>{label}
+                  </div>
+                ))}
+              </div>
+            )}
+            <div style={{ flex: 1, padding: isMobile ? 8 : 6 }}>
+              <div style={{ background: '#fff', borderRadius: isMobile ? 8 : '8px 8px 0 0', boxShadow: '0 1px 3px rgba(0,0,0,0.15), 0 4px 16px rgba(0,0,0,0.10)', overflow: 'hidden' }}>
+                <div style={{ background: '#404040', padding: '6px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: bodyFs, color: '#fff', fontWeight: 500 }}>New Message</span>
+                  <span style={{ color: '#ccc', fontSize: 12 }}>✕</span>
                 </div>
-              ))}
-            </div>
-            <div style={{ flex: 1, padding: 6 }}>
-              <div style={{ background: '#fff', borderRadius: '8px 8px 0 0', boxShadow: '0 1px 3px rgba(0,0,0,0.15), 0 6px 20px rgba(0,0,0,0.12)', overflow: 'hidden' }}>
-                <div style={{ background: '#404040', padding: '7px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: 12, color: '#fff', fontWeight: 500 }}>New Message</span>
-                  <span style={{ color: '#ccc', fontSize: 13 }}>✕</span>
+                <div style={{ display: 'flex', alignItems: 'center', padding: '3px 10px', borderBottom: '1px solid #e8eaed', minHeight: 26 }}>
+                  <span style={{ fontSize: fs, color: '#5f6368', width: 24, flexShrink: 0 }}>To</span>
+                  <span style={{ background: '#e8f0fe', borderRadius: 12, padding: '1px 8px', fontSize: fs, color: '#1a73e8' }}>alex@shipyard.dev</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', padding: '4px 10px', borderBottom: '1px solid #e8eaed', minHeight: 28 }}>
-                  <span style={{ fontSize: 11, color: '#5f6368', width: 28 }}>To</span>
-                  <span style={{ background: '#e8f0fe', borderRadius: 12, padding: '2px 9px', fontSize: 11, color: '#1a73e8' }}>alex@shipyard.dev</span>
+                <div id="mw-gmail-subj" style={{ display: 'flex', alignItems: 'center', padding: '3px 10px', borderBottom: '1px solid #e8eaed', minHeight: 26 }}>
+                  <span style={{ fontSize: fs, color: '#5f6368', width: 24, flexShrink: 0 }}>Sub</span>
+                  <span style={{ fontSize: bodyFs, color: '#202124' }}>{gmailSubj}</span>
                 </div>
-                <div id="mw-gmail-subj" style={{ display: 'flex', alignItems: 'center', padding: '4px 10px', borderBottom: '1px solid #e8eaed', minHeight: 28 }}>
-                  <span style={{ fontSize: 11, color: '#5f6368', width: 28, flexShrink: 0 }}>Sub</span>
-                  <span style={{ fontSize: 12, color: '#202124' }}>{gmailSubj}</span>
-                </div>
-                <div id="mw-gmail-body" style={{ padding: '8px 10px', fontSize: 12, color: '#202124', lineHeight: 1.6, whiteSpace: 'pre-wrap', minHeight: 72 }}>{gmailBody}</div>
-                <div style={{ borderTop: '1px solid #e8eaed', padding: '7px 10px', display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <button id="mw-gmail-send" style={{ background: gmailSent ? '#16a34a' : '#1a73e8', color: '#fff', border: 'none', borderRadius: 4, padding: '6px 16px', fontSize: 12, fontWeight: 500, cursor: 'pointer', opacity: gmailBtnShow ? 1 : 0, transition: 'opacity 0.3s, background 0.3s', fontFamily: 'inherit' }}>
+                <div id="mw-gmail-body" style={{ padding: '6px 10px', fontSize: isMobile ? 11 : 12, color: '#202124', lineHeight: 1.55, whiteSpace: 'pre-wrap', minHeight: isMobile ? 60 : 72 }}>{gmailBody}</div>
+                <div style={{ borderTop: '1px solid #e8eaed', padding: '6px 10px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <button id="mw-gmail-send" style={{ background: gmailSent ? '#16a34a' : '#1a73e8', color: '#fff', border: 'none', borderRadius: 4, padding: isMobile ? '5px 14px' : '6px 16px', fontSize: bodyFs, fontWeight: 500, cursor: 'pointer', opacity: gmailBtnShow ? 1 : 0, transition: 'opacity 0.3s, background 0.3s', fontFamily: 'inherit' }}>
                     {gmailSent ? '✓ Sent' : 'Send'}
                   </button>
-                  <span style={{ color: '#5f6368', fontSize: 15 }}>📎</span>
+                  <span style={{ color: '#5f6368', fontSize: 14 }}>📎</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* CALENDAR */}
+        {/* CALENDAR — simplified on mobile */}
         <div id="mw-cal" style={winStyle('cal')}>
-          <div style={{ background: '#fff', borderBottom: '1px solid #e0e0e0', padding: '7px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ background: '#fff', borderBottom: '1px solid #e0e0e0', padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
             {dots}
-            <div style={{ width: 26, height: 26, borderRadius: 4, border: '2px solid #4285f4', overflow: 'hidden', flexShrink: 0 }}>
-              <div style={{ background: '#4285f4', height: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 5, color: '#fff', fontWeight: 700 }}>JUN</div>
-              <div style={{ background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 17, fontSize: 11, fontWeight: 700, color: '#4285f4' }}>5</div>
+            <div style={{ width: 24, height: 24, borderRadius: 4, border: '2px solid #4285f4', overflow: 'hidden', flexShrink: 0 }}>
+              <div style={{ background: '#4285f4', height: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 5, color: '#fff', fontWeight: 700 }}>JUN</div>
+              <div style={{ background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 16, fontSize: 10, fontWeight: 700, color: '#4285f4' }}>5</div>
             </div>
-            <span style={{ fontSize: 18, color: '#5f6368', fontWeight: 300 }}>Calendar</span>
-            <div style={{ flex: 1, background: '#f1f3f4', borderRadius: 20, padding: '5px 12px', fontSize: 12, color: '#777' }}>Search</div>
+            <span style={{ fontSize: 16, color: '#5f6368', fontWeight: 300 }}>Calendar</span>
+            {!isMobile && <div style={{ flex: 1, background: '#f1f3f4', borderRadius: 20, padding: '4px 12px', fontSize: 12, color: '#777' }}>Search</div>}
           </div>
-          <div style={{ display: 'flex', minHeight: 205 }}>
-            <div style={{ width: 130, flexShrink: 0, borderRight: '1px solid #e8eaed', padding: 8 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                <span style={{ fontSize: 10, color: '#3c4043', fontWeight: 600 }}>June 2026</span>
-                <span style={{ fontSize: 11, color: '#70757a', cursor: 'default' }}>‹ ›</span>
+
+          {isMobile ? (
+            /* Mobile calendar: mini-only, no week grid */
+            <div style={{ padding: 12 }}>
+              <div style={{ marginBottom: 10 }}>
+                <div style={{ fontSize: 11, color: '#3c4043', fontWeight: 600, marginBottom: 8 }}>June 2026</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 2, maxWidth: 220 }}>
+                  {['M','T','W','T','F','S','S'].map((d,i) => <div key={i} style={{ fontSize: 9, color: '#70757a', textAlign: 'center', fontWeight: 500 }}>{d}</div>)}
+                  {[26,27,28,29,30,31,1,2,3,4,'5',6,7,8,9,10,11,12,13,14,15].map((d,i) => {
+                    const isOther = i < 6;
+                    const isToday = d === 3;
+                    const isDay5 = d === '5';
+                    return (
+                      <div id={isDay5 ? 'mw-cal-day5' : undefined} key={i} style={{ fontSize: 11, textAlign: 'center', width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', margin: 'auto', color: isOther ? '#ccc' : isToday ? '#fff' : calBooked && isDay5 ? '#fff' : '#3c4043', background: isToday ? '#1a73e8' : calBooked && isDay5 ? '#34a853' : 'transparent', fontWeight: isToday || (calBooked && isDay5) ? 700 : 400, animation: calBooked && isDay5 ? 'mw-pop 0.45s ease' : 'none', cursor: 'default' }}>{d}</div>
+                    );
+                  })}
+                </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 1 }}>
-                {['M','T','W','T','F','S','S'].map((d,i) => <div key={i} style={{ fontSize: 8, color: '#70757a', textAlign: 'center', padding: '2px 0', fontWeight: 500 }}>{d}</div>)}
-                {[26,27,28,29,30,31,1,2,3,4,'5',6,7,8,9,10,11,12,13,14,15].map((d,i) => {
-                  const isOther = i < 6;
-                  const isToday = d === 3;
-                  const isDay5 = d === '5';
-                  return (
-                    <div id={isDay5 ? 'mw-cal-day5' : undefined} key={i} style={{ fontSize: 10, color: isOther ? '#ccc' : isToday ? '#fff' : calBooked && isDay5 ? '#fff' : '#3c4043', textAlign: 'center', width: 17, height: 17, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', margin: 'auto', background: isToday ? '#1a73e8' : calBooked && isDay5 ? '#34a853' : 'transparent', fontWeight: isToday || (calBooked && isDay5) ? 700 : 400, animation: calBooked && isDay5 ? 'mw-pop 0.45s ease' : 'none', cursor: 'default' }}>{d}</div>
-                  );
-                })}
-              </div>
-              <div style={{ marginTop: 10, padding: 6, background: '#e8f5e9', borderRadius: 6, opacity: calEvShow ? 1 : 0, transition: 'opacity 0.5s' }}>
-                <div style={{ fontSize: 9, color: '#2e7d32', fontWeight: 700 }}>CONFIRMED</div>
-                <div style={{ fontSize: 10, color: '#1b5e20', fontWeight: 600, marginTop: 1 }}>Alex Morin</div>
-                <div style={{ fontSize: 9, color: '#388e3c' }}>Thu Jun 5 · 2:00 PM</div>
+              <div style={{ opacity: calEvShow ? 1 : 0, transition: 'opacity 0.5s', background: '#e8f5e9', borderRadius: 8, padding: '10px 12px', animation: calEvShow ? 'mw-slide 0.4s ease' : 'none' }}>
+                <div style={{ fontSize: 10, color: '#2e7d32', fontWeight: 700, marginBottom: 2 }}>MEETING CONFIRMED</div>
+                <div style={{ fontSize: 13, color: '#1b5e20', fontWeight: 600 }}>Alex Morin — Shipyard</div>
+                <div style={{ fontSize: 11, color: '#388e3c', marginTop: 2 }}>Thu Jun 5 · 2:00 PM · 30 min</div>
               </div>
             </div>
-            <div style={{ flex: 1, overflow: 'hidden' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '34px repeat(7,1fr)', borderBottom: '1px solid #e8eaed' }}>
-                <div style={{ fontSize: 8, color: '#70757a', padding: 4, textAlign: 'right' }}>GMT</div>
-                {['MON','TUE','WED','THU','FRI','SAT','SUN'].map((d,i) => (
-                  <div key={d} style={{ textAlign: 'center', padding: '5px 2px' }}>
-                    <span style={{ fontSize: 9, color: i === 3 ? '#1a73e8' : '#70757a', display: 'block', fontWeight: i===3?600:400 }}>{d}</span>
-                    <span style={{ fontSize: 15, color: i===2?'#fff':i===3?'#1a73e8':'#3c4043', display: 'inline-block', background: i===2?'#1a73e8':'transparent', borderRadius:'50%', width:i===2?26:undefined, height:i===2?26:undefined, lineHeight:i===2?'26px':undefined, textAlign:'center' }}>{i+1}</span>
-                  </div>
-                ))}
+          ) : (
+            /* Desktop calendar: full week grid */
+            <div style={{ display: 'flex', minHeight: 200 }}>
+              <div style={{ width: 128, flexShrink: 0, borderRight: '1px solid #e8eaed', padding: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <span style={{ fontSize: 10, color: '#3c4043', fontWeight: 600 }}>June 2026</span>
+                  <span style={{ fontSize: 11, color: '#70757a', cursor: 'default' }}>‹ ›</span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 1 }}>
+                  {['M','T','W','T','F','S','S'].map((d,i) => <div key={i} style={{ fontSize: 8, color: '#70757a', textAlign: 'center', padding: '2px 0', fontWeight: 500 }}>{d}</div>)}
+                  {[26,27,28,29,30,31,1,2,3,4,'5',6,7,8,9,10,11,12,13,14,15].map((d,i) => {
+                    const isOther = i < 6;
+                    const isToday = d === 3;
+                    const isDay5 = d === '5';
+                    return (
+                      <div id={isDay5 ? 'mw-cal-day5' : undefined} key={i} style={{ fontSize: 10, textAlign: 'center', width: 17, height: 17, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', margin: 'auto', color: isOther ? '#ccc' : isToday ? '#fff' : calBooked && isDay5 ? '#fff' : '#3c4043', background: isToday ? '#1a73e8' : calBooked && isDay5 ? '#34a853' : 'transparent', fontWeight: isToday || (calBooked && isDay5) ? 700 : 400, animation: calBooked && isDay5 ? 'mw-pop 0.45s ease' : 'none', cursor: 'default' }}>{d}</div>
+                    );
+                  })}
+                </div>
+                <div style={{ marginTop: 8, padding: 6, background: '#e8f5e9', borderRadius: 6, opacity: calEvShow ? 1 : 0, transition: 'opacity 0.5s' }}>
+                  <div style={{ fontSize: 9, color: '#2e7d32', fontWeight: 700 }}>CONFIRMED</div>
+                  <div style={{ fontSize: 10, color: '#1b5e20', fontWeight: 600, marginTop: 1 }}>Alex Morin</div>
+                  <div style={{ fontSize: 9, color: '#388e3c' }}>Thu Jun 5 · 2:00 PM</div>
+                </div>
               </div>
-              {[['9 AM',false],['10 AM',false],['11 AM',true],['1 PM',false]].map(([time, hasStandup], ri) => (
-                <div key={time} style={{ display: 'grid', gridTemplateColumns: '34px repeat(7,1fr)' }}>
-                  <div style={{ fontSize: 8, color: '#70757a', padding: '2px 3px', textAlign: 'right', height: 26, borderTop: '1px solid #f1f3f4' }}>{time}</div>
-                  {[0,1,2,3,4,5,6].map(ci => (
-                    <div id={ci===3&&time==='1 PM'?'mw-cal-thu-slot':undefined} key={ci} style={{ borderLeft: '1px solid #e8eaed', height: 26, borderTop: '1px solid #f1f3f4', background: ci===2?'#f8f9fa':'transparent', position: 'relative' }}>
-                      {hasStandup && ci===0 && <div style={{ position:'absolute',left:2,right:2,top:2,bottom:2,background:'#1a73e8',borderRadius:3,padding:'1px 4px',fontSize:9,color:'#fff',fontWeight:500,overflow:'hidden',whiteSpace:'nowrap' }}>Team standup</div>}
-                      {ci===3 && time==='1 PM' && calEvShow && <div style={{ position:'absolute',left:2,right:2,top:2,bottom:2,background:'#0f9d58',borderRadius:3,padding:'1px 4px',fontSize:9,color:'#fff',fontWeight:500,overflow:'hidden',whiteSpace:'nowrap',animation:'mw-ev 0.5s ease' }}>Alex Morin · 2pm</div>}
+              <div style={{ flex: 1, overflow: 'hidden' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '34px repeat(7,1fr)', borderBottom: '1px solid #e8eaed' }}>
+                  <div style={{ fontSize: 8, color: '#70757a', padding: 4, textAlign: 'right' }}>GMT</div>
+                  {['MON','TUE','WED','THU','FRI','SAT','SUN'].map((d,i) => (
+                    <div key={d} style={{ textAlign: 'center', padding: '4px 2px' }}>
+                      <span style={{ fontSize: 9, color: i===3 ? '#1a73e8' : '#70757a', display: 'block', fontWeight: i===3 ? 600 : 400 }}>{d}</span>
+                      <span style={{ fontSize: 14, color: i===2 ? '#fff' : i===3 ? '#1a73e8' : '#3c4043', display: 'inline-block', background: i===2 ? '#1a73e8' : 'transparent', borderRadius: '50%', width: i===2 ? 24 : undefined, height: i===2 ? 24 : undefined, lineHeight: i===2 ? '24px' : undefined, textAlign: 'center' }}>{i+1}</span>
                     </div>
                   ))}
                 </div>
-              ))}
+                {[['9 AM',false],['11 AM',true],['12 PM',false],['1 PM',false]].map(([time, hasStandup]) => (
+                  <div key={time} style={{ display: 'grid', gridTemplateColumns: '34px repeat(7,1fr)' }}>
+                    <div style={{ fontSize: 8, color: '#70757a', padding: '2px 3px', textAlign: 'right', height: 26, borderTop: '1px solid #f1f3f4' }}>{time}</div>
+                    {[0,1,2,3,4,5,6].map(ci => (
+                      <div id={ci===3&&time==='1 PM'?'mw-cal-thu-slot':undefined} key={ci} style={{ borderLeft: '1px solid #e8eaed', height: 26, borderTop: '1px solid #f1f3f4', background: ci===2 ? '#f8f9fa' : 'transparent', position: 'relative' }}>
+                        {hasStandup && ci===0 && <div style={{ position:'absolute',left:2,right:2,top:2,bottom:2,background:'#1a73e8',borderRadius:3,padding:'1px 4px',fontSize:9,color:'#fff',fontWeight:500,overflow:'hidden',whiteSpace:'nowrap' }}>Team standup</div>}
+                        {ci===3 && time==='1 PM' && calEvShow && <div style={{ position:'absolute',left:2,right:2,top:2,bottom:2,background:'#0f9d58',borderRadius:3,padding:'1px 4px',fontSize:9,color:'#fff',fontWeight:500,overflow:'hidden',whiteSpace:'nowrap',animation:'mw-ev 0.5s ease' }}>Alex Morin · 2pm</div>}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
       {/* SLACK */}
       <div style={{ background: '#fff', border: '1px solid #e0e0e0', borderRadius: 10, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.05)', opacity: slackShow ? 1 : 0, transition: 'opacity 0.6s', marginBottom: 14 }}>
-        <div style={{ background: '#3f0e40', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ background: '#3f0e40', padding: '7px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
           {dots}
           <span style={{ color: '#fff', fontSize: 13, fontWeight: 700, flex: 1, marginLeft: 8 }}>HireWilliam</span>
           <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: 16, padding: '3px 10px', fontSize: 10, color: '#fff', display: 'flex', alignItems: 'center', gap: 5 }}>
-            <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#2bac76', display: 'inline-block' }} />William online
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#2bac76', display: 'inline-block' }} />
+            {!isMobile && 'William online'}
           </div>
         </div>
         <div style={{ background: '#3f0e40', borderTop: '1px solid rgba(255,255,255,0.08)', padding: '5px 14px', display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -1218,24 +1254,24 @@ function MeetingsView() {
           <span style={{ color: '#fff', fontSize: 12, fontWeight: 600 }}>results</span>
           <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, marginLeft: 4 }}>· 3 members</span>
         </div>
-        <div style={{ padding: '14px', background: '#fff' }}>
+        <div style={{ padding: isMobile ? '12px' : '14px', background: '#fff' }}>
           <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-            <div style={{ width: 36, height: 36, borderRadius: 8, background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 800, color: '#fff', flexShrink: 0 }}>W</div>
+            <div style={{ width: 34, height: 34, borderRadius: 8, background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 800, color: '#fff', flexShrink: 0 }}>W</div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
                 <span style={{ fontSize: 14, fontWeight: 700, color: '#1d1c1d' }}>William</span>
                 <span style={{ fontSize: 10, background: '#6366f1', color: '#fff', borderRadius: 3, padding: '1px 6px', fontWeight: 600 }}>AI</span>
                 <span style={{ fontSize: 11, color: '#999' }}>9:41 AM</span>
               </div>
-              <div style={{ fontSize: 13, color: '#1d1c1d', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{slackMsg}</div>
+              <div style={{ fontSize: isMobile ? 12 : 13, color: '#1d1c1d', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{slackMsg}</div>
               {slackAttach && (
                 <div style={{ marginTop: 10, borderLeft: '3px solid #2bac76', background: '#f8fdf9', borderRadius: '0 6px 6px 0', padding: '10px 12px', animation: 'mw-slide 0.4s ease' }}>
                   <div style={{ fontSize: 10, color: '#2bac76', fontWeight: 700, letterSpacing: '0.06em', marginBottom: 8 }}>WORKFLOW COMPLETE</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 6 }}>
                     {[['◻ NOTION','#888','Research filed','Alex Morin · Shipyard'],['⬛ AIRTABLE','#fcb400','CRM updated','Stage Qualified · $12k'],['📧 GMAIL','#ea4335','Email sent · reply received','Positive intent confirmed'],['📅 CALENDAR','#1a73e8','Meeting booked','Thu Jun 5 · 2:00 PM']].map(([title,color,val,sub]) => (
                       <div key={title} style={{ background: '#fff', border: '1px solid #e8e8e6', borderRadius: 6, padding: '7px 10px' }}>
                         <div style={{ fontSize: 9, color, fontWeight: 700, marginBottom: 2 }}>{title}</div>
-                        <div style={{ fontSize: 11, color: '#1d1c1d', fontWeight: 500 }}>{val}</div>
+                        <div style={{ fontSize: isMobile ? 12 : 11, color: '#1d1c1d', fontWeight: 500 }}>{val}</div>
                         <div style={{ fontSize: 10, color: '#999' }}>{sub}</div>
                       </div>
                     ))}
@@ -1243,7 +1279,7 @@ function MeetingsView() {
                 </div>
               )}
               {slackReactions && (
-                <div style={{ display: 'flex', gap: 6, marginTop: 10, animation: 'mw-slide 0.4s ease' }}>
+                <div style={{ display: 'flex', gap: 6, marginTop: 10, flexWrap: 'wrap', animation: 'mw-slide 0.4s ease' }}>
                   {[['🔥','3'],['🚀','2'],['👀','1']].map(([emoji,count]) => (
                     <span key={emoji} style={{ background: '#f1f1f1', borderRadius: 12, padding: '3px 9px', fontSize: 11, cursor: 'default', border: '1px solid #e0e0e0' }}>{emoji} {count}</span>
                   ))}
@@ -1252,11 +1288,18 @@ function MeetingsView() {
             </div>
           </div>
         </div>
-        <div style={{ borderTop: '1px solid #e8eaed', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 8, background: '#fff' }}>
-          <div style={{ flex: 1, background: '#f1f1f1', borderRadius: 6, padding: '7px 12px', fontSize: 12, color: '#aaa', border: '1px solid #e0e0e0' }}>Message #results</div>
+        <div style={{ borderTop: '1px solid #e8eaed', padding: '7px 14px', display: 'flex', alignItems: 'center', gap: 8, background: '#fff' }}>
+          <div style={{ flex: 1, background: '#f1f1f1', borderRadius: 6, padding: '6px 12px', fontSize: 12, color: '#aaa', border: '1px solid #e0e0e0' }}>Message #results</div>
           <span style={{ fontSize: 16, cursor: 'default' }}>😊</span>
         </div>
       </div>
+
+      <button onClick={runSequence} style={{ display: 'block', margin: '0 auto 16px', background: '#fff', border: '1px solid #ddd', color: '#888', borderRadius: 8, padding: '9px 24px', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit' }}>
+        Replay
+      </button>
+    </div>
+  );
+}
 
       <button onClick={runSequence} style={{ display: 'block', margin: '0 auto 16px', background: '#fff', border: '1px solid #ddd', color: '#888', borderRadius: 8, padding: '9px 24px', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit' }}>
         Replay
