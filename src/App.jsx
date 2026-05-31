@@ -2059,20 +2059,7 @@ function ForFoundersView({ onNav }) {
             </div>
           </div>
 
-          <div className="ff-mg" style={{ marginTop: 6 }}>
-            <div className="ff-av ff-av-t">T</div>
-            <div className="ff-msg-right">
-              <div className="ff-meta">
-                <span className="ff-sender ff-sender-founder">Terry Lee</span>
-                <span style={{ fontSize: 12, color: "#868686", fontWeight: 400 }}>Founder, HireWilliam</span>
-                <span className="ff-ts">9:06 AM</span>
-              </div>
-              <div className="ff-body">
-                HireWilliam builds custom AI systems that run inside your business. Not tools. Not subscriptions. A proper AI build, scoped to your exact situation.<br /><br />
-                If you want to know what that looks like for your business, message me: <a href="mailto:terrylee@hirewilliam.com">terrylee@hirewilliam.com</a>. William already has a read on what you need.
-              </div>
-            </div>
-          </div>
+
         </div>
 
         <div className="ff-izone">
