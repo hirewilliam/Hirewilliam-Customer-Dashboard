@@ -2038,7 +2038,7 @@ function ForFoundersView({ onNav }) {
                     { name: "n8n",        domain: "n8n.io" },
                     { name: "Shopify",    domain: "shopify.com" },
                     { name: "Stripe",     domain: "stripe.com" },
-                    { name: "WhatsApp",   domain: "web.whatsapp.com" },
+                    { name: "WhatsApp",   domain: "whatsapp.com" },
                     { name: "Instagram",  domain: "instagram.com" },
                     { name: "Google Ads", domain: "ads.google.com" },
                     { name: "Meta Ads",   domain: "meta.com" },
