@@ -854,6 +854,95 @@ function MeetingsView() {
   const isRunning = useRef(false);
 
   const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const curPosRef = useRef({ x: 0, y: 0 });
+  const audioCtxRef = useRef(null);
+
+  function getAudioCtx() {
+    if (!audioCtxRef.current) {
+      try { audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){}
+    }
+    return audioCtxRef.current;
+  }
+
+  function playKeystroke() {
+    try {
+      const ctx = getAudioCtx(); if (!ctx) return;
+      const buf = ctx.createBuffer(1, ctx.sampleRate * 0.04, ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = (Math.random()*2-1) * Math.pow(1-i/d.length,8) * 0.22;
+      const src = ctx.createBufferSource(); src.buffer = buf;
+      const f = ctx.createBiquadFilter(); f.type='bandpass'; f.frequency.value=3200+Math.random()*800; f.Q.value=0.8;
+      const g = ctx.createGain(); g.gain.value = 0.055 + Math.random()*0.04;
+      src.connect(f); f.connect(g); g.connect(ctx.destination); src.start();
+    } catch(e){}
+  }
+
+  function playMouseClick() {
+    try {
+      const ctx = getAudioCtx(); if (!ctx) return;
+      const o = ctx.createOscillator(); const g = ctx.createGain();
+      o.type='sine'; o.frequency.setValueAtTime(120,ctx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(40,ctx.currentTime+0.04);
+      g.gain.setValueAtTime(0.22,ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.06);
+      o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+0.06);
+    } catch(e){}
+  }
+
+  function playSnap() {
+    try {
+      const ctx = getAudioCtx(); if (!ctx) return;
+      const o = ctx.createOscillator(); const g = ctx.createGain();
+      o.type='triangle'; o.frequency.setValueAtTime(1200,ctx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(400,ctx.currentTime+0.05);
+      g.gain.setValueAtTime(0.12,ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.07);
+      o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+0.07);
+    } catch(e){}
+  }
+
+  function playWhoosh() {
+    try {
+      const ctx = getAudioCtx(); if (!ctx) return;
+      const buf = ctx.createBuffer(1, ctx.sampleRate*0.28, ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2)*0.15;
+      const src = ctx.createBufferSource(); src.buffer=buf;
+      const f = ctx.createBiquadFilter(); f.type='highpass'; f.frequency.value=800;
+      f.frequency.linearRampToValueAtTime(4000,ctx.currentTime+0.25);
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.4,ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.28);
+      src.connect(f); f.connect(g); g.connect(ctx.destination); src.start();
+    } catch(e){}
+  }
+
+  function playPop() {
+    try {
+      const ctx = getAudioCtx(); if (!ctx) return;
+      [880,1320].forEach(freq => {
+        const o=ctx.createOscillator(); const g=ctx.createGain();
+        o.type='sine'; o.frequency.setValueAtTime(freq,ctx.currentTime);
+        o.frequency.exponentialRampToValueAtTime(freq*1.4,ctx.currentTime+0.05);
+        g.gain.setValueAtTime(0.12,ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.18);
+        o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+0.18);
+      });
+    } catch(e){}
+  }
+
+  function playSlackDing() {
+    try {
+      const ctx = getAudioCtx(); if (!ctx) return;
+      [1174,1568,1318].forEach((freq,i) => {
+        const o=ctx.createOscillator(); const g=ctx.createGain();
+        o.type='sine'; o.frequency.value=freq;
+        const t=ctx.currentTime+i*0.09;
+        g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.18,t+0.02);
+        g.gain.exponentialRampToValueAtTime(0.001,t+0.35);
+        o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t+0.35);
+      });
+    } catch(e){}
+  }
 
   function getElCenter(id) {
     const el = document.getElementById(id);
@@ -863,22 +952,67 @@ function MeetingsView() {
     return { x: er.left - cr.left + er.width / 2, y: er.top - cr.top + er.height / 2 };
   }
 
-  async function moveTo(id, ms = 500) {
+  function moveCursorTo(tx, ty, ms = 600) {
+    if (isMobile) return sleep(0);
+    return new Promise(resolve => {
+      const { x: sx, y: sy } = curPosRef.current;
+      const dist = Math.sqrt((tx-sx)*(tx-sx)+(ty-sy)*(ty-sy));
+      const arcScale = Math.max(0.25, Math.min(0.55, dist/400));
+      const mx = (sx+tx)/2 + (Math.random()-0.5)*dist*arcScale;
+      const my = (sy+ty)/2 + (Math.random()-0.5)*dist*arcScale*0.7;
+      let t0 = null;
+      function step(ts) {
+        if (!t0) t0 = ts;
+        const p = Math.min((ts-t0)/ms, 1);
+        const e = p<0.5 ? 4*p*p*p : 1-Math.pow(-2*p+2,3)/2;
+        const x = (1-e)*(1-e)*sx + 2*(1-e)*e*mx + e*e*tx;
+        const y = (1-e)*(1-e)*sy + 2*(1-e)*e*my + e*e*ty;
+        curPosRef.current = { x, y };
+        setCursorPos({ x, y });
+        if (p < 1) requestAnimationFrame(step); else resolve();
+      }
+      requestAnimationFrame(step);
+    });
+  }
+
+  async function wander(id, n, sp = 28) {
     if (isMobile) return;
-    setCursorPos(getElCenter(id));
-    await sleep(ms);
+    const r = document.getElementById(id).getBoundingClientRect();
+    const cr = containerRef.current.getBoundingClientRect();
+    for (let i = 0; i < n; i++) {
+      const tx = (r.left - cr.left) + sp + Math.random()*(r.width - sp*2);
+      const ty = (r.top - cr.top) + sp/2 + Math.random()*(r.height - sp);
+      await moveCursorTo(tx, ty, 240+Math.random()*180);
+      await sleep(50+Math.random()*80);
+      const jitters = 1 + Math.floor(Math.random()*2);
+      for (let j = 0; j < jitters; j++) {
+        const { x, y } = curPosRef.current;
+        await moveCursorTo(x+(Math.random()-0.5)*22, y+(Math.random()-0.5)*14, 100+Math.random()*80);
+        await sleep(25+Math.random()*40);
+      }
+      if (Math.random() > 0.72) {
+        playMouseClick();
+        const { x, y } = curPosRef.current;
+        setRipple({ x, y, key: Date.now() });
+        await sleep(160);
+      }
+    }
   }
 
   async function clickEl(id) {
-    if (!isMobile) {
-      await moveTo(id, 380);
-      await sleep(60);
-      const pos = getElCenter(id);
-      setRipple({ x: pos.x, y: pos.y, key: Date.now() });
-      await sleep(280);
-    } else {
-      await sleep(180);
-    }
+    if (isMobile) { await sleep(180); return; }
+    const c = getElCenter(id);
+    const wx = c.x + (Math.random()>0.5?1:-1)*(32+Math.random()*22);
+    const wy = c.y + (Math.random()-0.5)*20;
+    await moveCursorTo(wx, wy, 380*0.38);
+    await sleep(45);
+    await moveCursorTo(c.x, c.y-8, 380*0.28);
+    await sleep(55);
+    await moveCursorTo(c.x, c.y, 380*0.18);
+    await sleep(70);
+    playMouseClick();
+    setRipple({ x: c.x, y: c.y, key: Date.now() });
+    await sleep(220);
   }
 
   async function typeInto(setter, text, speed = 22) {
@@ -886,7 +1020,8 @@ function MeetingsView() {
     for (let i = 0; i < text.length; i++) {
       current += text[i];
       setter(current);
-      await sleep(isMobile ? Math.max(speed - 8, 8) : speed);
+      if (text[i] !== ' ' && text[i] !== '\n' && !isMobile) playKeystroke();
+      await sleep(isMobile ? Math.max(speed - 8, 8) : speed + Math.random()*12);
     }
   }
 
@@ -915,19 +1050,32 @@ function MeetingsView() {
     await typeInto(setNotionStatus, 'Ready for outreach', isMobile ? 22 : 35);
     await sleep(300);
     setActiveWin(null); setDoneWins(d => [...d, 'notion']);
-    await sleep(400);
+    // Visible arc to Airtable
+    if (!isMobile) {
+      const atR = document.getElementById('mw-airtable').getBoundingClientRect();
+      const cr = containerRef.current.getBoundingClientRect();
+      await moveCursorTo(atR.left - cr.left + atR.width*0.3, atR.top - cr.top + 20, 900);
+    }
+    await sleep(250);
 
     // AIRTABLE
     setActiveWin('airtable');
     await clickEl('mw-at-add-btn');
     await sleep(250);
     setAirtableRowShow(true);
+    playSnap();
     await sleep(180);
     await clickEl('mw-at-name-cell');
     await typeInto(setAirtableName, 'Alex Morin', isMobile ? 22 : 30);
     await sleep(300);
     setActiveWin(null); setDoneWins(d => [...d, 'airtable']);
-    await sleep(400);
+    // Visible arc to Gmail
+    if (!isMobile) {
+      const gmR = document.getElementById('mw-gmail').getBoundingClientRect();
+      const cr = containerRef.current.getBoundingClientRect();
+      await moveCursorTo(gmR.left - cr.left + gmR.width*0.4, gmR.top - cr.top + 20, 900);
+    }
+    await sleep(250);
 
     // GMAIL
     setActiveWin('gmail');
@@ -940,9 +1088,16 @@ function MeetingsView() {
     setGmailBtnShow(true);
     await clickEl('mw-gmail-send');
     await sleep(120);
+    playWhoosh();
     setGmailSent(true);
     setActiveWin(null); setDoneWins(d => [...d, 'gmail']);
-    await sleep(500);
+    // Visible arc to Calendar
+    if (!isMobile) {
+      const gcR = document.getElementById('mw-cal').getBoundingClientRect();
+      const cr = containerRef.current.getBoundingClientRect();
+      await moveCursorTo(gcR.left - cr.left + gcR.width*0.4, gcR.top - cr.top + 20, 900);
+    }
+    await sleep(300);
 
     // CALENDAR
     setActiveWin('cal');
@@ -952,11 +1107,13 @@ function MeetingsView() {
     if (!isMobile) await clickEl('mw-cal-thu-slot');
     await sleep(250);
     setCalEvShow(true);
+    playPop();
     setActiveWin(null); setDoneWins(d => [...d, 'cal']);
     await sleep(500);
     if (!isMobile) setCursorVisible(false);
 
     // SLACK
+    playSlackDing();
     setSlackShow(true);
     await sleep(400);
     const msg = "Here's what ran while you were away.\n\nProspect research completed and filed. Notion updated, CRM populated, email sent, meeting on the calendar.\n\nI'll pick up again at 3am while you're asleep. 👇";
