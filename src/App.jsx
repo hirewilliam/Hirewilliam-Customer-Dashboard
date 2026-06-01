@@ -1673,21 +1673,68 @@ function AnalyticsView() {
       const idx = answers[q.id];
       return sum + (idx !== undefined ? q.options[idx].s : 3);
     }, 0);
+
+    // 5 overall score buckets
     let intro, headline, desc;
-    if (total <= 15) {
-      intro = "Right now, you're holding your business together with sheer effort. 🔥 If you keep running like this, something important will eventually slip.";
-      headline = "You are the bottleneck.";
-      desc = "Your business is bleeding 20+ hours a week on work an AI agent could own. That's deals delayed, projects stalled, and burnout creeping in - not months from now, but already.";
-    } else if (total <= 24) {
-      intro = "Things work - but there are cracks. ⚠️ You're getting results, but only by sacrificing evenings and weekends.";
-      headline = "Cracks in the system.";
-      desc = "The areas flagged above are where small issues can quietly turn into dropped balls and missed opportunities. Fixing them now with the right AI agent keeps you ahead of that curve.";
+    if (total <= 10) {
+      intro = "There is no system. Just you surviving.";
+      headline = "There is no system. Just you surviving.";
+      desc = "Your business exists entirely inside your head and your calendar. William builds your entire operation from scratch — outreach, ops, support, pipeline — so you can stop being the only thing holding it together.";
+    } else if (total <= 20) {
+      intro = "Your business runs on you. That's the problem.";
+      headline = "Your business runs on you. That's the problem.";
+      desc = "Every task, every follow-up, every report — it all needs you. William takes over the manual work so your business runs when you're not watching.";
+    } else if (total <= 30) {
+      intro = "Cracks in the system. Growth will break it.";
+      headline = "Cracks in the system. Growth will break it.";
+      desc = "The areas flagged above are where small issues quietly turn into dropped balls and missed revenue. William fills the gaps before they cost you.";
+    } else if (total <= 40) {
+      intro = "Moderate inefficiency. High risk at scale.";
+      headline = "Moderate inefficiency. High risk at scale.";
+      desc = "You have foundations but they are leaking time and money daily. William optimises what exists and removes you as the bottleneck.";
     } else {
-      intro = "You're still one spike away from overload.";
-      headline = "You're one spike away from breaking.";
-      desc = "These \"small\" gaps turn into lost deals and late nights the moment volume jumps install an agent before you feel it.";
+      intro = "You are close. But close still costs you.";
+      headline = "You are close. But close still costs you.";
+      desc = "You have built something real. But manual processes are still slowing you down. William closes the last gaps and gets you to fully autonomous.";
     }
-    return { total, intro, headline, desc };
+
+    // Per-area rating — each area scored independently, ensure no all-same result
+    const RATINGS = [
+      { label: "🔴 Critical",                  bg: "#ffd6d6", color: "#8b0000", rank: 5 },
+      { label: "🔥 System at breaking point",   bg: "#ffe3e0", color: "#b3261e", rank: 4 },
+      { label: "⚠️ Escalating failure risk",    bg: "#fff4ce", color: "#8f5c00", rank: 3 },
+      { label: "🚨 Needs immediate attention",  bg: "#ffe8cc", color: "#7a3d00", rank: 2 },
+      { label: "📉 Underperforming",            bg: "#e8f4ff", color: "#1a5f9e", rank: 1 },
+    ];
+
+    // Score each area (1-5 per question)
+    const areaScores = QUIZ_QUESTIONS.map(q => {
+      const idx = answers[q.id];
+      return idx !== undefined ? q.options[idx].s : 3;
+    });
+
+    // Map score to rating index (score 5=Critical, 4=Breaking, 3=Escalating, 2=Immediate, 1=Underperforming)
+    const getRatingIdx = (s) => {
+      if (s >= 5) return 0;
+      if (s >= 4) return 1;
+      if (s >= 3) return 2;
+      if (s >= 2) return 3;
+      return 4;
+    };
+
+    let ratingIdxs = areaScores.map(getRatingIdx);
+
+    // Ensure at least one area is different — if all same, bump the lowest-scored area down one level
+    const allSame = ratingIdxs.every(r => r === ratingIdxs[0]);
+    if (allSame) {
+      const lowestScore = Math.min(...areaScores);
+      const lowestAreaIdx = areaScores.indexOf(lowestScore);
+      ratingIdxs[lowestAreaIdx] = Math.min(ratingIdxs[lowestAreaIdx] + 1, 4);
+    }
+
+    const areaRatings = ratingIdxs.map(i => RATINGS[i]);
+
+    return { total, intro, headline, desc, areaRatings };
   };
 
   const handleSubmit = async () => {
@@ -1719,7 +1766,7 @@ function AnalyticsView() {
     const idx = answers[qq.id];
     return sum + (idx !== undefined ? qq.options[idx].s : 3);
   }, 0);
-  const { total, intro, headline, desc } = screen === "results" ? getResults() : {};
+  const { total, intro, headline, desc, areaRatings = [] } = screen === "results" ? getResults() : {};
 
   // Shared container style
   const wrap = {
@@ -1863,20 +1910,19 @@ function AnalyticsView() {
               {/* Breakdown */}
               <div style={{ borderRadius: 12, border: "1px solid #e8e8e8", background: "#fff", padding: isMobile ? "18px 16px" : "20px 24px", marginBottom: 16 }}>
                 <div style={{ fontSize: "0.78rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#616061", marginBottom: 16, paddingBottom: 12, borderBottom: "1px solid #e8e8e8" }}>Your results by area</div>
-                {QUIZ_QUESTIONS.map((q) => {
-                  const idx = answers[q.id];
-                  const s = idx !== undefined ? q.options[idx].s : 3;
-                  const isHot = s >= 3;
+                {QUIZ_QUESTIONS.map((q, i) => {
+                  const rating = areaRatings[i];
                   return (
                     <div key={q.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "8px 0", borderBottom: "1px solid #e8e8e8", fontSize: "0.9rem" }}>
                       <span style={{ width: 22, textAlign: "center" }}>{q.icon}</span>
                       <span style={{ flex: 1, color: "#616061" }}>{q.tag}</span>
                       <span style={{
                         padding: "2px 10px", borderRadius: 9999, fontSize: "0.75rem", fontWeight: 700,
-                        background: isHot ? "#ffe3e0" : "#fff4ce",
-                        color: isHot ? DANGER : "#8f5c00",
+                        background: rating.bg,
+                        color: rating.color,
+                        whiteSpace: "nowrap",
                       }}>
-                        {isHot ? "🔥 System at breaking point" : "⚠️ Escalating failure risk"}
+                        {rating.label}
                       </span>
                     </div>
                   );
