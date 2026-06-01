@@ -195,7 +195,7 @@ function Sidebar({ active, onNav, onClose }) {
         William
       </div>
 
-      {/* Social icons — pinned to bottom */}
+      {/* Social icons - pinned to bottom */}
       <div style={{ marginTop: "auto", paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.08)", display: "flex", gap: 4, paddingBottom: 4 }}>
 
         {/* X */}
@@ -225,7 +225,7 @@ function Sidebar({ active, onNav, onClose }) {
           </svg>
         </a>
 
-        {/* Blog — no link yet */}
+        {/* Blog - no link yet */}
         <div title="Blog (coming soon)" style={{ width: 30, height: 30, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", cursor: "default" }}>
           <svg width="14" height="14" viewBox="0 0 24 24" style={{ fill: "rgba(255,255,255,0.55)" }}>
             <path d="M19 2H6a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h13a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1zm-1 18H6a1 1 0 0 1 0-2h12v2zm0-4H6a3 3 0 0 0-2 .78V5a1 1 0 0 1 1-1h13v12z"/>
@@ -1048,7 +1048,7 @@ function MeetingsView() {
     await sleep(60);
     await moveCursorTo(c.x, c.y-10, 320);
     await sleep(80);
-    // Final landing — wait for this to fully complete before ripple
+    // Final landing - wait for this to fully complete before ripple
     await moveCursorTo(c.x, c.y, 220);
     await sleep(120); // cursor must be visually settled before click
     playMouseClick();
@@ -1679,11 +1679,11 @@ function AnalyticsView() {
     if (total <= 10) {
       intro = "There is no system. Just you surviving.";
       headline = "There is no system. Just you surviving.";
-      desc = "Your business exists entirely inside your head and your calendar. William builds your entire operation from scratch — outreach, ops, support, pipeline — so you can stop being the only thing holding it together.";
+      desc = "Your business exists entirely inside your head and your calendar. William builds your entire operation from scratch - outreach, ops, support, pipeline - so you can stop being the only thing holding it together.";
     } else if (total <= 20) {
       intro = "Your business runs on you. That's the problem.";
       headline = "Your business runs on you. That's the problem.";
-      desc = "Every task, every follow-up, every report — it all needs you. William takes over the manual work so your business runs when you're not watching.";
+      desc = "Every task, every follow-up, every report - it all needs you. William takes over the manual work so your business runs when you're not watching.";
     } else if (total <= 30) {
       intro = "Cracks in the system. Growth will break it.";
       headline = "Cracks in the system. Growth will break it.";
@@ -1698,7 +1698,7 @@ function AnalyticsView() {
       desc = "You have built something real. But manual processes are still slowing you down. William closes the last gaps and gets you to fully autonomous.";
     }
 
-    // Per-area rating — each area scored independently, ensure no all-same result
+    // Per-area rating - each area scored independently, ensure no all-same result
     const RATINGS = [
       { label: "🔴 Critical",                  bg: "#ffd6d6", color: "#8b0000", rank: 5 },
       { label: "🔥 System at breaking point",   bg: "#ffe3e0", color: "#b3261e", rank: 4 },
@@ -1724,7 +1724,7 @@ function AnalyticsView() {
 
     let ratingIdxs = areaScores.map(getRatingIdx);
 
-    // Ensure at least one area is different — if all same, bump the lowest-scored area down one level
+    // Ensure at least one area is different - if all same, bump the lowest-scored area down one level
     const allSame = ratingIdxs.every(r => r === ratingIdxs[0]);
     if (allSame) {
       const lowestScore = Math.min(...areaScores);
