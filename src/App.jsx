@@ -1166,15 +1166,15 @@ function MeetingsView() {
 
       {/* Cursor desktop only */}
       {!isMobile && cursorVisible && (
-        <div style={{ position: 'absolute', left: cursorPos.x, top: cursorPos.y, pointerEvents: 'none', zIndex: 999, transform: 'translate(-2px,-2px)', transition: 'left 0.48s cubic-bezier(.4,0,.2,1), top 0.48s cubic-bezier(.4,0,.2,1)' }}>
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.35))' }}>
-            <path d="M2 2L7.5 16L9.5 10L16 8L2 2Z" fill="white" stroke="#6366f1" strokeWidth="1.4" strokeLinejoin="round"/>
+        <div style={{ position: 'absolute', left: cursorPos.x, top: cursorPos.y, pointerEvents: 'none', zIndex: 999, transform: 'translate(-3px,-3px)', transition: 'left 0.48s cubic-bezier(.4,0,.2,1), top 0.48s cubic-bezier(.4,0,.2,1)' }}>
+          <svg width="32" height="32" viewBox="0 0 18 18" fill="none" style={{ filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }}>
+            <path d="M2 2L7.5 16L9.5 10L16 8L2 2Z" fill="white" stroke="#6366f1" strokeWidth="1.2" strokeLinejoin="round"/>
           </svg>
-          <div style={{ position: 'absolute', left: 20, top: 2, background: '#6366f1', color: '#fff', fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10, whiteSpace: 'nowrap', boxShadow: '0 1px 6px rgba(99,102,241,0.4)' }}>William</div>
+          <div style={{ position: 'absolute', left: 34, top: 4, background: '#6366f1', color: '#fff', fontSize: 12, fontWeight: 700, padding: '3px 10px', borderRadius: 12, whiteSpace: 'nowrap', boxShadow: '0 2px 10px rgba(99,102,241,0.5)' }}>William</div>
         </div>
       )}
       {!isMobile && ripple && (
-        <div key={ripple.key} style={{ position: 'absolute', left: ripple.x - 12, top: ripple.y - 12, width: 24, height: 24, border: '2px solid #6366f1', borderRadius: '50%', pointerEvents: 'none', zIndex: 998, animation: 'mw-ripple 0.45s ease-out forwards' }} />
+        <div key={ripple.key} style={{ position: 'absolute', left: ripple.x - 18, top: ripple.y - 18, width: 36, height: 36, border: '2.5px solid #6366f1', borderRadius: '50%', pointerEvents: 'none', zIndex: 998, animation: 'mw-ripple 0.45s ease-out forwards' }} />
       )}
 
       <style>{`
