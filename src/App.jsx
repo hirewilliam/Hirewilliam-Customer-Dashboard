@@ -1948,6 +1948,8 @@ function ForFoundersView({ onNav }) {
         .ff-root .ff-ial { display: flex; gap: 12px; flex-wrap: wrap; }
         .ff-root .ff-ilink { color: #1264a3; font-size: 13px; font-weight: 700; text-decoration: none; transition: color .12s; }
         .ff-root .ff-ilink:hover { color: #3f0e40; text-decoration: underline; }
+        .ff-root .ff-social { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; border: 1px solid #e0e0e0; color: #868686; transition: color .15s, border-color .15s, background .15s; }
+        .ff-root .ff-social:hover { color: #3f0e40; border-color: #3f0e40; background: #f9f9f9; text-decoration: none; }
         @media (max-width: 720px) { .ff-root .ff-grid3 { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 480px) { .ff-root .ff-grid3 { grid-template-columns: 1fr; } }
       `}</style>
@@ -2145,6 +2147,18 @@ function ForFoundersView({ onNav }) {
             <div className="ff-ial">
               <a href="mailto:info@hirewilliam.com" className="ff-ilink">✉ Email Us</a>
               <a href="https://hirewilliam.com" className="ff-ilink">↗ hirewilliam.com</a>
+              <a href="https://www.instagram.com/hirewilliam/" target="_blank" rel="noopener noreferrer" className="ff-ilink ff-social" title="Instagram">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/></svg>
+              </a>
+              <a href="https://x.com/HireWilliamPro" target="_blank" rel="noopener noreferrer" className="ff-ilink ff-social" title="X (Twitter)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              </a>
+              <a href="https://www.linkedin.com/company/hire-william/" target="_blank" rel="noopener noreferrer" className="ff-ilink ff-social" title="LinkedIn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+              </a>
+              <a href="/blog/" className="ff-ilink ff-social" title="Blog (coming soon)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              </a>
             </div>
           </div>
         </div>
