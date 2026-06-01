@@ -1002,17 +1002,19 @@ function MeetingsView() {
   async function clickEl(id) {
     if (isMobile) { await sleep(180); return; }
     const c = getElCenter(id);
-    const wx = c.x + (Math.random()>0.5?1:-1)*(32+Math.random()*22);
-    const wy = c.y + (Math.random()-0.5)*20;
-    await moveCursorTo(wx, wy, 380*0.38);
-    await sleep(45);
-    await moveCursorTo(c.x, c.y-8, 380*0.28);
-    await sleep(55);
-    await moveCursorTo(c.x, c.y, 380*0.18);
-    await sleep(70);
+    // Approach: wide pass, then settle above, then land precisely
+    const wx = c.x + (Math.random()>0.5?1:-1)*(38+Math.random()*24);
+    const wy = c.y + (Math.random()-0.5)*22;
+    await moveCursorTo(wx, wy, 500);
+    await sleep(60);
+    await moveCursorTo(c.x, c.y-10, 320);
+    await sleep(80);
+    // Final landing — wait for this to fully complete before ripple
+    await moveCursorTo(c.x, c.y, 220);
+    await sleep(120); // cursor must be visually settled before click
     playMouseClick();
     setRipple({ x: c.x, y: c.y, key: Date.now() });
-    await sleep(220);
+    await sleep(280);
   }
 
   async function typeInto(setter, text, speed = 22) {
@@ -1109,8 +1111,21 @@ function MeetingsView() {
     setCalEvShow(true);
     playPop();
     setActiveWin(null); setDoneWins(d => [...d, 'cal']);
-    await sleep(500);
-    if (!isMobile) setCursorVisible(false);
+    await sleep(400);
+
+    // Cursor sweeps down to Slack panel
+    if (!isMobile) {
+      const slackEl = document.getElementById('mw-slack-panel');
+      if (slackEl && containerRef.current) {
+        const sr = slackEl.getBoundingClientRect();
+        const cr = containerRef.current.getBoundingClientRect();
+        await moveCursorTo(sr.left - cr.left + sr.width * 0.3, sr.top - cr.top + 20, 900);
+        await sleep(200);
+        await moveCursorTo(sr.left - cr.left + sr.width * 0.5, sr.top - cr.top + 40, 400);
+        await sleep(150);
+      }
+      setCursorVisible(false);
+    }
 
     // SLACK
     playSlackDing();
@@ -1397,7 +1412,7 @@ function MeetingsView() {
       </div>
 
       {/* SLACK */}
-      <div style={{ background: '#fff', border: '1px solid #e0e0e0', borderRadius: 10, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.05)', opacity: slackShow ? 1 : 0, transition: 'opacity 0.6s', marginBottom: 14 }}>
+      <div id="mw-slack-panel" style={{ background: '#fff', border: '1px solid #e0e0e0', borderRadius: 10, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.05)', opacity: slackShow ? 1 : 0, transition: 'opacity 0.6s', marginBottom: 14 }}>
         <div style={{ background: '#3f0e40', padding: '7px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
           {dots}
           <span style={{ color: '#fff', fontSize: 13, fontWeight: 700, flex: 1, marginLeft: 8 }}>HireWilliam</span>
