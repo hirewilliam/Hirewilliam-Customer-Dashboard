@@ -1458,13 +1458,6 @@ function MeetingsView() {
   );
 }
 
-      <button onClick={runSequence} style={{ display: 'block', margin: '0 auto 16px', background: '#fff', border: '1px solid #ddd', color: '#888', borderRadius: 8, padding: '9px 24px', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit' }}>
-        Replay
-      </button>
-    </div>
-  );
-}
-
 
 // ── Analytics (AI Readiness Quiz) ──
 const QUIZ_QUESTIONS = [
