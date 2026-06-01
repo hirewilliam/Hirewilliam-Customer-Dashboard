@@ -824,7 +824,7 @@ function OutreachView() {
   );
 }
 
-// ── MEETINGS SECTION — YEAR 3030 ──────────────────────────────────────────
+// ── MEETINGS SECTION YEAR 3030 ──────────────────────────────────────────
 
 // ── Meetings (Agent Workflow Demo) ──
 function MeetingsView() {
@@ -1149,7 +1149,7 @@ function MeetingsView() {
   return (
     <div ref={containerRef} style={{ flex: 1, minHeight: 0, overflowY: 'auto', background: '#f0f0f0', padding: isMobile ? 10 : 20, position: 'relative' }}>
 
-      {/* Cursor — desktop only */}
+      {/* Cursor desktop only */}
       {!isMobile && cursorVisible && (
         <div style={{ position: 'absolute', left: cursorPos.x, top: cursorPos.y, pointerEvents: 'none', zIndex: 999, transform: 'translate(-2px,-2px)', transition: 'left 0.48s cubic-bezier(.4,0,.2,1), top 0.48s cubic-bezier(.4,0,.2,1)' }}>
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.35))' }}>
@@ -1180,7 +1180,7 @@ function MeetingsView() {
         <div style={{ fontSize: isMobile ? 11 : 12, color: '#999' }}>No human involved. This is what runs inside your business.</div>
       </div>
 
-      {/* 2x2 grid — single col on mobile */}
+      {/* 2x2 grid single col on mobile */}
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 10 : 12, marginBottom: isMobile ? 10 : 12 }}>
 
         {/* NOTION */}
@@ -1191,9 +1191,9 @@ function MeetingsView() {
           </div>
           <div style={{ padding: isMobile ? '10px 12px' : '12px 14px' }}>
             <div style={{ fontSize: isMobile ? 16 : 18 }}>📋</div>
-            <div style={{ fontSize: isMobile ? 14 : 16, fontWeight: 700, color: '#1a1a1a', marginBottom: 8, fontFamily: 'Georgia, serif' }}>Alex Morin — Shipyard</div>
+            <div style={{ fontSize: isMobile ? 14 : 16, fontWeight: 700, color: '#1a1a1a', marginBottom: 8, fontFamily: 'Georgia, serif' }}>Alex Morin Shipyard</div>
             <div style={{ height: 1, background: '#e8e8e6', marginBottom: 6 }} />
-            {[['Company','Shipyard'],['Industry','Dev Tools'],['Signal',null,<span key="s" style={{ background: '#e3f2fd', color: '#1565c0', borderRadius: 3, padding: '1px 7px', fontSize: fs, fontWeight: 500 }}>Hiring AE — 2h ago</span>],['ICP Match',null,<span key="i" style={{ background: '#e8f5e9', color: '#2e7d32', borderRadius: 3, padding: '1px 7px', fontSize: fs, fontWeight: 500 }}>High</span>]].map(([k,v,tag]) => (
+            {[['Company','Shipyard'],['Industry','Dev Tools'],['Signal',null,<span key="s" style={{ background: '#e3f2fd', color: '#1565c0', borderRadius: 3, padding: '1px 7px', fontSize: fs, fontWeight: 500 }}>Hiring AE 2h ago</span>],['ICP Match',null,<span key="i" style={{ background: '#e8f5e9', color: '#2e7d32', borderRadius: 3, padding: '1px 7px', fontSize: fs, fontWeight: 500 }}>High</span>]].map(([k,v,tag]) => (
               <div key={k} style={{ display: 'flex', alignItems: 'center', marginBottom: 2, padding: '2px 0' }}>
                 <span style={{ fontSize: fs, color: '#9b9b9b', width: isMobile ? 72 : 80, flexShrink: 0 }}>{k}</span>
                 <span style={{ fontSize: bodyFs, color: '#37352f' }}>{tag || v}</span>
@@ -1309,7 +1309,7 @@ function MeetingsView() {
           </div>
         </div>
 
-        {/* CALENDAR — simplified on mobile */}
+        {/* CALENDAR simplified on mobile */}
         <div id="mw-cal" style={winStyle('cal')}>
           <div style={{ background: '#fff', borderBottom: '1px solid #e0e0e0', padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
             {dots}
@@ -1340,7 +1340,7 @@ function MeetingsView() {
               </div>
               <div style={{ opacity: calEvShow ? 1 : 0, transition: 'opacity 0.5s', background: '#e8f5e9', borderRadius: 8, padding: '10px 12px', animation: calEvShow ? 'mw-slide 0.4s ease' : 'none' }}>
                 <div style={{ fontSize: 10, color: '#2e7d32', fontWeight: 700, marginBottom: 2 }}>MEETING CONFIRMED</div>
-                <div style={{ fontSize: 13, color: '#1b5e20', fontWeight: 600 }}>Alex Morin — Shipyard</div>
+                <div style={{ fontSize: 13, color: '#1b5e20', fontWeight: 600 }}>Alex Morin Shipyard</div>
                 <div style={{ fontSize: 11, color: '#388e3c', marginTop: 2 }}>Thu Jun 5 · 2:00 PM · 30 min</div>
               </div>
             </div>
@@ -1638,7 +1638,7 @@ function AnalyticsView() {
     } else {
       intro = "You're still one spike away from overload.";
       headline = "You're one spike away from breaking.";
-      desc = "These \"small\" gaps turn into lost deals and late nights the moment volume jumps — install an agent before you feel it.";
+      desc = "These \"small\" gaps turn into lost deals and late nights the moment volume jumps install an agent before you feel it.";
     }
     return { total, intro, headline, desc };
   };
@@ -2340,7 +2340,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* Mobile bottom navigation — always visible channel selector */}
+      {/* Mobile bottom navigation always visible channel selector */}
       {isMobile && <MobileBottomNav active={page} onNav={setPage} />}
     </div>
   );

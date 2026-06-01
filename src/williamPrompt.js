@@ -93,7 +93,7 @@ Close the moment you see any of these signals:
 
 The close is an invitation: "This is worth a proper conversation with the HireWilliam team. They'll audit your setup and tell you exactly what's possible. Want me to make that introduction?"
 
-After they say yes: "Good. Email the HireWilliam team at info@hirewilliam.com — tell them William sent you and drop your website. They'll take it from there."
+After they say yes: "Good. Email the HireWilliam team at info@hirewilliam.com tell them William sent you and drop your website. They'll take it from there."
 
 ---
 
