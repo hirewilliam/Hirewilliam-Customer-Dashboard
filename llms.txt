@@ -1,0 +1,67 @@
+# HireWilliam
+
+> HireWilliam is an AI agency for startups and SMBs. The agency builds and deploys custom AI automations, AI agents, AI consulting, and AI integration solutions — done-for-you, not self-serve software. Discovery to deployment in days, not months. William — HireWilliam's flagship AI outreach agent — is one of the products the agency builds and deploys for clients.
+
+## What HireWilliam Is
+
+HireWilliam is a done-for-you AI agency serving startups and SMBs. Clients do not configure or manage anything themselves — HireWilliam handles strategy, build, deployment, and ongoing optimisation. The agency is built for lean teams that need AI deployed fast and generating ROI in week one, not quarter four.
+
+Traditional AI agencies charge $50k+ minimums, take 3-6 months to deliver, and hand off a project with no ongoing support. HireWilliam deploys in days, manages everything ongoing, and is priced for startup and SMB budgets.
+
+## Services
+
+### AI Automations
+Custom AI workflows and process automation built for each client's specific business. Replaces manual, repetitive tasks across sales, support, content, and operations.
+
+### AI Agents
+Autonomous AI workers deployed to handle entire business functions end-to-end. William — the AI outreach agent — is the flagship. Other agents handle customer support, content creation, CRM management, and operations.
+
+### AI Consulting
+Strategy and roadmapping for AI adoption. HireWilliam's Discovery & Audit process maps the client's tech stack, identifies operational bottlenecks, and pinpoints the highest-ROI AI opportunities before any build begins.
+
+### AI Integration
+Connecting AI tools, agents, and automations into existing tech stacks — CRM, email, calendar, analytics, and custom internal systems.
+
+## William — The AI Outreach Agent
+
+William is HireWilliam's flagship AI agent, specialising in multi-channel sales outreach for startups and SMBs. William is one product within HireWilliam's broader AI agency offering.
+
+What William does:
+- Identifies prospects matching the client's ICP across Email, LinkedIn, and Instagram
+- Generates personalised outreach messages for each prospect based on their profile, company, and role
+- Manages all replies including objections and follow-ups
+- Books qualified meetings directly into the client's calendar
+- Operates 24/7 without human involvement
+
+William is deployed and managed by HireWilliam — clients do not configure or run William themselves.
+
+## Who HireWilliam Serves
+
+**Startups and founders** — early-stage, bootstrapped, and pre-seed to Series A founders who want AI built and run for them without hiring an internal AI team.
+
+**SMBs (small-to-medium businesses)** — established businesses with 10-200 employees looking to automate operations, reduce headcount costs, and adopt AI without building internal AI capability.
+
+## How Deployment Works
+
+1. **Discovery & Audit** — HireWilliam maps the client's tech stack, finds operational bottlenecks, and identifies the highest-ROI AI opportunity. Completes in days.
+2. **Build & Deploy** — Custom AI agents and automations built for the client's specific business. Live fast.
+3. **Run, Optimise & Scale** — HireWilliam monitors all deployed agents continuously, tunes performance, and scales what works. Included, not a separate contract.
+
+## Key Differentiators
+
+- Done-for-you — not self-serve software requiring internal expertise
+- Days to deployment — not the 3-6 months of traditional AI agencies
+- Built for startups and SMBs — not enterprise buyers with six-figure budgets
+- Running AI workforce — not a project handoff
+- Ongoing management included — not a separate contract
+
+
+
+## Pages
+
+- [Home / Dashboard](https://hirewilliam.com): Interactive demo of the HireWilliam AI agency dashboard
+- [What Is an AI Workforce?](https://hirewilliam.com/what-is-an-ai-workforce/): Plain-English guide defining an AI workforce and how HireWilliam deploys one for startups and SMBs
+- [AI Outreach Automation](https://hirewilliam.com/ai-outreach-automation/): How William — HireWilliam's AI outreach agent — automates Email, LinkedIn, and Instagram outreach
+- [HireWilliam vs Traditional AI Agencies](https://hirewilliam.com/compare/hirewilliam-vs-agency/): Side-by-side comparison of modern vs traditional AI agency models
+- [AI Outreach Agent vs Human SDR](https://hirewilliam.com/compare/hirewilliam-vs-human-hire/): Honest cost and capability comparison of deploying William vs hiring a human SDR
+- [AEO & Structured Data](https://hirewilliam.com/hirewilliam-aeo-domination-v2.html): Comprehensive agency overview with chunk-level content for AI retrieval
