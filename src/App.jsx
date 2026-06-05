@@ -235,10 +235,19 @@ function Sidebar({ active, onNav, onClose }) {
         </a>
 
         {/* HireWilliam Academy — placeholder (coming soon) */}
-        <div title="HireWilliam Academy (coming soon)" aria-label="HireWilliam Academy — coming soon" style={{ width: 30, height: 30, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", cursor: "default" }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" style={{ fill: "rgba(255,255,255,0.55)" }}>
-            <path d="M7 4V2h10v2h4v3c0 1.66-1.34 3-3 3a4 4 0 0 1-3.2 1.97v2.83l1.4-.7L17 16h-2v3h2v2H7v-2h2v-3H7l.8-1.9 1.4.7v-2.83A4 4 0 0 1 6 10c-1.66 0-3-1.34-3-3V4h4M5 6v1c0 .55.45 1 1 1V6H5m14 0h-1v2c.55 0 1-.45 1-1V6z"/>
+        <div title="HireWilliam Academy — coming soon ✨" aria-label="HireWilliam Academy — coming soon" style={{ width: 30, height: 30, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", cursor: "default", position: "relative", background: "linear-gradient(135deg, rgba(251,191,36,0.18) 0%, rgba(245,158,11,0.10) 100%)", border: "1px solid rgba(251,191,36,0.35)", boxShadow: "0 0 8px rgba(251,191,36,0.25)" }}>
+          <svg width="17" height="17" viewBox="0 0 24 24" style={{ filter: "drop-shadow(0 0 3px rgba(251,191,36,0.6))" }}>
+            <defs>
+              <linearGradient id="acadGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#fde68a" />
+                <stop offset="50%" stopColor="#fbbf24" />
+                <stop offset="100%" stopColor="#f59e0b" />
+              </linearGradient>
+            </defs>
+            <path fill="url(#acadGrad)" d="M12 3 1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/>
           </svg>
+          {/* "NEW" pulse dot */}
+          <span style={{ position: "absolute", top: 2, right: 2, width: 6, height: 6, borderRadius: "50%", background: "#fbbf24", boxShadow: "0 0 6px rgba(251,191,36,0.9)", animation: "pulse-gold 2s ease-in-out infinite" }} />
         </div>
 
       </div>
