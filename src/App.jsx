@@ -226,7 +226,7 @@ function Sidebar({ active, onNav, onClose }) {
         </a>
 
         {/* Blog */}
-        <a href="/feed/" title="Blog" style={{ width: 30, height: 30, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", transition: "background 0.15s" }}
+        <a href="/blogs/" title="Blog" style={{ width: 30, height: 30, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", transition: "background 0.15s" }}
           onMouseEnter={e => { e.currentTarget.style.background = PURPLE; e.currentTarget.querySelector("svg").style.fill = "#fff"; }}
           onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.querySelector("svg").style.fill = "rgba(255,255,255,0.55)"; }}>
           <svg width="14" height="14" viewBox="0 0 24 24" style={{ fill: "rgba(255,255,255,0.55)", transition: "fill 0.15s" }}>
