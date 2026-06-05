@@ -234,8 +234,8 @@ function Sidebar({ active, onNav, onClose }) {
           </svg>
         </a>
 
-        {/* HireWilliam Academy — placeholder (coming soon) */}
-        <div title="HireWilliam Academy — coming soon ✨" aria-label="HireWilliam Academy — coming soon" style={{ width: 30, height: 30, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", cursor: "default", position: "relative", background: "linear-gradient(135deg, rgba(251,191,36,0.18) 0%, rgba(245,158,11,0.10) 100%)", border: "1px solid rgba(251,191,36,0.35)", boxShadow: "0 0 8px rgba(251,191,36,0.25)" }}>
+        {/* HireWilliam Academy - placeholder (coming soon) */}
+        <div title="HireWilliam Academy - coming soon ✨" aria-label="HireWilliam Academy - coming soon" style={{ width: 30, height: 30, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", cursor: "default", position: "relative", background: "linear-gradient(135deg, rgba(251,191,36,0.18) 0%, rgba(245,158,11,0.10) 100%)", border: "1px solid rgba(251,191,36,0.35)", boxShadow: "0 0 8px rgba(251,191,36,0.25)" }}>
           <svg width="17" height="17" viewBox="0 0 24 24" style={{ filter: "drop-shadow(0 0 3px rgba(251,191,36,0.6))" }}>
             <defs>
               <linearGradient id="acadGrad" x1="0%" y1="0%" x2="100%" y2="100%">
