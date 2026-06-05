@@ -234,6 +234,13 @@ function Sidebar({ active, onNav, onClose }) {
           </svg>
         </a>
 
+        {/* HireWilliam Academy — placeholder (coming soon) */}
+        <div title="HireWilliam Academy (coming soon)" aria-label="HireWilliam Academy — coming soon" style={{ width: 30, height: 30, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", cursor: "default" }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" style={{ fill: "rgba(255,255,255,0.55)" }}>
+            <path d="M7 4V2h10v2h4v3c0 1.66-1.34 3-3 3a4 4 0 0 1-3.2 1.97v2.83l1.4-.7L17 16h-2v3h2v2H7v-2h2v-3H7l.8-1.9 1.4.7v-2.83A4 4 0 0 1 6 10c-1.66 0-3-1.34-3-3V4h4M5 6v1c0 .55.45 1 1 1V6H5m14 0h-1v2c.55 0 1-.45 1-1V6z"/>
+          </svg>
+        </div>
+
       </div>
     </div>
   );
