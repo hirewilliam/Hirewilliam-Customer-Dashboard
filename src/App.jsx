@@ -225,12 +225,14 @@ function Sidebar({ active, onNav, onClose }) {
           </svg>
         </a>
 
-        {/* Blog - no link yet */}
-        <div title="Blog (coming soon)" style={{ width: 30, height: 30, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", cursor: "default" }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" style={{ fill: "rgba(255,255,255,0.55)" }}>
+        {/* Blog */}
+        <a href="/feed/" title="Blog" style={{ width: 30, height: 30, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", transition: "background 0.15s" }}
+          onMouseEnter={e => { e.currentTarget.style.background = PURPLE; e.currentTarget.querySelector("svg").style.fill = "#fff"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.querySelector("svg").style.fill = "rgba(255,255,255,0.55)"; }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" style={{ fill: "rgba(255,255,255,0.55)", transition: "fill 0.15s" }}>
             <path d="M19 2H6a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h13a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1zm-1 18H6a1 1 0 0 1 0-2h12v2zm0-4H6a3 3 0 0 0-2 .78V5a1 1 0 0 1 1-1h13v12z"/>
           </svg>
-        </div>
+        </a>
 
       </div>
     </div>
