@@ -27,7 +27,7 @@ William is now fully integrated with Claude AI and responds dynamically with his
 If the dev server is running:
 1. Press `Ctrl+C` to stop it
 2. Run `npm run dev` again
-3. Open http://localhost:5173/Hirewilliam-Customer-Dashboard/
+3. Open http://localhost:5173/
 
 ### Step 4: Talk to William
 
