@@ -5,6 +5,7 @@
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   Permissions-Policy: interest-cohort=()
   Vary: Accept, Accept-Encoding, User-Agent
+  Link: </llms.txt>; rel="alternate"; type="text/plain"; title="LLM crawler index", </sitemap.xml>; rel="sitemap"; type="application/xml"
 
 /blogs/*
   Cache-Control: public, max-age=300, s-maxage=3600, stale-while-revalidate=86400

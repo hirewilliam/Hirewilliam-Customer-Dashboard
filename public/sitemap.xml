@@ -4,25 +4,25 @@
   <!-- Core -->
   <url>
     <loc>https://hirewilliam.com/</loc>
-    <lastmod>2026-05-24</lastmod>
+    <lastmod>2026-06-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://hirewilliam.com/about/</loc>
-    <lastmod>2026-05-24</lastmod>
+    <lastmod>2026-06-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://hirewilliam.com/pricing/</loc>
-    <lastmod>2026-05-24</lastmod>
+    <lastmod>2026-06-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://hirewilliam.com/faq/</loc>
-    <lastmod>2026-05-24</lastmod>
+    <lastmod>2026-06-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -30,37 +30,37 @@
   <!-- Services -->
   <url>
     <loc>https://hirewilliam.com/services/</loc>
-    <lastmod>2026-05-24</lastmod>
+    <lastmod>2026-06-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://hirewilliam.com/services/ai-automation/</loc>
-    <lastmod>2026-05-24</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <lastmod>2026-06-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
   </url>
   <url>
     <loc>https://hirewilliam.com/services/ai-agents/</loc>
-    <lastmod>2026-05-24</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <lastmod>2026-06-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
   </url>
   <url>
     <loc>https://hirewilliam.com/services/ai-consulting/</loc>
-    <lastmod>2026-05-24</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-06-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
   </url>
   <url>
     <loc>https://hirewilliam.com/services/ai-integration/</loc>
-    <lastmod>2026-05-24</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-06-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
   </url>
   <url>
     <loc>https://hirewilliam.com/ai-outreach-automation/</loc>
-    <lastmod>2026-05-24</lastmod>
+    <lastmod>2026-06-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -68,19 +68,19 @@
   <!-- Use Cases -->
   <url>
     <loc>https://hirewilliam.com/use-cases/sales-outreach/</loc>
-    <lastmod>2026-05-24</lastmod>
+    <lastmod>2026-06-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hirewilliam.com/use-cases/lead-generation/</loc>
-    <lastmod>2026-05-24</lastmod>
+    <lastmod>2026-06-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hirewilliam.com/use-cases/linkedin-automation/</loc>
-    <lastmod>2026-05-24</lastmod>
+    <lastmod>2026-06-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -88,31 +88,31 @@
   <!-- Comparisons -->
   <url>
     <loc>https://hirewilliam.com/compare/hirewilliam-vs-clay/</loc>
-    <lastmod>2026-05-24</lastmod>
+    <lastmod>2026-06-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hirewilliam.com/compare/hirewilliam-vs-zapier/</loc>
-    <lastmod>2026-05-24</lastmod>
+    <lastmod>2026-06-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hirewilliam.com/compare/hirewilliam-vs-make/</loc>
-    <lastmod>2026-05-24</lastmod>
+    <lastmod>2026-06-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hirewilliam.com/compare/hirewilliam-vs-agency/</loc>
-    <lastmod>2026-05-24</lastmod>
+    <lastmod>2026-06-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hirewilliam.com/compare/hirewilliam-vs-human-hire/</loc>
-    <lastmod>2026-05-24</lastmod>
+    <lastmod>2026-06-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -120,15 +120,15 @@
   <!-- Educational / Guides -->
   <url>
     <loc>https://hirewilliam.com/what-is-an-ai-workforce/</loc>
-    <lastmod>2026-05-24</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-06-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
 
   <!-- Blog (long-form SEO) -->
   <url>
     <loc>https://hirewilliam.com/blog/</loc>
-    <lastmod>2026-05-24</lastmod>
+    <lastmod>2026-06-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -142,25 +142,25 @@
   </url>
   <url>
     <loc>https://hirewilliam.com/blog/what-is-ai-automation-for-small-business/</loc>
-    <lastmod>2026-05-24</lastmod>
+    <lastmod>2026-06-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hirewilliam.com/blog/how-to-replace-sdr-with-ai/</loc>
-    <lastmod>2026-05-24</lastmod>
+    <lastmod>2026-06-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hirewilliam.com/blog/ai-automation-roi/</loc>
-    <lastmod>2026-05-24</lastmod>
+    <lastmod>2026-06-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://hirewilliam.com/blog/ai-agents-vs-workflow-automation/</loc>
-    <lastmod>2026-05-24</lastmod>
+    <lastmod>2026-06-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
