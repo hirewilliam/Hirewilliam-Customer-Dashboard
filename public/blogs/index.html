@@ -2186,6 +2186,153 @@
   }
   .agency-cta-btn:hover { background: #9370d8; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(124,92,191,0.4); }
   .agency-cta-sub { font-size: 11px; color: var(--text-muted); margin-top: 9px; font-style: italic; }
+
+  /* ─────────────────────── MOBILE ─────────────────────── */
+  /* Everything below is scoped to small screens only. Desktop view is untouched. */
+  @media (max-width: 768px) {
+    body {
+      flex-direction: column;
+      height: auto;
+      min-height: 100vh;
+      overflow: auto;
+    }
+
+    /* Main sidebar: collapse into a sticky horizontal channel strip at the top */
+    .sidebar {
+      width: 100%;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid var(--border-subtle);
+      overflow: visible;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      flex-direction: column;
+    }
+    .sidebar > .sidebar-header,
+    .sidebar > .sidebar-divider,
+    .sidebar > .sidebar-divider ~ *,
+    .sidebar-section-label { display: none !important; }
+
+    .sidebar > .sidebar-section {
+      display: flex;
+      flex-direction: row;
+      gap: 6px;
+      padding: 8px 10px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .sidebar > .sidebar-section::-webkit-scrollbar { display: none; }
+
+    .sidebar-item {
+      flex-shrink: 0;
+      padding: 6px 10px;
+      font-size: 12px;
+      white-space: nowrap;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+    }
+    .sidebar-item.active { background: var(--bg-active); color: #fff; }
+    .sidebar-item .unread-dot,
+    .sidebar-item .badge { display: none; }
+
+    /* Main column fills the rest, scroll on body */
+    .main {
+      flex: 1 1 auto;
+      overflow: visible;
+      height: auto;
+    }
+
+    .channel-header {
+      padding: 10px 14px;
+      flex-wrap: wrap;
+      row-gap: 4px;
+    }
+    .channel-desc {
+      border-left: none;
+      padding-left: 0;
+      font-size: 11px;
+      white-space: normal;
+      width: 100%;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .content {
+      overflow: visible;
+      padding: 12px 12px 32px;
+    }
+
+    .msg-group { gap: 8px; }
+    .avatar-lg { width: 28px; height: 28px; font-size: 13px; }
+    .msg-author { font-size: 13.5px; }
+    .msg-intro { font-size: 13px; margin-bottom: 14px; line-height: 1.55; }
+
+    /* Force every per-post "page" container to stack and unlock its scroll */
+    [class$="-page"] {
+      flex-direction: column !important;
+      height: auto !important;
+      min-height: 0 !important;
+      overflow: visible !important;
+    }
+    [class$="-main"] {
+      width: 100% !important;
+      height: auto !important;
+      overflow: visible !important;
+    }
+    [class$="-content"] {
+      flex-direction: column !important;
+      height: auto !important;
+      overflow: visible !important;
+    }
+
+    /* Hide fake SaaS chrome that doesn't add value on a phone */
+    [class$="-leftnav"],
+    [class$="-topbar"],
+    [class$="-list-panel"],
+    [class$="-rightpanel"],
+    [class$="-right-panel"],
+    [class$="-sidepanel"],
+    [class$="-side-panel"],
+    [class$="-mainnav"] {
+      display: none !important;
+    }
+
+    /* The actual article body fills the screen */
+    [class$="-blog-panel"] {
+      width: 100% !important;
+      flex: 1 1 auto !important;
+      overflow: visible !important;
+      padding: 14px !important;
+    }
+
+    /* Common article element sizing for mobile readability */
+    [class$="-blog-title"] { font-size: 21px !important; line-height: 1.25 !important; }
+    [class$="-blog-eyebrow"] { font-size: 10.5px !important; }
+    [class$="-blog-meta"] { font-size: 11.5px !important; }
+    [class$="-blog-item-title"] { font-size: 15px !important; line-height: 1.3 !important; }
+    [class$="-blog-item-body"] { font-size: 13.5px !important; line-height: 1.55 !important; }
+    [class$="-blog-fix-text"] { font-size: 13px !important; }
+    [class$="-blog-cta-title"] { font-size: 15px !important; line-height: 1.4 !important; }
+    [class$="-blog-cta-btn"] {
+      width: 100%;
+      box-sizing: border-box;
+      justify-content: center;
+      text-align: center;
+    }
+
+    /* Featured card + grid: stack */
+    .featured-card { grid-template-columns: 1fr; }
+    .featured-thumb { min-height: 90px; font-size: 36px; }
+    .posts-grid { grid-template-columns: 1fr; }
+
+    /* Tables (a few posts use them): allow horizontal scroll without breaking layout */
+    table { font-size: 12px; display: block; overflow-x: auto; max-width: 100%; }
+
+    /* Avoid any horizontal page overflow from rogue child content */
+    img, svg, iframe { max-width: 100%; height: auto; }
+  }
 </style>
 </head>
 <body>
@@ -6115,6 +6262,7 @@
   function switchChannel(id, el) {
     document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
     el.classList.add('active');
+    try { el.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' }); } catch (e) {}
     const dot = el.querySelector('.unread-dot');
     if (dot) dot.remove();
 
