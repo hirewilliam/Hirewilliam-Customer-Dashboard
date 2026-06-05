@@ -2287,7 +2287,10 @@
       overflow: visible !important;
     }
 
-    /* Hide fake SaaS chrome that doesn't add value on a phone */
+    /* Hide fake SaaS chrome that doesn't add value on a phone.
+       Note: the main app sidebar has class "sidebar" (no hyphen prefix),
+       so [class$="-sidebar"] does NOT match it — only per-post fake
+       sidebars like .aws-sidebar, .at-sidebar, etc. */
     [class$="-leftnav"],
     [class$="-topbar"],
     [class$="-list-panel"],
@@ -2295,7 +2298,13 @@
     [class$="-right-panel"],
     [class$="-sidepanel"],
     [class$="-side-panel"],
-    [class$="-mainnav"] {
+    [class$="-mainnav"],
+    [class$="-sidebar"],
+    [class$="-breadcrumb"],
+    [class$="-toolbar"],
+    [class$="-tab-bar"],
+    [class$="-tabs"],
+    [class$="-subnav"] {
       display: none !important;
     }
 
