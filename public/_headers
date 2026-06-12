@@ -7,7 +7,7 @@
   Vary: Accept, Accept-Encoding, User-Agent
   Link: </llms.txt>; rel="alternate"; type="text/plain"; title="LLM crawler index", </sitemap.xml>; rel="sitemap"; type="application/xml"
 
-/blogs/*
+/guides/*
   Cache-Control: public, max-age=300, s-maxage=3600, stale-while-revalidate=86400
   X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1, max-image-preview:large
 

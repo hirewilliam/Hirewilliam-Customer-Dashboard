@@ -90,21 +90,21 @@ In-depth founder guides on AI automation and adoption:
 
 22 honest founder guides covering the SaaS tools you actually use day-to-day. Each post catalogs real complaints from G2, Capterra and Reddit alongside the AI fixes HireWilliam deploys:
 
-- **[All 22 Guides](https://hirewilliam.com/blogs/)** - Browse the full set
+- **[All 22 Guides](https://hirewilliam.com/guides/)** - Browse the full set
 
-**Automation & integration tools:** [Zapier](https://hirewilliam.com/blogs/#feed-zapier) · [n8n](https://hirewilliam.com/blogs/#feed-n8n) · [Airtable](https://hirewilliam.com/blogs/#feed-airtable)
+**Automation & integration tools:** [Zapier](https://hirewilliam.com/guides/#feed-zapier) · [n8n](https://hirewilliam.com/guides/#feed-n8n) · [Airtable](https://hirewilliam.com/guides/#feed-airtable)
 
-**CRM & marketing:** [HubSpot](https://hirewilliam.com/blogs/#feed-hubspot) · [Salesforce](https://hirewilliam.com/blogs/#feed-salesforce) · [Semrush](https://hirewilliam.com/blogs/#feed-semrush)
+**CRM & marketing:** [HubSpot](https://hirewilliam.com/guides/#feed-hubspot) · [Salesforce](https://hirewilliam.com/guides/#feed-salesforce) · [Semrush](https://hirewilliam.com/guides/#feed-semrush)
 
-**Cloud platforms:** [AWS](https://hirewilliam.com/blogs/#feed-aws) · [Google Workspace](https://hirewilliam.com/blogs/#feed-google) · [Microsoft 365 / Copilot](https://hirewilliam.com/blogs/#feed-windows) · [Apple Intelligence](https://hirewilliam.com/blogs/#feed-apple)
+**Cloud platforms:** [AWS](https://hirewilliam.com/guides/#feed-aws) · [Google Workspace](https://hirewilliam.com/guides/#feed-google) · [Microsoft 365 / Copilot](https://hirewilliam.com/guides/#feed-windows) · [Apple Intelligence](https://hirewilliam.com/guides/#feed-apple)
 
-**Project management:** [Asana](https://hirewilliam.com/blogs/#feed-asana) · [Jira](https://hirewilliam.com/blogs/#feed-jira) · [monday.com](https://hirewilliam.com/blogs/#feed-monday) · [Notion](https://hirewilliam.com/blogs/#feed-notion)
+**Project management:** [Asana](https://hirewilliam.com/guides/#feed-asana) · [Jira](https://hirewilliam.com/guides/#feed-jira) · [monday.com](https://hirewilliam.com/guides/#feed-monday) · [Notion](https://hirewilliam.com/guides/#feed-notion)
 
-**Communication & collaboration:** [Slack](https://hirewilliam.com/blogs/#feed-slack) · [Discord](https://hirewilliam.com/blogs/#feed-discord) · [Loom](https://hirewilliam.com/blogs/#feed-loom)
+**Communication & collaboration:** [Slack](https://hirewilliam.com/guides/#feed-slack) · [Discord](https://hirewilliam.com/guides/#feed-discord) · [Loom](https://hirewilliam.com/guides/#feed-loom)
 
-**Developer & design:** [GitHub](https://hirewilliam.com/blogs/#feed-github) · [Figma](https://hirewilliam.com/blogs/#feed-figma)
+**Developer & design:** [GitHub](https://hirewilliam.com/guides/#feed-github) · [Figma](https://hirewilliam.com/guides/#feed-figma)
 
-**Finance & support:** [Stripe](https://hirewilliam.com/blogs/#feed-stripe) · [QuickBooks](https://hirewilliam.com/blogs/#feed-quickbooks) · [Zendesk](https://hirewilliam.com/blogs/#feed-zendesk)
+**Finance & support:** [Stripe](https://hirewilliam.com/guides/#feed-stripe) · [QuickBooks](https://hirewilliam.com/guides/#feed-quickbooks) · [Zendesk](https://hirewilliam.com/guides/#feed-zendesk)
 
 ---
 

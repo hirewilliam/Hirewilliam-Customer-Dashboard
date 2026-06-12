@@ -225,8 +225,8 @@ function Sidebar({ active, onNav, onClose }) {
           </svg>
         </a>
 
-        {/* Blog */}
-        <a href="/blogs/" title="Read our blog →" aria-label="Read our blog" style={{ width: 30, height: 30, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", transition: "background 0.15s" }}
+        {/* Guides */}
+        <a href="/guides/" title="Read our guides →" aria-label="Read our guides" style={{ width: 30, height: 30, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", transition: "background 0.15s" }}
           onMouseEnter={e => { e.currentTarget.style.background = PURPLE; e.currentTarget.querySelector("svg").style.fill = "#fff"; }}
           onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.querySelector("svg").style.fill = "rgba(255,255,255,0.55)"; }}>
           <svg width="14" height="14" viewBox="0 0 24 24" style={{ fill: "rgba(255,255,255,0.55)", transition: "fill 0.15s" }}>
@@ -234,8 +234,10 @@ function Sidebar({ active, onNav, onClose }) {
           </svg>
         </a>
 
-        {/* HireWilliam Academy - placeholder (coming soon) */}
-        <div title="HireWilliam Academy - coming soon ✨" aria-label="HireWilliam Academy - coming soon" style={{ width: 30, height: 30, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", cursor: "default", position: "relative", background: "linear-gradient(135deg, rgba(251,191,36,0.18) 0%, rgba(245,158,11,0.10) 100%)", border: "1px solid rgba(251,191,36,0.35)", boxShadow: "0 0 8px rgba(251,191,36,0.25)" }}>
+        {/* HireWilliam Academy */}
+        <a href="/academy/" title="HireWilliam Academy ✨" aria-label="HireWilliam Academy" style={{ width: 30, height: 30, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", position: "relative", background: "linear-gradient(135deg, rgba(251,191,36,0.18) 0%, rgba(245,158,11,0.10) 100%)", border: "1px solid rgba(251,191,36,0.35)", boxShadow: "0 0 8px rgba(251,191,36,0.25)", transition: "box-shadow 0.15s" }}
+          onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 14px rgba(251,191,36,0.55)"; }}
+          onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 8px rgba(251,191,36,0.25)"; }}>
           <svg width="17" height="17" viewBox="0 0 24 24" style={{ filter: "drop-shadow(0 0 3px rgba(251,191,36,0.6))" }}>
             <defs>
               <linearGradient id="acadGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -248,7 +250,7 @@ function Sidebar({ active, onNav, onClose }) {
           </svg>
           {/* "NEW" pulse dot */}
           <span style={{ position: "absolute", top: 2, right: 2, width: 6, height: 6, borderRadius: "50%", background: "#fbbf24", boxShadow: "0 0 6px rgba(251,191,36,0.9)", animation: "pulse-gold 2s ease-in-out infinite" }} />
-        </div>
+        </a>
 
       </div>
     </div>
