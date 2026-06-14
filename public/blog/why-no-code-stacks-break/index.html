@@ -166,6 +166,22 @@
           "@type": "Answer",
           "text": "PostHog's autocapture attaches document-level capture listeners; shadcn/ui dropdowns (built on Radix primitives) rely on pointer-event sequencing and portal elements, and the capture-phase handler can interfere - the menu closes instantly or items don't fire onSelect. Fixes that work: (1) upgrade posthog-js - multiple releases addressed event interference; (2) add the ph-no-capture class to the dropdown trigger and content so autocapture skips those elements; (3) if it persists, set autocapture: false at init and instrument the events you actually need via posthog.capture() - manual events are more reliable for analytics anyway; (4) confirm the issue by commenting out PostHog init: if the dropdown works, you've isolated it. Don't ship a broken nav to keep heatmaps - capture less, deliberately."
         }
+      },
+      {
+        "@type": "Question",
+        "name": "Why does Stripe Tax automated calculation fail for a province like Ontario with custom metadata?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Stripe Tax needs a fully resolvable customer address and an active tax registration for the jurisdiction. If you pass the province in a custom metadata field instead of the structured customer.address.state, Stripe never sees it; and without a Canadian tax registration it refuses to calculate for Ontario. Fix: populate the structured address object using the two-letter subdivision code (ON for Ontario) rather than metadata, add your Canada/Ontario registrations under Stripe Tax settings, and assign a tax code to the product. Verify with a test customer at an Ontario postal code before going live."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Why does my Vanta compliance check fail on a Bubble static S3 asset?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Vanta flags Bubble-hosted static assets when the underlying S3 object is missing a response header the check expects - typically a cache-control or security header. Because Bubble manages that S3 bucket, you can't set the headers directly. Fix: front the assets with a CDN or proxy (Cloudflare is common) that injects the required headers on the way out, or move the specific flagged static assets to a bucket you control where you can set object metadata. Re-run the Vanta test after the header is present at the URL it checks."
+        }
       }
     ]
   }
@@ -306,6 +322,11 @@
   <p><strong>Cause:</strong> Metadata doesn't cascade in Stripe. Payment Link metadata lands on the Checkout Session - not automatically on the PaymentIntent, the Subscription, or the Invoice your webhook may be reading.</p>
   <p><strong>Fix:</strong> Listen for <code>checkout.session.completed</code> and read metadata from the session object, or expand the session from whatever object you received. For subscriptions, set <code>subscription_data.metadata</code> so it propagates onto the subscription itself. Rule of thumb: put metadata on the object whose webhook you actually consume.</p>
 
+  <h3>Stripe Tax automated calculation fails for a province (e.g. Ontario) with custom metadata</h3>
+  <p><strong>Symptom:</strong> Stripe Tax returns a calculation error - or silently applies the wrong rate - for a Canadian province like Ontario, even though tax works fine for other regions.</p>
+  <p><strong>Cause:</strong> Stripe Tax needs a fully resolvable customer address (country + state/province + postal code) and an active registration for that jurisdiction. Passing province in a custom metadata field instead of the structured <code>customer.address.state</code> means Stripe never sees it; missing a Canada/Ontario tax registration makes it refuse to calculate.</p>
+  <p><strong>Fix:</strong> Populate the structured <code>address</code> object (use the two-letter subdivision code, <code>ON</code> for Ontario) rather than stuffing it in metadata, add your Canadian tax registrations under Stripe Tax settings, and confirm the product has a tax code assigned. Verify with a test customer at an Ontario postal code before going live.</p>
+
   <h2>PostHog Failure Modes</h2>
 
   <h3>Autocapture breaks shadcn/Radix dropdown listeners</h3>
@@ -318,9 +339,12 @@
   <p><strong>Cause:</strong> A formula or ratio insight is dividing by a series that now returns zero or no data - usually because an event or property was renamed, or a filter references the old property name, so the denominator went empty.</p>
   <p><strong>Fix:</strong> Open the insight, check each series returns data over the period, and re-point filters/formulas at the new property name. If you renamed properties at the source, add a mapping (or alias the old name in your capture code) for continuity - and annotate the dashboard with the change date so future-you doesn't re-debug it.</p>
 
-  <h2>Rapid-Fire: Five More One-Liners</h2>
+  <h2>Rapid-Fire: More One-Liners</h2>
 
   <ul>
+    <li><strong>Vanta compliance check fails on a Bubble static S3 asset:</strong> the audit flags your Bubble-hosted asset because the S3 bucket object is missing a required response header (often cache-control or a security header) that Vanta's check expects. You can't edit Bubble's bucket headers directly - front the assets with a CDN/proxy (Cloudflare) that injects the missing headers, or move the flagged static assets to a bucket you control.</li>
+    <li><strong>Deel onboarding stuck on tax-document collection:</strong> the worker's onboarding spins on the tax step when their country/entity type doesn't match the contract type, or a prior document is in a rejected/pending state. Confirm the contract type (contractor vs EOR) matches the worker's country, have them re-upload the exact document Deel asks for, and open a Deel support ticket referencing the worker ID if the step won't clear.</li>
+    <li><strong>Mercury Bank API 403 on a production payroll batch transfer:</strong> the 403 is an authorization scope problem, not a balance problem - the API token lacks send-money/treasury permission, the IP isn't allow-listed, or you're hitting prod with a sandbox key. Re-issue a token with payment scope, allow-list your server IP, and verify you're on the production base URL before retrying the batch.</li>
     <li><strong>Retool on Safari mobile:</strong> custom CSS that works on desktop collapses on iOS Safari - Retool's mobile rendering doesn't honor all desktop container CSS. Use Retool Mobile-native components or test every custom-CSS view on an actual iPhone before rollout.</li>
     <li><strong>Framer + Cloudflare proxied domain errors:</strong> Framer needs to issue its own SSL and verify the domain; Cloudflare's orange-cloud proxy breaks that handshake. Set the Framer DNS records to "DNS only" (grey cloud) - or you'll chase SSL and redirect errors forever.</li>
     <li><strong>Softr form → Airtable linked fields:</strong> Softr forms can't write to a linked-record field with free text - they need the linked record to exist and be selected. Use a connected list/dropdown bound to the linked table, or write to a text field and link it with an Airtable automation afterward.</li>
@@ -361,6 +385,12 @@
 
   <h3>Why is PostHog autocapture breaking my shadcn/Radix dropdown menu listeners?</h3>
   <p>PostHog's autocapture attaches document-level capture listeners; shadcn/ui dropdowns (built on Radix primitives) rely on pointer-event sequencing and portal elements, and the capture-phase handler can interfere - the menu closes instantly or items don't fire onSelect. Fixes that work: (1) upgrade posthog-js - multiple releases addressed event interference; (2) add the ph-no-capture class to the dropdown trigger and content so autocapture skips those elements; (3) if it persists, set autocapture: false at init and instrument the events you actually need via posthog.capture() - manual events are more reliable for analytics anyway; (4) confirm the issue by commenting out PostHog init: if the dropdown works, you've isolated it. Don't ship a broken nav to keep heatmaps - capture less, deliberately.</p>
+
+  <h3>Why does Stripe Tax automated calculation fail for a province like Ontario with custom metadata?</h3>
+  <p>Stripe Tax needs a fully resolvable customer address and an active tax registration for the jurisdiction. If you pass the province in a custom metadata field instead of the structured customer.address.state, Stripe never sees it; and without a Canadian tax registration it refuses to calculate for Ontario. Fix: populate the structured address object using the two-letter subdivision code (ON for Ontario) rather than metadata, add your Canada/Ontario registrations under Stripe Tax settings, and assign a tax code to the product. Verify with a test customer at an Ontario postal code before going live.</p>
+
+  <h3>Why does my Vanta compliance check fail on a Bubble static S3 asset?</h3>
+  <p>Vanta flags Bubble-hosted static assets when the underlying S3 object is missing a response header the check expects - typically a cache-control or security header. Because Bubble manages that S3 bucket, you can't set the headers directly. Fix: front the assets with a CDN or proxy (Cloudflare is common) that injects the required headers on the way out, or move the specific flagged static assets to a bucket you control where you can set object metadata. Re-run the Vanta test after the header is present at the URL it checks.</p>
 
   <hr>
 
